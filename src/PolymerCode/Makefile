@@ -11,9 +11,9 @@ batch:
 
 	gcc -O3 driveMetropolis.c -o metropolis.out -lm
 
-	chmod a+x batchMetropolis.sh
+	chmod a+x runBatch.sh
 
-	./batchMetropolis.sh 7 v
+	./runBatch.sh
 
 hpc:
 
@@ -32,3 +32,11 @@ copyrepo:
 	git -C ~/Documents/PolymerGit log -1 --pretty=format:%H > "CommitUsedHash.txt"
 
 	cp -r ~/Documents/PolymerGit/src/PolymerCode/ .
+
+parallel:
+
+	gcc -O3 driveMetropolis.c -o metropolis.out -lm
+
+	chmod a+x batchMetropolis.sh
+
+	./batchMetropolis.sh 7 v
