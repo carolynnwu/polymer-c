@@ -183,19 +183,19 @@ void finalizeSummary()
 
             
             fprintf(fList, " %e %e",
-                    POccludeBase[nf],           // 20 + 7*iSiteTotal + (6 + 7*iSiteTotal + 2)*nf
-                    1-POccludeBase[nf]);        // 21 + 7*iSiteTotal + (6 + 7*iSiteTotal + 2)*nf
+                    POccludeBase[nf],           // 20 + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
+                    1-POccludeBase[nf]);        // 21 + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
             
             for(nf2=0;nf2<NFil;nf2++)
             {
                 fprintf(fList, " %f",
-                    reeFilBar[nf][nf2]);        // 22 + 7*iSiteTotal + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    reeFilBar[nf][nf2]);        // 22 + 7*(iSiteTotal-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
             }
             
             for(nf2=0;nf2<NFil;nf2++)
             {
                 fprintf(fList, " %f",
-                        ree2FilBar[nf][nf2]);   // 23 + 7*iSiteTotal + NFil + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                        ree2FilBar[nf][nf2]);   // 23 + 7*(iSiteTotal-1) + (NFil-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
             }
             
 //            for (ib=0;ib<bSiteTotal[nf];ib++)
