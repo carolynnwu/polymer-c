@@ -13,8 +13,9 @@ FORCE=0                     # Force on ends of filaments in z-direction
 DIMERFORCE=0                # Force pulling ends of multiple filaments together
 
 # Loop through single variable
-for ((FORCE=0;FORCE<=10;FORCE=($FORCE+1)))
+for FORCE in $(seq 0 0.01 0.25)
 do
+
     # Run executable
     ./metropolis.out parameters.txt SinglePolymerWithForce.$FORCE.txt $VERBOSE $NFIL $BASESEPDISTANCE $FORCE $DIMERFORCE &
 
@@ -27,7 +28,7 @@ wait
 echo "Done waiting for processes to finish."
 
 # loop through all files, concatenate them into one file
-for ((FORCE=0;FORCE<=10;FORCE=($FORCE+1)))
+for FORCE in $(seq 0 0.01 0.25)
 do
 
 # concatenate inidividual run files into single file
