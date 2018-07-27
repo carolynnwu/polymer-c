@@ -13,7 +13,7 @@ FORCE=0                     # Force on ends of filaments in z-direction
 DIMERFORCE=0                # Force pulling ends of multiple filaments together
 
 # Loop through single variable
-for FORCE in $(seq 0 0.01 0.25)
+for FORCE in $(seq 0 0.04 1)
 do
 
     # Run executable
@@ -28,7 +28,7 @@ wait
 echo "Done waiting for processes to finish."
 
 # loop through all files, concatenate them into one file
-for FORCE in $(seq 0 0.01 0.25)
+for FORCE in $(seq 0 0.04 1)
 do
 
 # concatenate inidividual run files into single file
