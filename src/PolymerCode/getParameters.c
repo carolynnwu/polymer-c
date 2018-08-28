@@ -39,8 +39,11 @@ void getParameters()
     fscanf(paramsFile,"%s %lf", tmpString, &Force);
     if (TALKATIVE) printf("This is force: %f\n", Force);
     
-    fscanf(paramsFile,"%s %lf", tmpString, &dimerForce);
-    if (TALKATIVE) printf("This is dimerization force: %f\n", dimerForce);
+    fscanf(paramsFile,"%s %lf", tmpString, &kdimer);
+    if (TALKATIVE) printf("This is dimerization spring constant: %f\n", kdimer);
+
+    fscanf(paramsFile,"%s %lf", tmpString, &dimerDist0);
+    if (TALKATIVE) printf("This is dimerization rest distance: %f\n", dimerDist0);
     
     fscanf(paramsFile,"%s %d", tmpString, &verboseTF);
     if (TALKATIVE) printf("This is verbose: %d\n", verboseTF);

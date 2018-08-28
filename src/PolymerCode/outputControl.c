@@ -150,7 +150,7 @@ void finalizeSummary()
         fList = fopen(listName, "a");
         
         // formulas only work for identical filaments
-        fprintf(fList, "%ld %ld %f %f %f %f",
+        fprintf(fList, "%ld %ld %f %f %f %f %f %f",
                 nt,         // 1
                 NFil,       // 2
                 irLigand,   // 3
