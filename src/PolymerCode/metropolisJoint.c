@@ -560,10 +560,14 @@ void metropolisJoint()
                 Ncurrent = N[nf];
                 for(nf2=(nf+1);nf2<NFil;nf2++)
                 {
-                    ENew += sqrt((rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])*(rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])+
-                                 (rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])*(rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])+
-                                 (rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2])*(rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2]))*
-                                dimerForce;
+                    //ENew += sqrt((rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])*(rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])+
+                                 //(rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])*(rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])+
+                                 //(rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2])*(rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2]))*
+                                //dimerForce;
+                    dimerDistCurrent = sqrt((rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])*(rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])+
+                                             (rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])*(rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])+
+                                            (rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2])*(rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2]));
+                    ENew += 0.5*kdimer*(dimerDistCurrent-dimerDist0)*(dimerDistCurrent-dimerDist0);
                 }
             }
             

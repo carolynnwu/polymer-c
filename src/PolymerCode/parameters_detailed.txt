@@ -6,7 +6,8 @@ irLigand		1				% Ligand radius measured in Kuhn lengths
 brLigand		1				% Bound ligand radius measured in Kuhn lengths
 baserLigand		4				% Radius of "Base" (sphere at base of filaments instead of membrane)
 Force			0				% Force pulling on ends of filaments
-dimerForce		0				% Force pulling ends of filaments together
+kdimer			0				% Spring constant for ends of filaments
+dimerDist0		1				% Rest separation distance of filament ends
 verboseTF		0				% Boolean setting if output is verbose or summary
 iSiteInputMethod	4				% Method used in getSites to decide where iSites are located
 	% 0 - zeta chain

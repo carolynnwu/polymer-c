@@ -127,7 +127,8 @@ double baseCenter[3];
 double baseSepDistance;
 
 /* Filament tail dimerization force */
-double dimerForce;
+double dimerDistCurrent, dimerDist0;
+double kdimer;
 
 /*******************************************************************************/
 //  INCLUDES
@@ -196,8 +197,8 @@ int main( int argc, char *argv[] )
     if(argv[7])
     {
         if(atoi(argv[7])!=-1)
-            dimerForce = atof(argv[7]);
-        if (TALKATIVE) printf("This is the dimerization force: %lf\n", dimerForce);
+            kdimer = atof(argv[7]);
+        if (TALKATIVE) printf("This is the dimerization force: %lf\n", kdimer);
     }
     
     
