@@ -30,20 +30,40 @@ void initializeStiffSites()
     
     //read string and assign to double vector
     // 1 is occupied iSite (phosphorylated), 0 is unoccupied
-    switch (stiffCase)
+    for(nf=0;nf<NFil;nf++)
     {
-        case 0:
+        stiffCase = iSiteTotal[nf];
+        
+        switch (stiffCase)
+        {
             
-            for(nf=0;nf<NFil;nf++)
-            {
-                // eventually want to be able have different phosphorylation settings per iSite per filament
-                sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3],&stiffiSites[nf][4],&stiffiSites[nf][5]);
-            }
+            case 1:
+            
+            // eventually want to be able have different phosphorylation settings per iSite per filament
+            sscanf(occupiedSites,"%lf", &stiffiSites[nf][0]);
+            break;
+            
+            case 2:
+            
+            // eventually want to be able have different phosphorylation settings per iSite per filament
+            sscanf(occupiedSites,"%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1]);
+            break;
+            
+            case 6:
+            
+            // eventually want to be able have different phosphorylation settings per iSite per filament
+            sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3],&stiffiSites[nf][4],&stiffiSites[nf][5]);
+            break;
+            
+            default:
+            printf("Create case for stiffening %d sites",stiffCase);
+            fflush(stdout);
+            exit(0);
             break;
             
             // could include a case to read occupiedSites from a file of either locations or of 0,1s
-            // for now, this is only useful for CD3Zeta parameters (anything with six iSites)
-            // could get rid of switch altogether for now
+            
+        }
     }
     
     // for debugging, print which iSites are declared stiff
