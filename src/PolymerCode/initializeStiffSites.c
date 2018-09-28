@@ -48,6 +48,12 @@ void initializeStiffSites()
             // eventually want to be able have different phosphorylation settings per iSite per filament
             sscanf(occupiedSites,"%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1]);
             break;
+                
+            case 4:
+                
+            // eventually want to be able have different phosphorylation settings per iSite per filament
+            sscanf(occupiedSites,"%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3]);
+            break;
             
             case 6:
             
@@ -56,7 +62,7 @@ void initializeStiffSites()
             break;
             
             default:
-            printf("Create case for stiffening %d sites",stiffCase);
+            printf("Create case for stiffening %d sites.\n",stiffCase);
             fflush(stdout);
             exit(0);
             break;
@@ -148,10 +154,10 @@ void initializeStiffSites()
             {
                 // Include error for completely stiff
                 // May cause convergence problems?
-                printf("Error! Filament %ld is completely stiff!\n",nf);
+                printf("Warning! Filament %ld is completely stiff!\n",nf);
                 fflush(stdout);
                 
-                exit(0);
+                // exit(0);
             }
         }
     }

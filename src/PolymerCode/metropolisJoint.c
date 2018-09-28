@@ -226,11 +226,16 @@ void metropolisJoint()
             //replace proposed joint until one is found that is not stiff
         if (STIFFEN)
         {
-            while(StiffSites[nfPropose][iPropose]==1) //Test if proposed joint is stiff.
+            while(StiffSites[nfPropose][iPropose]==1 && totalStiff[nfPropose] < N[nfPropose]) //Test if proposed joint is stiff.
             {
                 nfPropose = floor(NFil*TWISTER); //If stiff, propose new filament and joint until propose one not stiff.
                 iPropose = floor(N[nfPropose]*TWISTER); //If stiff, propose new joint until propose one not stiff.
             }
+            if(totalStiff[nfPropose]>=N[nfPropose])
+            {
+                iPropose = 0;
+            }
+
         }
         
         //THINK ABOUT THIS PART HERE!!!!!!!!!!!!!
@@ -283,10 +288,11 @@ void metropolisJoint()
             // do I need to 'set/rotate' proposed base for other filaments??
             rotate(&tBase[nfPropose][0], &e1Base[nfPropose][0], &e2Base[nfPropose][0], &tPropose[nfPropose][0][0], &e1Propose[nfPropose][0][0], &e2Propose[nfPropose][0][0], phiPropose[nfPropose][0], thetaPropose[nfPropose][0], psiPropose[nfPropose][0]);
             
+            
             //THINK ABOUT THIS PART HERE!!!!!!!!!!!!!
             for(ix=0;ix<3;ix++)
                 rPropose[nfPropose][0][ix] = rBase[nfPropose][ix] + tPropose[nfPropose][0][ix];
-				
+            
             // if nf != nfPropose, proposal configuration is the same as current configuration
             // if nf = nfPropose and i<iPropose, proposal configuration is the same as current configuration
             for(nf=0;nf<NFil;nf++)
@@ -349,6 +355,7 @@ void metropolisJoint()
                 for (ix=0;ix<3;ix++)
                     rPropose[nfPropose][i][ix] = rPropose[nfPropose][i-1][ix] + tPropose[nfPropose][i][ix];
             }
+           
             
             //how does this work?  only returns first component of t, e1, e2? where are the other components?
 
