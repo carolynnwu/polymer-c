@@ -223,6 +223,7 @@ void metropolisJoint()
 
         //If using STIFFEN
             //test if joint is stiff
+                // (e.g., if joint i is 'stiff', then the angle between points i-2, i-1, i will remain fixed)
             //replace proposed joint until one is found that is not stiff
         if (STIFFEN)
         {
@@ -233,7 +234,7 @@ void metropolisJoint()
             }
             if(totalStiff[nfPropose]>=N[nfPropose])
             {
-                iPropose = 0;
+                iPropose = 0; // allow polymer to swing around origin
             }
 
         }
@@ -281,7 +282,6 @@ void metropolisJoint()
 
             // -- translate to proposal configuration --
             // rotate base
-            
             
             //THINK ABOUT THIS PART HERE!!!!!!!!!!!!!
             // rotate only the proposed filament

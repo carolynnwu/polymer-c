@@ -98,6 +98,13 @@ void initializeStiffSites()
     /******************* STIFFEN SEGMENTS *******************/
     /********************************************************/
     
+    // When Stiffening is implemented in rotations, stiffening at point i means that angle i-2,i-1,i is fixed
+    // For intuition's sake, it would be better for stiffening at point i to mean that angle i-1,i,i+1 is fixed
+    // Therefore each stiffStart and stiffEnd has an additional '+1' to shift where the fixed angle is located
+    
+    // Currently do not want to stiffen site 0. If stiffen site 0 then no rotation can occur at base.
+    // Need to implement extra condition in rotation code for case where all segments are stiff (no movement - no rotation)
+    
     for(nf=0;nf<NFil;nf++)
     {
         for(ty=0;ty<iSiteTotal[nf];ty++)
@@ -105,24 +112,24 @@ void initializeStiffSites()
             if(stiffiSites[nf][ty]==1) //might want to check the truth value on this - equals for double?
             {
                 // set beginning of stiffening range
-                if(iSite[nf][ty]-StiffenRange >= 0)
+                if(iSite[nf][ty]-StiffenRange +1 >= 1) // above 0
                 {
-                    stiffStart=iSite[nf][ty]-StiffenRange;
+                    stiffStart = iSite[nf][ty]-StiffenRange +1; // add one to make iSite fixed point instead of iSite-1
                 }
-                else // if stiffenrange goes below 0, start stiffening at 0
+                else // if stiffenrange goes below 1, start stiffening at 1 (do not want to stiffen site 0 - see above)
                 {
-                    stiffStart=0;
+                    stiffStart = 1;
                 }
                 
                 //set end of stiffening range
                 // if stiffenrange goes above N, end at N
-                if(iSite[nf][ty]+StiffenRange+1 >= N[nf])
+                if(iSite[nf][ty]+StiffenRange+1 +1 >= N[nf])
                 {
-                    stiffEnd=N[nf];
+                    stiffEnd = N[nf];
                 }
                 else
                 {
-                    stiffEnd=iSite[nf][ty]+StiffenRange+1;
+                    stiffEnd=iSite[nf][ty]+StiffenRange+1 +1; // add one to make iSite fixed point instead of iSite-1
                 }
                 
                 // declare which segments are stiff, exclusive of right endpoint (because included +1 above)
