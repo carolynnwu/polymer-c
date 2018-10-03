@@ -36,32 +36,39 @@ void initializeStiffSites()
         
         switch (stiffCase)
         {
-            
+            // eventually want to be able have different phosphorylation settings per iSite per filament
             case 1:
             
-            // eventually want to be able have different phosphorylation settings per iSite per filament
             sscanf(occupiedSites,"%lf", &stiffiSites[nf][0]);
             break;
             
             case 2:
             
-            // eventually want to be able have different phosphorylation settings per iSite per filament
             sscanf(occupiedSites,"%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1]);
+            break;
+                
+            case 3:
+                
+            sscanf(occupiedSites,"%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2]);
             break;
                 
             case 4:
                 
-            // eventually want to be able have different phosphorylation settings per iSite per filament
             sscanf(occupiedSites,"%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3]);
+            break;
+                
+            case 5:
+                
+            sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3],&stiffiSites[nf][4]);
             break;
             
             case 6:
             
-            // eventually want to be able have different phosphorylation settings per iSite per filament
             sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3],&stiffiSites[nf][4],&stiffiSites[nf][5]);
             break;
             
             default:
+                
             printf("Create case for stiffening %d sites.\n",stiffCase);
             fflush(stdout);
             exit(0);
@@ -160,7 +167,7 @@ void initializeStiffSites()
             printf("Total Stiff on filament %ld: %d\n",nf, totalStiff[nf]);
             fflush(stdout);
             
-            if (totalStiff[nf] >= N[nf])
+            if (totalStiff[nf] >= N[nf]-1) //N-1 since 0 should never be stiff
             {
                 // Include error for completely stiff
                 // May cause convergence problems?

@@ -232,7 +232,8 @@ void metropolisJoint()
                 nfPropose = floor(NFil*TWISTER); //If stiff, propose new filament and joint until propose one not stiff.
                 iPropose = floor(N[nfPropose]*TWISTER); //If stiff, propose new joint until propose one not stiff.
             }
-            if(totalStiff[nfPropose]>=N[nfPropose])
+            // if N-1 joints are stiff, then whole polymer is stiff except for joint '0'
+            if(totalStiff[nfPropose]>=N[nfPropose]-1)
             {
                 iPropose = 0; // allow polymer to swing around origin
             }
