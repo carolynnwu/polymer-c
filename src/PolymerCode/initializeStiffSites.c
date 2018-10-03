@@ -105,37 +105,40 @@ void initializeStiffSites()
     // Currently do not want to stiffen site 0. If stiffen site 0 then no rotation can occur at base.
     // Need to implement extra condition in rotation code for case where all segments are stiff (no movement - no rotation)
     
-    for(nf=0;nf<NFil;nf++)
+    if(StiffenRange != -1) // If StiffenRange is set to -1, then no stiffening occurs. All StiffSites are left at 0.
     {
-        for(ty=0;ty<iSiteTotal[nf];ty++)
+        for(nf=0;nf<NFil;nf++)
         {
-            if(stiffiSites[nf][ty]==1) //might want to check the truth value on this - equals for double?
+            for(ty=0;ty<iSiteTotal[nf];ty++)
             {
-                // set beginning of stiffening range
-                if(iSite[nf][ty]-StiffenRange +1 >= 1) // above 0
+                if(stiffiSites[nf][ty]==1) //might want to check the truth value on this - equals for double?
                 {
-                    stiffStart = iSite[nf][ty]-StiffenRange +1; // add one to make iSite fixed point instead of iSite-1
-                }
-                else // if stiffenrange goes below 1, start stiffening at 1 (do not want to stiffen site 0 - see above)
-                {
-                    stiffStart = 1;
-                }
-                
-                //set end of stiffening range
-                // if stiffenrange goes above N, end at N
-                if(iSite[nf][ty]+StiffenRange+1 +1 >= N[nf])
-                {
-                    stiffEnd = N[nf];
-                }
-                else
-                {
-                    stiffEnd=iSite[nf][ty]+StiffenRange+1 +1; // add one to make iSite fixed point instead of iSite-1
-                }
-                
-                // declare which segments are stiff, exclusive of right endpoint (because included +1 above)
-                for(i=stiffStart;i<stiffEnd;i++)
-                {
-                    StiffSites[nf][i]=1; //set that joint to "stiff"
+                    // set beginning of stiffening range
+                    if(iSite[nf][ty]-StiffenRange +1 >= 1) // above 0
+                    {
+                        stiffStart = iSite[nf][ty]-StiffenRange +1; // add one to make iSite fixed point instead of iSite-1
+                    }
+                    else // if stiffenrange goes below 1, start stiffening at 1 (do not want to stiffen site 0 - see above)
+                    {
+                        stiffStart = 1;
+                    }
+                    
+                    //set end of stiffening range
+                    // if stiffenrange goes above N, end at N
+                    if(iSite[nf][ty]+StiffenRange+1 +1 >= N[nf])
+                    {
+                        stiffEnd = N[nf];
+                    }
+                    else
+                    {
+                        stiffEnd=iSite[nf][ty]+StiffenRange+1 +1; // add one to make iSite fixed point instead of iSite-1
+                    }
+                    
+                    // declare which segments are stiff, exclusive of right endpoint (because included +1 above)
+                    for(i=stiffStart;i<stiffEnd;i++)
+                    {
+                        StiffSites[nf][i]=1; //set that joint to "stiff"
+                    }
                 }
             }
         }
