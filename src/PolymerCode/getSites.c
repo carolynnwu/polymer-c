@@ -99,7 +99,7 @@ void getSites()
         {
             if (iSite[nf][iy] >= N[nf])
             {
-                printf("Warning! Site is located past end of polymer in filament %ld!",nf);
+                printf("Warning! Site is located past end of polymer in filament %ld!\n",nf);
                 fflush(stdout);
             }
         }

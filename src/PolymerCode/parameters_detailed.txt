@@ -1,6 +1,9 @@
 listName		outputTest			% output file name
 NFil			1				% Number of filaments
 N			1				% Number of segments
+filamentInputMethod	1				% Method used in getFilaments to decide on filament number and length
+	% 0 - parameters.txt or command line
+	% 1 - filaments.txt
 baseSepDistance		1				% Separation distance between base of filaments
 irLigand		1				% Ligand radius measured in Kuhn lengths
 brLigand		1				% Bound ligand radius measured in Kuhn lengths
@@ -20,6 +23,7 @@ stiffCase		0				% Method used in initializeStiffSites to determine which sites a
 	% for now, this is the only option
 occupiedSites		0_0_0_0_0_0			% String to determine which of the 6 CD3Zeta iSites are 'phosphorylated'
 occupiedSitesNoSpace 	000000				% String used in output to determine which CD3Zeta iSites are 'phosphorylated'
+filamentFilename	filaments.txt			% Text file with lengths of filaments
 iSiteFilename		iSites.txt			% Text file with locations of ligand sites
 bSiteFilename		bSites.txt			% Text file with locations of bound ligand sites
 basicSiteFilename	basicSites.txt			% Text file with locations of basic residues

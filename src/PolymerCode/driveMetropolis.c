@@ -42,8 +42,8 @@
 char listName[100];
 FILE *fList;
 //
-char paramsFilename[100], iSiteFilename[100], bSiteFilename[100], basicSiteFilename[100];
-FILE *paramsFile, *iSiteList, *bSiteList, *basicSiteList;
+char paramsFilename[100], filamentFilename[100], iSiteFilename[100], bSiteFilename[100], basicSiteFilename[100];
+FILE *paramsFile, *filList, *iSiteList, *bSiteList, *basicSiteList;
 
 long NFil,N[NFILMAX];
 long iSite[NFILMAX][NMAX], iSiteTotal[NFILMAX], iSiteCurrent, iy,ty, stericOcclusion[NFILMAX][NMAX];
@@ -73,7 +73,7 @@ long proposals[2], accepts[2], nt, iChi, i, iPropose, ix, iParam, ntNextStationa
 double E, ENew, rate[2], dChi[2], dChiHere, Force;
 long constraintProposalsTotal;
 
-int iSiteInputMethod;
+int filamentInputMethod, iSiteInputMethod;
 long commandiSites;
 char *iSiteLocations;
 char input[4*NMAX];
@@ -140,6 +140,7 @@ double kdimer;
 #include "initializeStiffSites.c"
 #include "initializePhosphorylatedSites.c"
 #include "getBasicSites.c"
+#include "getFilaments.c"
 #include "metropolisJoint.c"
 
 
@@ -201,16 +202,6 @@ int main( int argc, char *argv[] )
         if (TALKATIVE) printf("This is the dimerization force: %lf\n", kdimer);
     }
     
-    
-    /* Finish setting up initial variables */
-    
-    // assign Ntemp to each filament
-    for(nf=0;nf<NFil;nf++)
-    {
-        N[nf]=Ntemp;
-        if (TALKATIVE) printf("This is number of rods in filament %ld: %ld\n",nf, N[nf]);
-    }
-
 	iseed = RanInitReturnIseed(0);
 	
 	metropolisJoint();

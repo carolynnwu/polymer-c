@@ -8,8 +8,8 @@ void rotate(double *tIn, double *e1In, double *e2In, double *tOut, double *e1Out
 void metropolisJoint()
 {
 
-    /********* INITIALIZE ISITES AND BSITES AND BASIC SITES *******************/
-
+    /********* INITIALIZE FILAMENTS, ISITES, BSITES, AND BASIC SITES *******************/
+    getFilaments();
     getSites();
     
     if(ELECTRO)
