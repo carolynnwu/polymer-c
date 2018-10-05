@@ -257,11 +257,11 @@ void finalizeSummary()
                 
                 for (iy=0; iy<iSiteTotal[nf];iy++)
                 {
-                    fprintf(fList, "%lf ", occupied[nf][iy]);
+                    fprintf(fList, " %lf", occupied[nf][iy]);
                 }
                 
                 // eventually want this to depend on filament
-                fprintf(fList, "%s ", occupiedSitesNoSpace);
+                fprintf(fList, " %s", occupiedSitesNoSpace);
             }
             
             
