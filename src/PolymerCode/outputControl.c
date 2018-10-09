@@ -48,6 +48,7 @@ void initializeSummary()
             PMembraneOcclude_sum[nf][iy]        = 0;
         }
         POccludeBase_sum[nf] = 0;
+        
     //    for(ib=0; ib<bSiteTotal[nf]; ib++)
     //    {
     //        PDeliver[nf][ib]=0;
@@ -112,6 +113,13 @@ void finalizeSummary()
         }
         
         POccludeBase[nf] = (double)POccludeBase_sum[nf]/(double)(nt-NTCHECK);
+        
+        // debugging
+        if(0)
+        {
+            printf("This is the base occlusion for base %ld: %f\n",nf,POccludeBase[nf]);
+            fflush(stdout);
+        }
         
     //    for(ib=0;ib<bSiteTotal[nf];ib++)
     //    {

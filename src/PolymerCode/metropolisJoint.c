@@ -785,9 +785,21 @@ void metropolisJoint()
             //initialize ligand center at base
             for(nf=0;nf<NFil;nf++)
             {
-                baseLigandCenter[nf][0] = rBase[nf][0] + irLigand*e1Base[nf][0];
-                baseLigandCenter[nf][1] = rBase[nf][1] + irLigand*e1Base[nf][1];
-                baseLigandCenter[nf][2] = rBase[nf][2] + irLigand*e1Base[nf][2];
+                // use -t vector to set base ligand center
+                // This puts the center on the negative z-axis
+                baseLigandCenter[nf][0] = rBase[nf][0] - irLigand*tBase[nf][0];
+                baseLigandCenter[nf][1] = rBase[nf][1] - irLigand*tBase[nf][1];
+                baseLigandCenter[nf][2] = rBase[nf][2] - irLigand*tBase[nf][2];
+                
+                // debugging
+                if(0)
+                {
+                    if(nt>NTCHECK && nt%100==0 && nt< NTCHECK+10000)
+                    {
+                        printf("Base Ligand Center %ld:\n x: %f\n y: %f\n z: %f\n", nf, baseLigandCenter[nf][0],baseLigandCenter[nf][1],baseLigandCenter[nf][2]);
+                        fflush(stdout);
+                    }
+                }
                 
                 //initialize steric occlusion at base to 0
                 stericOcclusionBase[nf] = 0;
