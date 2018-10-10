@@ -47,28 +47,57 @@ void getSites()
             break;
             
         case 2: //input iSites from file
+            // use -1 on a line to denote no iSites for that filament
+            // a blank line will also denote no iSites, but doesn't work if final filament is one without iSites
             
             iSiteList = fopen(iSiteFilename, "r");
             char line[200];
-            iy=0;
+            nf=0;
             
             while (fgets(line, sizeof(line), iSiteList))
             {
-                // Eventually allow different iSites for each filament
-                for(nf=0;nf<NFil;nf++)
+                iy=0;
+                
+                // if line has something on it, set iSites equal to parts of line
+                if(line[0] != '\n')
                 {
-                    iSite[nf][iy]=atoi(line);
+                    char * linepart;
+                    linepart = strtok(line," ,");
+                    while(linepart != NULL)
+                    {
+                        
+                        if(atoi(linepart)!=-1)
+                        {
+                            iSite[nf][iy] = atoi(linepart);
+                            linepart = strtok(NULL, " ,");
+                            iy++;
+                        }
+                        else
+                        {
+                            linepart = strtok(NULL, " ,");
+                        }
+                    }
                 }
-                // Eventually have different numbers of iSites for each filament
-                iy++;
+                
+                // set iSiteTotal and update filament
+                iSiteTotal[nf]=iy;
+                if(iSiteTotal[nf]==0)
+                {
+                    printf("Filament %ld has no iSites.\n",nf);
+                    fflush(stdout);
+                }
+                nf++;
+
+            }
+            
+            if(nf!=NFil)
+            {
+                printf("Error! Number of filaments mismatch between filaments and iSites!\n");
+                fflush(stdout);
+                exit(0);
             }
             
             fclose(iSiteList);
-            
-            for(nf=0;nf<NFil;nf++)
-            {
-                iSiteTotal[nf]=iy;
-            }
 
             break;
         
@@ -187,29 +216,58 @@ void getSites()
                 break;
                 
             case 3: // read bound sites from file
+                // use -1 on a line to denote no bSites for that filament
+                // a blank line will also denote no bSites, but doesn't work if final filament is one without bSites
                 
                 bSiteList = fopen(bSiteFilename, "r");
                 char line[200];
-                iy=0;
+                nf=0;
                 
                 while (fgets(line, sizeof(line), bSiteList))
                 {
-                    // eventually want to be able to have different bound ligands for each filament
-                    for(nf=0;nf<NFil;nf++)
+                    ib=0;
+                    
+                    // if line has something on it, set bSites equal to parts of line
+                    if(line[0] != '\n')
                     {
-                        bSite[nf][iy]=atoi(line);
+                        char * linepart;
+                        linepart = strtok(line," ,");
+                        while(linepart != NULL)
+                        {
+                            
+                            if(atoi(linepart)!=-1)
+                            {
+                                bSite[nf][ib] = atoi(linepart);
+                                linepart = strtok(NULL, " ,");
+                                ib++;
+                            }
+                            else
+                            {
+                                linepart = strtok(NULL, " ,");
+                            }
+                        }
                     }
-                    iy++;
+                    
+                    // set iSiteTotal and update filament
+                    bSiteTotal[nf]=ib;
+                    if(bSiteTotal[nf]==0)
+                    {
+                        printf("Filament %ld has no bound sites.\n",nf);
+                        fflush(stdout);
+                    }
+                    nf++;
                     
                 }
                 
-                fclose(bSiteList);
-                
-                for(nf=0;nf<NFil;nf++)
+                if(nf!=NFil)
                 {
-                    bSiteTotal[nf]=iy;
+                    printf("Error! Number of filaments mismatch between filaments and bSites!\n");
+                    fflush(stdout);
+                    exit(0);
                 }
                 
+                fclose(bSiteList);
+
                 break;
                 
             case 4: // use last site as only bSite
@@ -238,7 +296,7 @@ void getSites()
             {
                 if (bSite[nf][iy] >= N[nf])
                 {
-                    printf("Warning! Bound site is located past end of filament %ld!",nf);
+                    printf("Warning! Bound site is located past end of filament %ld!\n",nf);
                     fflush(stdout);
                 }
             }
