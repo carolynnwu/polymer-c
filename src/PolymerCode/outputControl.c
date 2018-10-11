@@ -277,6 +277,58 @@ void finalizeSummary()
         fprintf(fList, "\n");
         fclose(fList);
     }
+    if(verboseTF && VISUALIZE)
+    {
+        //print second file with only parameters for the run
+        char listName_params[200];
+        strcpy(listName_params,listName);
+        strcpy(listName_params,"_VisualParameters");
+        
+        fList = fopen(listName_params,"a");
+        
+        // formulas only work for identical filaments
+        fprintf(fList, "%ld %ld %ld %ld %f %f",
+                MEMBRANE,   // 1
+                MULTIPLE,   // 2
+                BASEBOUND,  // 3
+                NFil,       // 4
+                irLigand,   // 5
+                brLigand);     // 6
+        
+        for(nf=0;nf<NFil;nf++)
+        {
+            
+            fprintf(fList, " %ld %ld %ld %ld %f",
+                    nf,                 // 8 +
+                    N[nf],              // 9 +
+                    iSiteTotal[nf],     // 10 +
+                    bSiteTotal[nf]);   // 11 +
+            
+            for (iy=0;iy<iSiteTotal[nf];iy++)
+            {
+                fprintf(fList, " %ld",
+                        iSite[nf][iy]);             // 13 + iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+            }
+            if(MULTIPLE)
+            {
+                for (ib=0;ib<bSiteTotal[nf];ib++)
+                {
+                    fprintf(fList, " %ld",
+                            bSite[nf][iy]);             // 14 + iSiteTotal[nf]-1 + bBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                }
+            }
+            
+        } // end printing data for each filament
+        if(BASEBOUND)
+        {
+            fprintf(fList, " %f",
+                    baserLigand);        // 1
+        }
+        
+        fprintf(fList, "\n");
+        fclose(fList);
+
+    }
 }
 
 /********************************************************************************************************/
@@ -427,12 +479,26 @@ void dataRecording()
             
             if (VISUALIZE)
             {
+                if(MULTIPLE)
+                {
+                    for (ib=0;ib<bSiteTotal[nf];ib++)
+                    {
+                        fprintf(fList, " %f %f %f",
+                                bLigandCenter[nf][iy][0],    // 29 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                                bLigandCenter[nf][iy][1],    // 30 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                                bLigandCenter[nf][iy][2]);   // 31 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                    }
+                }
+            }
+            
+            if (VISUALIZE)
+            {
                 if(BASEBOUND)
                 {
                     fprintf(fList," %f %f %f",
-                            baseCenter[0],      // 1 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3)*NFil
-                            baseCenter[1],      // 2 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3)*NFil
-                            baseCenter[2]);     // 3 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3)*NFil
+                            baseCenter[0],      // 1 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3 + MULTIPLE*3*bSiteTotal[nf])*NFil
+                            baseCenter[1],      // 2 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3 + MULTIPLE*3*bSiteTotal[nf])*NFil
+                            baseCenter[2]);     // 3 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3 + MULTIPLE*3*bSiteTotal[nf])*NFil
                 }
             }
             
