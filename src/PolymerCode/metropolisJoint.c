@@ -539,7 +539,7 @@ void metropolisJoint()
         
         if (constraintProposalsTotal >= CPMAX) //if number of proposals exceeds CPMAX, exit program
         {
-            printf("Exceeded maximum proposals.\n");
+            printf("Exceeded maximum proposals.\n nt: %ld\n",nt);
             fflush(stdout);
             
             exit(0);

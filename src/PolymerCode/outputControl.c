@@ -280,14 +280,14 @@ void finalizeSummary()
     if(verboseTF && VISUALIZE)
     {
         //print second file with only parameters for the run
-        char listName_params[200];
-        strcpy(listName_params,listName);
-        strcpy(listName_params,"_VisualParameters");
+        char listNameParams[200];
+        strcpy(listNameParams,listName);
+        strcat(listNameParams,"_VisualParameters");
         
-        fList = fopen(listName_params,"a");
+        fList = fopen(listNameParams,"a");
         
         // formulas only work for identical filaments
-        fprintf(fList, "%ld %ld %ld %ld %f %f",
+        fprintf(fList, "%d %d %d %ld %f %f",
                 MEMBRANE,   // 1
                 MULTIPLE,   // 2
                 BASEBOUND,  // 3
@@ -298,7 +298,7 @@ void finalizeSummary()
         for(nf=0;nf<NFil;nf++)
         {
             
-            fprintf(fList, " %ld %ld %ld %ld %f",
+            fprintf(fList, " %ld %ld %ld %ld",
                     nf,                 // 8 +
                     N[nf],              // 9 +
                     iSiteTotal[nf],     // 10 +
@@ -314,7 +314,7 @@ void finalizeSummary()
                 for (ib=0;ib<bSiteTotal[nf];ib++)
                 {
                     fprintf(fList, " %ld",
-                            bSite[nf][iy]);             // 14 + iSiteTotal[nf]-1 + bBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                            bSite[nf][ib]);             // 14 + iSiteTotal[nf]-1 + bBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
                 }
             }
             
