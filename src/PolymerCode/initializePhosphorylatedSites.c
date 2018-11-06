@@ -7,7 +7,7 @@ void initializePhosphorylatedSites();
 /*******************************************************************************/
 
 int totalPhosphorylated[NFILMAX];
-
+int phosCase;
 double phosiSites[NFILMAX][NMAX];
 /*******************************************************************************/
 void initializePhosphorylatedSites()
@@ -34,8 +34,25 @@ void initializePhosphorylatedSites()
     //read string or read and interpret which of CD3Zeta Mouse tyrosines are phosphorylated
     for(nf=0;nf<NFil;nf++)
     {
-        // Eventually want to have different phosphorylated sites depending on filament
-        sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &phosiSites[nf][0],&phosiSites[nf][1],&phosiSites[nf][2],&phosiSites[nf][3], &phosiSites[nf][4],&phosiSites[nf][5]);
+        phosCase = iSiteTotal[nf];
+        
+        switch(phosCase)
+        {
+            case 2:
+                // Eventually want to have different phosphorylated sites depending on filament
+                sscanf(occupiedSites,"%lf_%lf", &phosiSites[nf][0],&phosiSites[nf][1]);
+                
+            case 6:
+                // Eventually want to have different phosphorylated sites depending on filament
+                sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &phosiSites[nf][0],&phosiSites[nf][1],&phosiSites[nf][2],&phosiSites[nf][3], &phosiSites[nf][4],&phosiSites[nf][5]);
+                
+            default:
+                
+                printf("Create case for phosphorylating %d sites.\n",phosCase);
+                fflush(stdout);
+                exit(0);
+                break;
+        }
     }
 
     //print which of the iSites are phosphorylated
