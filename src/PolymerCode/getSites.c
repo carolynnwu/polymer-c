@@ -167,7 +167,28 @@ void getSites()
                 // eventually want to be able to have different occupancies for each filament
                 for(nf=0;nf<NFil;nf++)
                 {
-                    sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &iSiteOccupied[nf][0],&iSiteOccupied[nf][1],&iSiteOccupied[nf][2],&iSiteOccupied[nf][3], &iSiteOccupied[nf][4],&iSiteOccupied[nf][5]);
+                    switch(iSiteTotal[nf])
+                    {
+                        case 1:
+                            sscanf(occupiedSites,"%lf", &iSiteOccupied[nf][0]);
+                            break;
+                        case 2:
+                            sscanf(occupiedSites,"%lf_%lf", &iSiteOccupied[nf][0],&iSiteOccupied[nf][1]);
+                            break;
+                        case 3:
+                            sscanf(occupiedSites,"%lf_%lf_%lf", &iSiteOccupied[nf][0],&iSiteOccupied[nf][1],&iSiteOccupied[nf][2]);
+                            break;
+                        case 4:
+                            sscanf(occupiedSites,"%lf_%lf_%lf_%lf", &iSiteOccupied[nf][0],&iSiteOccupied[nf][1],&iSiteOccupied[nf][2],&iSiteOccupied[nf][3]);
+                            break;
+                        case 6:
+                            sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &iSiteOccupied[nf][0],&iSiteOccupied[nf][1],&iSiteOccupied[nf][2],&iSiteOccupied[nf][3], &iSiteOccupied[nf][4],&iSiteOccupied[nf][5]);
+                            break;
+                        default:
+                            printf("Add occupied iSite case for %d sites in getSites.c\n",iSiteTotal[nf]);
+                            break;
+                    }
+                    
                 }
                 
                 for(nf=0;nf<NFil;nf++)
