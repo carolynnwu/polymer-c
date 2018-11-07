@@ -36,6 +36,9 @@ void getParameters()
     fscanf(paramsFile,"%s %lf", tmpString, &brLigand);
     if (TALKATIVE) printf("This is bound ligand radius: %lf\n", brLigand);
     
+    fscanf(paramsFile,"%s %lf", tmpString, &kBound);
+    if (TALKATIVE) printf("This is bound ligand spring constant: %lf\n", kBound);
+    
     fscanf(paramsFile,"%s %lf", tmpString, &baserLigand);
     if (TALKATIVE) printf("This is base bound ligand radius: %lf\n", baserLigand);
     

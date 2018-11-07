@@ -5,6 +5,7 @@ filamentInputMethod	1
 baseSepDistance		1
 irLigand		2.25
 brLigand		1
+kBound			1000
 baserLigand		4
 Force			0
 kdimer			0

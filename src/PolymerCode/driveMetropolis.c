@@ -131,7 +131,8 @@ double dimerDistCurrent, dimerDist0;
 double kdimer;
 
 /* MULTIPLE ligands energy variables */
-float boundCentertoJointDistance, boundCentertoBaseDistance, boundCentertoBaseLigandDistance, boundCentertoBoundDistance;
+double kBound;
+double boundCentertoJointDistance, boundCentertoBaseDistance, boundCentertoBaseLigandDistance, boundCentertoBoundDistance;
 
 /*******************************************************************************/
 //  INCLUDES
