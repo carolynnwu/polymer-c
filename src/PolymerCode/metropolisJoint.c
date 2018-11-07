@@ -450,6 +450,8 @@ void metropolisJoint()
                 }
             } // finished second constraint
 
+            if(0)
+            {
             //only test if looking at multiple binding and if membrane constraint passed
             if (MULTIPLE && constraintSatisfiedTF)
             {
@@ -548,8 +550,10 @@ void metropolisJoint()
                         }
                         }
                 }
+                
 
                 } //finished last constraint
+            }
             
             constraintProposalsTotal++; //count number of times proposals are rejected this time step
         } //finish constraint while loop
@@ -565,7 +569,7 @@ void metropolisJoint()
         /****************************************************************/
         /********************* 3. Metropolis test ***********************/
         /****************************************************************/
-        // We now have a propsoal configuration that passes the constraints.
+        // We now have a proposal configuration that passes the constraints.
         // Step 3 is to see if it passes our acceptance test (Metropolis test).
         
         if (!ELECTRO)
@@ -573,22 +577,21 @@ void metropolisJoint()
             // Compute energy
             ENew = 0;
             
+            /****************************************************************/
             // Force pulling filaments out in the z direction
             for(nf=0;nf<NFil;nf++)
             {
                 Ncurrent = N[nf];
                 ENew += -rPropose[nf][Ncurrent-1][2]*Force; // Energy in units of kBT. Force in units of kBT/Kuhn
             }
+            
+            /****************************************************************/
             // Force pulling filaments together at the end
             for(nf=0;nf<NFil;nf++)
             {
                 Ncurrent = N[nf];
                 for(nf2=(nf+1);nf2<NFil;nf2++)
                 {
-                    //ENew += sqrt((rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])*(rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])+
-                                 //(rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])*(rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])+
-                                 //(rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2])*(rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2]))*
-                                //dimerForce;
                     dimerDistCurrent = sqrt((rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])*(rPropose[nf][Ncurrent-1][0]-rPropose[nf2][N[nf2]-1][0])+
                                              (rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])*(rPropose[nf][Ncurrent-1][1]-rPropose[nf2][N[nf2]-1][1])+
                                             (rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2])*(rPropose[nf][Ncurrent-1][2]-rPropose[nf2][N[nf2]-1][2]));
@@ -596,6 +599,115 @@ void metropolisJoint()
                 }
             }
             
+            /****************************************************************/
+            // Bound ligand energies
+            
+            //only test if looking at multiple binding and if membrane constraint passed
+            if (MULTIPLE)
+            {
+                
+                //printf("Testing bound ligands.");
+                for(nf=0;nf<NFil;nf++) //for each filament
+                {
+                    for (ib=0;ib<bSiteTotal[nf];ib++) //for each bound ligand on filament
+                    {
+                        /**********************/
+                        // energy between bound ligands and membrane
+                        if (MEMBRANE)
+                        {
+                            if(bLigandCenterPropose[nf][ib][2]<brLigand) // if any bound ligands intersect with membrane
+                            {
+                                // add energy based on intersection distance
+                                Enew += 0.5*kBound*(bLigandCenterPropose[nf][ib][2]-brLigand)*(bLigandCenterPropose[nf][ib][2]-brLigand);
+                            }
+                        }
+                        /**********************/
+                        // energy between bound ligands and joints in filaments
+                        for(nf2=0;nf2<NFil;nf2++) // check each bound ligand of filament nf against all joints of filament nf2
+                        {
+                            for(i=0;i<N[nf2];i++)// for each joint
+                            {
+                                if ( ((bLigandCenterPropose[nf][ib][0]-rPropose[nf2][i][0])*(bLigandCenterPropose[nf][ib][0]-rPropose[nf2][i][0]) +
+                                      (bLigandCenterPropose[nf][ib][1]-rPropose[nf2][i][1])*(bLigandCenterPropose[nf][ib][1]-rPropose[nf2][i][1]) +
+                                      (bLigandCenterPropose[nf][ib][2]-rPropose[nf2][i][2])*(bLigandCenterPropose[nf][ib][2]-rPropose[nf2][i][2]) <= brLigand*brLigand )
+                                    && !( nf == nf2 && i == bSite[nf][ib]) ) //if proposed joint is inside ligand sphere AND joint is not where tested ligand is attached
+                                {
+                                    boundCentertoJointDistance = sqrt((bLigandCenterPropose[nf][ib][0]-rPropose[nf2][i][0])*(bLigandCenterPropose[nf][ib][0]-rPropose[nf2][i][0]) +
+                                                                       (bLigandCenterPropose[nf][ib][1]-rPropose[nf2][i][1])*(bLigandCenterPropose[nf][ib][1]-rPropose[nf2][i][1]) +
+                                                                       (bLigandCenterPropose[nf][ib][2]-rPropose[nf2][i][2])*(bLigandCenterPropose[nf][ib][2]-rPropose[nf2][i][2])) - brLigand;
+                                    
+                                    Enew += 0.5*kBound*boundCentertoJointDistance*boundCentertoJointDistance;
+                                }
+                            }
+                        }
+                        /**********************/
+                        // energy between bound ligands and base joints
+                        if(!MEMBRANE)
+                        {
+                            for(nf2=0;nf2<NFil;nf2++)
+                            {
+                                if ( ((bLigandCenterPropose[nf][ib][0]-rBase[nf2][0])*(bLigandCenterPropose[nf][ib][0]-rBase[nf2][0]) +
+                                      (bLigandCenterPropose[nf][ib][1]-rBase[nf2][1])*(bLigandCenterPropose[nf][ib][1]-rBase[nf2][1]) +
+                                      (bLigandCenterPropose[nf][ib][2]-rBase[nf2][2])*(bLigandCenterPropose[nf][ib][2]-rBase[nf2][2]) <= brLigand*brLigand )
+                                    && !( nf == nf2 && i == bSite[nf][ib]) ) //if proposed joint is inside ligand sphere AND joint is not where tested ligand is attached
+                                {
+                                    boundCentertoBaseLigandDistance = sqrt((bLigandCenterPropose[nf][ib][0]-rBase[nf2][0])*(bLigandCenterPropose[nf][ib][0]-rBase[nf2][0]) +
+                                                                           (bLigandCenterPropose[nf][ib][1]-rBase[nf2][1])*(bLigandCenterPropose[nf][ib][1]-rBase[nf2][1]) +
+                                                                           (bLigandCenterPropose[nf][ib][2]-rBase[nf2][2])*(bLigandCenterPropose[nf][ib][2]-rBase[nf2][2])) - brLigand;
+                                    
+                                    Enew += 0.5*kBound*boundCentertoBaseDistance*boundCentertoBaseDistance;
+
+                                }
+                            }
+                        }
+                        /**********************/
+                        // energy between bound ligands and base ligand
+                        // only have 1 base ligand for all filaments
+                        if (BASEBOUND)
+                        {
+                            if ((bLigandCenterPropose[nf][ib][0]-baseCenter[0])*(bLigandCenterPropose[nf][ib][0]-baseCenter[0])+
+                                (bLigandCenterPropose[nf][ib][1]-baseCenter[1])*(bLigandCenterPropose[nf][ib][1]-baseCenter[1])+
+                                (bLigandCenterPropose[nf][ib][2]-baseCenter[2])*(bLigandCenterPropose[nf][ib][2]-baseCenter[2])<=
+                                (brLigand+baserLigand)*(brLigand+baserLigand)) //if distance between centers is less than brLigand+baserLigand, then ligands are intersecting
+                            {
+                                boundCentertoBaseLigandDistance = sqrt((bLigandCenterPropose[nf][ib][0]-baseCenter[0])*(bLigandCenterPropose[nf][ib][0]-baseCenter[0])+
+                                                                       (bLigandCenterPropose[nf][ib][1]-baseCenter[1])*(bLigandCenterPropose[nf][ib][1]-baseCenter[1])+
+                                                                       (bLigandCenterPropose[nf][ib][2]-baseCenter[2])*(bLigandCenterPropose[nf][ib][2]-baseCenter[2])) - (brLigand+baserLigand);
+                                
+                                Enew += 0.5*kBound*boundCentertoBaseLigandDistance*boundCentertoBaseLigandDistance;
+                            }
+                            
+                        }
+                        
+                        /**********************/
+                        // energy between bound ligands and other bound ligands
+                        for(nf2=nf;nf2<NFil;nf2++) //look at this filament and all following filaments
+                        {
+                            for (ib2=0;ib2<bSiteTotal[nf2];ib2++) //for each next ligand
+                            {
+                                
+                                if ((bLigandCenterPropose[nf][ib][0]-bLigandCenterPropose[nf2][ib2][0])*(bLigandCenterPropose[nf][ib][0]-bLigandCenterPropose[nf2][ib2][0]) +
+                                    (bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1])*(bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1]) +
+                                    (bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])*(bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])<=
+                                    (2*brLigand)*(2*brLigand) && !(nf == nf2 && bSite[nf][ib] == bSite[nf2][ib2])) //if distance between centers is less than 2*brLigand, then ligands are intersecting, && bound ligands being compared are not the same ligand
+                                {
+                                    boundCentertoBoundDistance = sqrt((bLigandCenterPropose[nf][ib][0]-bLigandCenterPropose[nf2][ib2][0])*(bLigandCenterPropose[nf][ib][0]-bLigandCenterPropose[nf2][ib2][0]) +
+                                                                      (bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1])*(bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1]) +
+                                                                      (bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])*(bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])) - (2*brLigand);
+                                    
+                                    Enew += 0.5*kBound*boundCentertoBoundDistance*boundCentertoBoundDistance;
+
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                
+            } //finish MULTIPLE energies
+            
+            /****************************************************************/
+            // Accept or reject based on energy
             // should this be <=? Do we reject normal probability for no force?
             if (  TWISTER < exp(E-ENew) ) //always accepts if ENew<E, accepts with normal (?) probability if ENew>E
             {
@@ -648,7 +760,7 @@ void metropolisJoint()
                 
             }
         }
-        else
+        else // IF(ELECTRO)
         {
  
             //sum over energies of all joints, except phosphorylated ones

@@ -130,6 +130,9 @@ double baseSepDistance;
 double dimerDistCurrent, dimerDist0;
 double kdimer;
 
+/* MULTIPLE ligands energy variables */
+float boundCentertoJointDistance, boundCentertoBaseDistance, boundCentertoBaseLigandDistance, boundCentertoBoundDistance;
+
 /*******************************************************************************/
 //  INCLUDES
 /*******************************************************************************/
