@@ -41,10 +41,12 @@ void initializePhosphorylatedSites()
             case 2:
                 // Eventually want to have different phosphorylated sites depending on filament
                 sscanf(occupiedSites,"%lf_%lf", &phosiSites[nf][0],&phosiSites[nf][1]);
+                break;
                 
             case 6:
                 // Eventually want to have different phosphorylated sites depending on filament
                 sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &phosiSites[nf][0],&phosiSites[nf][1],&phosiSites[nf][2],&phosiSites[nf][3], &phosiSites[nf][4],&phosiSites[nf][5]);
+                break;
                 
             default:
                 
