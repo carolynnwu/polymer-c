@@ -472,7 +472,7 @@ void metropolisJoint()
                         
                        if(constraintSatisfiedTF) //if passed membrane constraint, test joints
                        {
-                           for(nf2=nf;nf2<NFil;nf2++)
+                           for(nf2=0;nf2<NFil;nf2++)
                            {
                                 for(i=0;i<N[nf2];i++)// for each joint
                                 {
@@ -510,14 +510,14 @@ void metropolisJoint()
                          if (constraintSatisfiedTF) //if constraint is still satisfied, test ligand sphere with other ligands on filaments
                          {
                              // check ligand against other ligands on filaments
-                             for(nf2=nf;nf2<NFil;nf2++) //look at this filament and all following filaments
+                             for(nf2=0;nf2<NFil;nf2++) //look at this filament and all following filaments
                              {
                                 for (ib2=0;ib2<bSiteTotal[nf2];ib2++) //for each next ligand
                                 {
                                     
-                                    if ((bLigandCenterPropose[nf][ib][0]-bLigandCenter[nf2][ib2][0])*(bLigandCenterPropose[nf][ib][0]-bLigandCenter[nf2][ib2][0]) +
-                                        (bLigandCenterPropose[nf][ib][1]-bLigandCenter[nf2][ib2][1])*(bLigandCenterPropose[nf][ib][1]-bLigandCenter[nf2][ib2][1]) +
-                                        (bLigandCenterPropose[nf][ib][2]-bLigandCenter[nf2][ib2][2])*(bLigandCenterPropose[nf][ib][2]-bLigandCenter[nf2][ib2][2])<=
+                                    if ((bLigandCenterPropose[nf][ib][0]-bLigandCenterPropose[nf2][ib2][0])*(bLigandCenterPropose[nf][ib][0]-bLigandCenterPropose[nf2][ib2][0]) +
+                                        (bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1])*(bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1]) +
+                                        (bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])*(bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])<=
                                         (2*brLigand)*(2*brLigand) && !(nf == nf2 && bSite[nf][ib] == bSite[nf2][ib2])) //if distance between centers is less than 2*brLigand, then ligands are intersecting, && bound ligands being compared are not the same ligand
                                     {
                                         constraintSatisfiedTF=0; //constraint not satisfied
