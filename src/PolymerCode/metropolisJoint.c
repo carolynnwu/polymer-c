@@ -618,7 +618,7 @@ void metropolisJoint()
                             if(bLigandCenterPropose[nf][ib][2]<brLigand) // if any bound ligands intersect with membrane
                             {
                                 // add energy based on intersection distance
-                                Enew += 0.5*kBound*(bLigandCenterPropose[nf][ib][2]-brLigand)*(bLigandCenterPropose[nf][ib][2]-brLigand);
+                                ENew += 0.5*kBound*(bLigandCenterPropose[nf][ib][2]-brLigand)*(bLigandCenterPropose[nf][ib][2]-brLigand);
                             }
                         }
                         /**********************/
@@ -636,7 +636,7 @@ void metropolisJoint()
                                                                        (bLigandCenterPropose[nf][ib][1]-rPropose[nf2][i][1])*(bLigandCenterPropose[nf][ib][1]-rPropose[nf2][i][1]) +
                                                                        (bLigandCenterPropose[nf][ib][2]-rPropose[nf2][i][2])*(bLigandCenterPropose[nf][ib][2]-rPropose[nf2][i][2])) - brLigand;
                                     
-                                    Enew += 0.5*kBound*boundCentertoJointDistance*boundCentertoJointDistance;
+                                    ENew += 0.5*kBound*boundCentertoJointDistance*boundCentertoJointDistance;
                                 }
                             }
                         }
@@ -655,7 +655,7 @@ void metropolisJoint()
                                                                            (bLigandCenterPropose[nf][ib][1]-rBase[nf2][1])*(bLigandCenterPropose[nf][ib][1]-rBase[nf2][1]) +
                                                                            (bLigandCenterPropose[nf][ib][2]-rBase[nf2][2])*(bLigandCenterPropose[nf][ib][2]-rBase[nf2][2])) - brLigand;
                                     
-                                    Enew += 0.5*kBound*boundCentertoBaseDistance*boundCentertoBaseDistance;
+                                    ENew += 0.5*kBound*boundCentertoBaseDistance*boundCentertoBaseDistance;
 
                                 }
                             }
@@ -674,7 +674,7 @@ void metropolisJoint()
                                                                        (bLigandCenterPropose[nf][ib][1]-baseCenter[1])*(bLigandCenterPropose[nf][ib][1]-baseCenter[1])+
                                                                        (bLigandCenterPropose[nf][ib][2]-baseCenter[2])*(bLigandCenterPropose[nf][ib][2]-baseCenter[2])) - (brLigand+baserLigand);
                                 
-                                Enew += 0.5*kBound*boundCentertoBaseLigandDistance*boundCentertoBaseLigandDistance;
+                                ENew += 0.5*kBound*boundCentertoBaseLigandDistance*boundCentertoBaseLigandDistance;
                             }
                             
                         }
@@ -695,7 +695,7 @@ void metropolisJoint()
                                                                       (bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1])*(bLigandCenterPropose[nf][ib][1]-bLigandCenterPropose[nf2][ib2][1]) +
                                                                       (bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])*(bLigandCenterPropose[nf][ib][2]-bLigandCenterPropose[nf2][ib2][2])) - (2*brLigand);
                                     
-                                    Enew += 0.5*kBound*boundCentertoBoundDistance*boundCentertoBoundDistance;
+                                    ENew += 0.5*kBound*boundCentertoBoundDistance*boundCentertoBoundDistance;
 
                                 }
                             }
