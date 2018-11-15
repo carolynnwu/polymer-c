@@ -47,6 +47,7 @@ FILE *paramsFile, *filList, *iSiteList, *bSiteList, *basicSiteList;
 
 long NFil,N[NFILMAX];
 long iSite[NFILMAX][NMAX], iSiteTotal[NFILMAX], iSiteCurrent, iy,ty, stericOcclusion[NFILMAX][NMAX];
+long NumberiSites;
 long Ncurrent;
 double c0, c1, irLigand;
 
@@ -92,7 +93,7 @@ double StiffenRange, StiffSites[NFILMAX][NMAX];
 int stiffCase, totalStiff[NFILMAX];
 
 char occupiedSites[4*NMAX],occupiedSitesNoSpace[NMAX];
-double iSiteOccupied[NFILMAX][NMAX];
+double iSiteOccupied[NMAX];
 
 /* MULTIPLE Global Variables*/
 int bSiteInputMethod;
@@ -100,6 +101,7 @@ double brLigand;
 double bLigandCenter[NFILMAX][NMAX][3];
 long bSite[NFILMAX][NMAX], bSiteTotal[NFILMAX], bSiteCurrent, ib, ib2;
 long bSiteCounter;
+long NumberbSites;
 
 double bLigandCenterPropose[NFILMAX][NMAX][3];
 

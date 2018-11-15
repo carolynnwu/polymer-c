@@ -26,7 +26,6 @@ double occupied[NFILMAX][NMAX];
 double binSize[NFILMAX];
 long binCurrent;
 
-double NumberiSites;
 double iSitesOccluded_counter;
 double POcclude_NumSites[NMAX], POcclude_NumSites_sum[NMAX], PAvailable_NumSites[NMAX];
 
@@ -34,8 +33,6 @@ double POcclude_NumSites[NMAX], POcclude_NumSites_sum[NMAX], PAvailable_NumSites
 /********************************************************************************************************/
 void initializeSummary()
 {
-    
-    NumberiSites = 0;
     
     // summary variables
     for(nf=0;nf<NFil;nf++)
@@ -57,13 +54,6 @@ void initializeSummary()
         }
         POccludeBase_sum[nf] = 0;
         
-        NumberiSites += iSiteTotal[nf];
-        
-        for(i=0;i<=NumberiSites;i++)
-        {
-            POcclude_NumSites[i] = 0;
-        }
-        
     //    for(ib=0; ib<bSiteTotal[nf]; ib++)
     //    {
     //        PDeliver[nf][ib]=0;
@@ -77,6 +67,11 @@ void initializeSummary()
             rMiSiteBar_sum[nf][iy] = 0;
             rM2iSiteBar_sum[nf][iy] = 0;
         }
+    }
+    
+    for(i=0;i<=NumberiSites;i++)
+    {
+        POcclude_NumSites[i] = 0;
     }
     
     

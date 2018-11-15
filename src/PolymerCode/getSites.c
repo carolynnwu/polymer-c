@@ -121,6 +121,11 @@ void getSites()
 
     }
     
+    // Determine total number of iSites for system
+    NumberiSites = 0;
+    for(nf=0;nf<NFil;nf++)
+        NumberiSites += iSiteTotal[nf];
+    
     //Warning for possible user error
     for(nf=0;nf<NFil;nf++)
     {
@@ -151,6 +156,9 @@ void getSites()
             printf("iSiteTotal: %ld\n", iSiteTotal[nf]);
             fflush(stdout);
         }
+        
+        printf("Number of iSites in system: %ld\n",NumberiSites);
+        fflush(stdout);
     }
     
     /*****************************************************/
@@ -186,29 +194,33 @@ void getSites()
                 
             case 2: //bSites for multiple binding of ZAP-70 to CD3 Zeta mouse
                 
-                for(nf=0;nf<NFil;nf++)
+                for (i=0; i<NumberiSites; i++)
                 {
-                    for (iy=0; iy<iSiteTotal[nf]; iy++)
-                    {
-                        iSiteOccupied[nf][iy]=0;
-                    }
-                }
-                // eventually want to be able to have different occupancies for each filament
-                for(nf=0;nf<NFil;nf++)
-                {
-                    sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &iSiteOccupied[nf][0],&iSiteOccupied[nf][1],&iSiteOccupied[nf][2],&iSiteOccupied[nf][3], &iSiteOccupied[nf][4],&iSiteOccupied[nf][5]);
+                    iSiteOccupied[i]=0;
                 }
                 
+                i=0;
+                char * linepart;
+                linepart = strtok(occupiedSites,"_");
+                while(linepart != NULL)
+                {
+                    iSiteOccupied[i] = atoi(linepart);
+                    linepart = strtok(NULL, "_");
+                    i++;
+                }
+                
+                int siteCounter = 0;
                 for(nf=0;nf<NFil;nf++)
                 {
                     bSiteCounter=0;
                     for (iy=0;iy<iSiteTotal[nf];iy++)
                     {
-                        if (iSiteOccupied[nf][iy]==1)
+                        if (iSiteOccupied[siteCounter]==1)
                         {
                             bSite[nf][bSiteCounter]=iSite[nf][iy];
                             bSiteCounter++;
                         }
+                        siteCounter++;
                     }
                     bSiteTotal[nf]=bSiteCounter;
                 }
@@ -289,6 +301,11 @@ void getSites()
                 
         }
         
+        // Determine total number of iSites for system
+        NumberbSites = 0;
+        for(nf=0;nf<NFil;nf++)
+            NumberbSites += bSiteTotal[nf];
+        
         //Warning for possible user error
         for(nf=0;nf<NFil;nf++)
         {
@@ -319,6 +336,9 @@ void getSites()
                 printf("bSiteTotal = %ld \n", bSiteTotal[nf]);
                 fflush(stdout);
             }
+            
+            printf("Number of bound sites in system = %ld \n", NumberbSites);
+            fflush(stdout);
         }
 
     }
