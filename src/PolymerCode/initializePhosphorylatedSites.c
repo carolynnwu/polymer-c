@@ -8,46 +8,41 @@ void initializePhosphorylatedSites();
 
 int totalPhosphorylated[NFILMAX];
 
-double phosiSites[NFILMAX][NMAX];
+double phosiSites[NFILMAX*NMAX];
 /*******************************************************************************/
 void initializePhosphorylatedSites()
 {
     //initializes phoshorylatedSites to 0 (none phosphorylated)
-    for(nf=0;nf<NFil;nf++)
+    for (i=0; i<NumberiSites; i++)
     {
-        for(ty=0;ty<iSiteTotal[nf];ty++)
-        {
-            phosiSites[nf][ty]=0;
-        }
+        phosiSites[i]=0;
     }
  
     if (TALKATIVE)
     {
-        for(nf=0;nf<NFil;nf++)
-        {
-            printf("These are the occupied (phosphorylated) sites on filament %ld : %s\n", nf, occupiedSites);
-        }
+        printf("These are the occupied (phosphorylated) sites on filament: %s\n", occupiedSites);
     }
     
     //read string and assign to double vector
     // 1 is occupied iSite (phosphorylated), 0 is unoccupied
     //read string or read and interpret which of CD3Zeta Mouse tyrosines are phosphorylated
-    for(nf=0;nf<NFil;nf++)
+    i=0;
+    char * linepart;
+    linepart = strtok(occupiedSites,"_");
+    while(linepart != NULL)
     {
-        // Eventually want to have different phosphorylated sites depending on filament
-        sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &phosiSites[nf][0],&phosiSites[nf][1],&phosiSites[nf][2],&phosiSites[nf][3], &phosiSites[nf][4],&phosiSites[nf][5]);
+        phosiSites[i] = atoi(linepart);
+        linepart = strtok(NULL, "_");
+        i++;
     }
-
+    
     //print which of the iSites are phosphorylated
     if (TALKATIVE)
     {
-        for(nf=0;nf<NFil;nf++)
+        for (i=0; i<NumberiSites; i++)
         {
-            for (iy=0;iy<iSiteTotal[nf];iy++)
-            {
-                printf("phosiSites[ %ld ][ %ld ] =  %f\n",nf,iy, phosiSites[nf][iy]);
-                fflush(stdout);
-            }
+            printf("phosiSites[ %ld ] =  %f\n",i, phosiSites[i]);
+            fflush(stdout);
         }
     }
 
@@ -62,11 +57,12 @@ void initializePhosphorylatedSites()
 
     //Phosphorylate sites
     // Note this is ONLY correct if PhosElectroRange does not extend past end points of polymer
+    int siteCounter = 0;
     for(nf=0;nf<NFil;nf++)
     {
         for(ty=0;ty<iSiteTotal[nf];ty++)
         {
-            if(phosiSites[nf][ty]==1) //might want to check the truth value on this - equals for double?
+            if(phosiSites[siteCounter]==1) //might want to check the truth value on this - equals for double?
             {
                 // include exit in case phosphorylation goes too far (can fix this to work appropriately if needed in the future)
                 if( (iSite[nf][ty]-PhosElectroRange < 0) || (iSite[nf][ty]+PhosElectroRange+1 > N[nf]) )
@@ -81,6 +77,7 @@ void initializePhosphorylatedSites()
                     PhosphorylatedSites[nf][i]=1; //set that joint to "phosphorylated"
                 }
             }
+            siteCounter++;
         }
     }
 
