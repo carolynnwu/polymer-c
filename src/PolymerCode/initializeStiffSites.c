@@ -6,89 +6,42 @@ void initializeStiffSites();
 //  GLOBAL VARIABLES for initializing stiff sites
 /*******************************************************************************/
 int stiffEnd, stiffStart;
-double stiffiSites[NFILMAX][NMAX];
+double stiffiSites[NMAX];
 //
 /********************************************************************************************************/
 void initializeStiffSites()
 {
     //initializes stiffiSites to 0 (none phosphorylated)
-    for(nf=0;nf<NFil;nf++)
+    for (i=0; i<NumberiSites; i++)
     {
-        for(ty=0;ty<iSiteTotal[nf];ty++)
-        {
-            stiffiSites[nf][ty]=0;
-        }
+        stiffiSites[i]=0;
     }
 
     if (TALKATIVE)
     {
-        for(nf=0;nf<NFil;nf++)
-        {
-            printf("These are the occupied sites for filament %ld: %s\n", nf, occupiedSites);
-        }
+        printf("These are the occupied sites: %s\n", occupiedSites);
+        fflush(stdout);
     }
     
     //read string and assign to double vector
     // 1 is occupied iSite (phosphorylated), 0 is unoccupied
-    for(nf=0;nf<NFil;nf++)
+    i=0;
+    char * linepart;
+    linepart = strtok(occupiedSites,"_");
+    while(linepart != NULL)
     {
-        stiffCase = iSiteTotal[nf];
-        
-        switch (stiffCase)
-        {
-            // eventually want to be able have different phosphorylation settings per iSite per filament
-            case 1:
-            
-            sscanf(occupiedSites,"%lf", &stiffiSites[nf][0]);
-            break;
-            
-            case 2:
-            
-            sscanf(occupiedSites,"%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1]);
-            break;
-                
-            case 3:
-                
-            sscanf(occupiedSites,"%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2]);
-            break;
-                
-            case 4:
-                
-            sscanf(occupiedSites,"%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3]);
-            break;
-                
-            case 5:
-                
-            sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3],&stiffiSites[nf][4]);
-            break;
-            
-            case 6:
-            
-            sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &stiffiSites[nf][0],&stiffiSites[nf][1],&stiffiSites[nf][2],&stiffiSites[nf][3],&stiffiSites[nf][4],&stiffiSites[nf][5]);
-            break;
-            
-            default:
-                
-            printf("Create case for stiffening %d sites.\n",stiffCase);
-            fflush(stdout);
-            exit(0);
-            break;
-            
-            // could include a case to read occupiedSites from a file of either locations or of 0,1s
-            
-        }
+        stiffiSites[i] = atoi(linepart);
+        linepart = strtok(NULL, "_");
+        i++;
     }
     
     // for debugging, print which iSites are declared stiff
     if (TALKATIVE)
     {
-        for(nf=0;nf<NFil;nf++)
+        for (i=0;i<NumberiSites;i++)
         {
-            for (iy=0;iy<iSiteTotal[nf];iy++)
-            {
-                printf("stiffiSites[ %ld ][ %ld ] =  %f\n",nf,iy, stiffiSites[nf][iy]);
-                fflush(stdout);
-            }
+            printf("stiffiSites[ %ld ] =  %f\n",i, stiffiSites[i]);
+            fflush(stdout);
         }
     }
     
@@ -97,7 +50,7 @@ void initializeStiffSites()
     {
         for(i=0;i<N[nf];i++)
         {
-            StiffSites[nf][i] =0;
+            StiffSites[nf][i] =0; // NFilxN[nf] matrix
         }
     }
 
@@ -114,11 +67,12 @@ void initializeStiffSites()
     
     if(StiffenRange != -1) // If StiffenRange is set to -1, then no stiffening occurs. All StiffSites are left at 0.
     {
+        int siteCounter = 0;
         for(nf=0;nf<NFil;nf++)
         {
             for(ty=0;ty<iSiteTotal[nf];ty++)
             {
-                if(stiffiSites[nf][ty]==1) //might want to check the truth value on this - equals for double?
+                if(stiffiSites[siteCounter]==1) //might want to check the truth value on this - equals for double?
                 {
                     // set beginning of stiffening range
                     if(iSite[nf][ty]-StiffenRange +1 >= 1) // above 0
@@ -147,6 +101,7 @@ void initializeStiffSites()
                         StiffSites[nf][i]=1; //set that joint to "stiff"
                     }
                 }
+                siteCounter++;
             }
         }
     }
