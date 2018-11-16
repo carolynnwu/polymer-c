@@ -11,39 +11,67 @@ void getBasicSites();
 /********************************************************************************************************/
 void getBasicSites()
 {
-    /********* INITIALIZE BASIC AND TYROSINE SITES *******************/
+    /********* INITIALIZE BASIC SITES *******************/
     
 
     basicSiteList = fopen(basicSiteFilename, "r");
     char line[200];
-    iBasic=0;
+    nf=0;
     
     while (fgets(line, sizeof(line), basicSiteList))
     {
-        // For now, let all filaments have the same basic sites
-        // Eventually allow each filament to have different basic sites
-        for(nf=0;nf<NFil;nf++)
+        iy=0;
+        
+        // if line has something on it, set iSites equal to parts of line
+        if(line[0] != '\n')
         {
-            basicSite[nf][iBasic]=atoi(line);
+            char * linepart;
+            linepart = strtok(line," ,");
+            while(linepart != NULL)
+            {
+                
+                if(atoi(linepart)!=-1)
+                {
+                    basicSite[nf][iy] = atoi(linepart);
+                    linepart = strtok(NULL, " ,");
+                    iy++;
+                }
+                else
+                {
+                    linepart = strtok(NULL, " ,");
+                }
+            }
         }
-        // Eventually count sites separately for each filament
-        iBasic++; // count how many basic sites per filament
+        
+        // set basicSiteTotal and update filament
+        basicSiteTotal[nf]=iy;
+        if(basicSiteTotal[nf]==0)
+        {
+            printf("Filament %ld has no basic sites.\n",nf);
+            fflush(stdout);
+        }
+        nf++;
+        
     }
     
-    fclose(iSiteList);
-    
-    for(nf=0;nf<NFil;nf++)
+    if(nf!=NFil)
     {
-        basicSiteTotal[nf]=iBasic;
+        printf("Error! Number of filaments mismatch between filaments and  basicSites!\n");
+        fflush(stdout);
+        exit(0);
     }
+    
+    fclose(basicSiteList);
 
+    
+    // warning for basic sites located past filament end
     for(nf=0;nf<NFil;nf++)
     {
         for (iBasic=0; iBasic<basicSiteTotal[nf];iBasic++)
         {
             if (basicSite[nf][iBasic] >= N[nf])
             {
-                printf("Warning! Site is located past end of polymer number %ld !",nf);
+                printf("Warning! Basic site is located past end of polymer number %ld !",nf);
                 fflush(stdout);
             }
         }
