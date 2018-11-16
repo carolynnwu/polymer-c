@@ -22,7 +22,7 @@ double reeiSite[NFILMAX][NMAX], rMBar[NFILMAX], rM2Bar[NFILMAX], rMiSiteBar[NFIL
 
 double distiSiteToLigand[NFILMAX][NMAX][NMAX], selfBind[NFILMAX][NMAX][NMAX], selfBindFraction[NFILMAX][NMAX][NMAX], localConcentration[NFILMAX][NMAX][NMAX];
 
-double occupied[NFILMAX][NMAX];
+double occupied[NMAX];
 double binSize[NFILMAX];
 long binCurrent;
 
@@ -95,6 +95,22 @@ void initializeSummary()
                 }
             }
         }
+    }
+    
+    // parse OccupiedSites
+    for (i=0; i<NumberiSites; i++)
+    {
+        occupied[i]=0;
+    }
+    
+    i=0;
+    char * linepart;
+    linepart = strtok(occupiedSites,"_");
+    while(linepart != NULL)
+    {
+        occupied[i] = atoi(linepart);
+        linepart = strtok(NULL, "_");
+        i++;
     }
 
 }
@@ -292,14 +308,11 @@ void finalizeSummary()
             
             if (CD3ZETA)
             {
-                sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &occupied[nf][0],&occupied[nf][1],&occupied[nf][2],&occupied[nf][3], &occupied[nf][4],&occupied[nf][5]);
-                
-                for (iy=0; iy<iSiteTotal[nf];iy++)
+                for (i=0; i<NumberiSites;i++)
                 {
-                    fprintf(fList, " %lf", occupied[nf][iy]);
+                    fprintf(fList, " %lf", occupied[i]);
                 }
                 
-                // eventually want this to depend on filament
                 fprintf(fList, " %s", occupiedSitesNoSpace);
             }
             
