@@ -6,7 +6,7 @@ void getSites();
 /*******************************************************************************/
 //  GLOBAL VARIABLES for output control
 /*******************************************************************************/
-
+long siteCounter,bSiteCounter;
 
 /********************************************************************************************************/
 void getSites()
@@ -194,28 +194,13 @@ void getSites()
                 
             case 2: //bSites for multiple binding of ZAP-70 to CD3 Zeta mouse
                 
-                for (i=0; i<NumberiSites; i++)
-                {
-                    iSiteOccupied[i]=0;
-                }
-                
-                i=0;
-                char * linepart;
-                linepart = strtok(occupiedSites,"_");
-                while(linepart != NULL)
-                {
-                    iSiteOccupied[i] = atoi(linepart);
-                    linepart = strtok(NULL, "_");
-                    i++;
-                }
-                
-                int siteCounter = 0;
+                siteCounter = 0;
                 for(nf=0;nf<NFil;nf++)
                 {
                     bSiteCounter=0;
                     for (iy=0;iy<iSiteTotal[nf];iy++)
                     {
-                        if (iSiteOccupied[siteCounter]==1)
+                        if (occupied[siteCounter]==1)
                         {
                             bSite[nf][bSiteCounter]=iSite[nf][iy];
                             bSiteCounter++;

@@ -6,41 +6,19 @@ void initializeStiffSites();
 //  GLOBAL VARIABLES for initializing stiff sites
 /*******************************************************************************/
 int stiffEnd, stiffStart;
-double stiffiSites[NMAX];
 //
 /********************************************************************************************************/
 void initializeStiffSites()
 {
-    //initializes stiffiSites to 0 (none phosphorylated)
-    for (i=0; i<NumberiSites; i++)
-    {
-        stiffiSites[i]=0;
-    }
-
-    if (TALKATIVE)
-    {
-        printf("These are the occupied sites: %s\n", occupiedSites);
-        fflush(stdout);
-    }
-    
-    //read string and assign to double vector
-    // 1 is occupied iSite (phosphorylated), 0 is unoccupied
-    i=0;
-    char * linepart;
-    linepart = strtok(occupiedSites,"_");
-    while(linepart != NULL)
-    {
-        stiffiSites[i] = atoi(linepart);
-        linepart = strtok(NULL, "_");
-        i++;
-    }
     
     // for debugging, print which iSites are declared stiff
     if (TALKATIVE)
     {
+        printf("Stiffened sites: \n");
+        fflush(stdout);
         for (i=0;i<NumberiSites;i++)
         {
-            printf("stiffiSites[ %ld ] =  %f\n",i, stiffiSites[i]);
+            printf("occupied[ %ld ] =  %f\n",i, occupied[i]);
             fflush(stdout);
         }
     }
@@ -72,7 +50,7 @@ void initializeStiffSites()
         {
             for(ty=0;ty<iSiteTotal[nf];ty++)
             {
-                if(stiffiSites[siteCounter]==1) //might want to check the truth value on this - equals for double?
+                if(occupied[siteCounter]==1) //might want to check the truth value on this - equals for double?
                 {
                     // set beginning of stiffening range
                     if(iSite[nf][ty]-StiffenRange +1 >= 1) // above 0

@@ -7,41 +7,18 @@ void initializePhosphorylatedSites();
 /*******************************************************************************/
 
 int totalPhosphorylated[NFILMAX];
-
-double phosiSites[NFILMAX*NMAX];
 /*******************************************************************************/
 void initializePhosphorylatedSites()
 {
-    //initializes phoshorylatedSites to 0 (none phosphorylated)
-    for (i=0; i<NumberiSites; i++)
-    {
-        phosiSites[i]=0;
-    }
- 
-    if (TALKATIVE)
-    {
-        printf("These are the occupied (phosphorylated) sites on filament: %s\n", occupiedSites);
-    }
-    
-    //read string and assign to double vector
-    // 1 is occupied iSite (phosphorylated), 0 is unoccupied
-    //read string or read and interpret which of CD3Zeta Mouse tyrosines are phosphorylated
-    i=0;
-    char * linepart;
-    linepart = strtok(occupiedSites,"_");
-    while(linepart != NULL)
-    {
-        phosiSites[i] = atoi(linepart);
-        linepart = strtok(NULL, "_");
-        i++;
-    }
-    
+
     //print which of the iSites are phosphorylated
     if (TALKATIVE)
     {
+        printf("Phosphorylated sites:\n");
+        fflush(stdout);
         for (i=0; i<NumberiSites; i++)
         {
-            printf("phosiSites[ %ld ] =  %f\n",i, phosiSites[i]);
+            printf("occupied[ %ld ] =  %f\n",i, occupied[i]);
             fflush(stdout);
         }
     }
@@ -62,7 +39,7 @@ void initializePhosphorylatedSites()
     {
         for(ty=0;ty<iSiteTotal[nf];ty++)
         {
-            if(phosiSites[siteCounter]==1) //might want to check the truth value on this - equals for double?
+            if(occupied[siteCounter]==1) //might want to check the truth value on this - equals for double?
             {
                 // include exit in case phosphorylation goes too far (can fix this to work appropriately if needed in the future)
                 if( (iSite[nf][ty]-PhosElectroRange < 0) || (iSite[nf][ty]+PhosElectroRange+1 > N[nf]) )

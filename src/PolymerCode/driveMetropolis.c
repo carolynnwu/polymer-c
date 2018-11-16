@@ -14,7 +14,7 @@
 #define DCHIINIT        0.1
 #define KSCRITICAL      0.01
 #define MEMBRANE        0
-#define MULTIPLE        0
+#define MULTIPLE        1
 #define STIFFEN         0
 #define ELECTRO         0
 #define HARDWALL        0
@@ -50,6 +50,8 @@ long iSite[NFILMAX][NMAX], iSiteTotal[NFILMAX], iSiteCurrent, iy,ty, stericOcclu
 long NumberiSites;
 long Ncurrent;
 double c0, c1, irLigand;
+
+double occupied[NMAX];
 
 double ree[NFILMAX], rM[NFILMAX], rM2[NFILMAX], rMiSite[NFILMAX][NMAX], rM2iSite[NFILMAX][NMAX], rH[NFILMAX];
 
@@ -93,14 +95,12 @@ double StiffenRange, StiffSites[NFILMAX][NMAX];
 int stiffCase, totalStiff[NFILMAX];
 
 char occupiedSites[4*NMAX],occupiedSitesNoSpace[NMAX];
-double iSiteOccupied[NMAX];
 
 /* MULTIPLE Global Variables*/
 int bSiteInputMethod;
 double brLigand;
 double bLigandCenter[NFILMAX][NMAX][3];
 long bSite[NFILMAX][NMAX], bSiteTotal[NFILMAX], bSiteCurrent, ib, ib2;
-long bSiteCounter;
 long NumberbSites;
 
 double bLigandCenterPropose[NFILMAX][NMAX][3];
@@ -208,8 +208,39 @@ int main( int argc, char *argv[] )
         if (TALKATIVE) printf("This is the dimerization force: %lf\n", kdimer);
     }
     
+    
+    
+    
+    /* Finish setting up initial variables */
+    
+    // assign Ntemp to each filament
+    for(nf=0;nf<NFil;nf++)
+    {
+        N[nf]=Ntemp;
+        if (TALKATIVE) printf("This is number of rods in filament %ld: %ld\n",nf, N[nf]);
+    }
+    
+    // parse OccupiedSites
+    for (i=0; i<NumberiSites; i++)
+    {
+        occupied[i]=0;
+    }
+    
+    i=0;
+    char * linepart;
+    linepart = strtok(occupiedSites,"_");
+    while(linepart != NULL)
+    {
+        occupied[i] = atoi(linepart);
+        linepart = strtok(NULL, "_");
+        i++;
+    }
+    
+    
+    // initialize random seed
 	iseed = RanInitReturnIseed(0);
 	
+    // run metropolis algorithm
 	metropolisJoint();
 
 	return 0;

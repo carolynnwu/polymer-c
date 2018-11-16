@@ -22,7 +22,6 @@ double reeiSite[NFILMAX][NMAX], rMBar[NFILMAX], rM2Bar[NFILMAX], rMiSiteBar[NFIL
 
 double distiSiteToLigand[NFILMAX][NMAX][NMAX], selfBind[NFILMAX][NMAX][NMAX], selfBindFraction[NFILMAX][NMAX][NMAX], localConcentration[NFILMAX][NMAX][NMAX];
 
-double occupied[NMAX];
 double binSize[NFILMAX];
 long binCurrent;
 
@@ -95,22 +94,6 @@ void initializeSummary()
                 }
             }
         }
-    }
-    
-    // parse OccupiedSites
-    for (i=0; i<NumberiSites; i++)
-    {
-        occupied[i]=0;
-    }
-    
-    i=0;
-    char * linepart;
-    linepart = strtok(occupiedSites,"_");
-    while(linepart != NULL)
-    {
-        occupied[i] = atoi(linepart);
-        linepart = strtok(NULL, "_");
-        i++;
     }
 
 }
@@ -306,18 +289,17 @@ void finalizeSummary()
                 }
             }
             
-            if (CD3ZETA)
+        } // end printing data for each filament
+        
+        if (CD3ZETA)
+        {
+            for (i=0; i<NumberiSites;i++)
             {
-                for (i=0; i<NumberiSites;i++)
-                {
-                    fprintf(fList, " %lf", occupied[i]);
-                }
-                
-                fprintf(fList, " %s", occupiedSitesNoSpace);
+                fprintf(fList, " %lf", occupied[i]);
             }
             
-            
-        } // end printing data for each filament
+            fprintf(fList, " %s", occupiedSitesNoSpace);
+        }
         
         fprintf(fList, "\n");
         fclose(fList);
