@@ -5,7 +5,7 @@ all:
 run:
 	gcc -O3 driveMetropolis.c -o metropolis.out -lm
 
-	./metropolis.out parameters.txt -1 -1 -1 -1 -1
+	./metropolis.out parameters.txt TestiSites.txt 0 -1 -1 -1 -1
 
 batch:
 

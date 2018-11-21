@@ -1,9 +1,11 @@
 listName		outputTest
 NFil			1
 N			60
+filamentInputMethod	1
 baseSepDistance		1
 irLigand		2.25
 brLigand		1
+kBound			1000
 baserLigand		4
 Force			0
 kdimer			0
@@ -14,6 +16,7 @@ StiffenRange		0
 stiffCase		0
 occupiedSites		0_0_0_0_0_0
 occupiedSitesNoSpace 	000000
+filamentFilename	filaments.txt
 iSiteFilename		iSites.txt
 bSiteFilename		bSites.txt
 basicSiteFilename	basicSites.txt

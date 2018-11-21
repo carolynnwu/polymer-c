@@ -23,6 +23,9 @@ void getParameters()
     // eventually want different N per filament
     fscanf(paramsFile,"%s %ld", tmpString, &Ntemp);
     if (TALKATIVE) printf("This is number of rods in each filament: %ld\n",Ntemp);
+    
+    fscanf(paramsFile,"%s %d", tmpString, &filamentInputMethod);
+    if (TALKATIVE) printf("This is filament Input Method: %d\n", filamentInputMethod);
 
     fscanf(paramsFile,"%s %lf", tmpString, &baseSepDistance);
     if (TALKATIVE) printf("This is the filament base separation distance: %lf\n", baseSepDistance);
@@ -32,6 +35,9 @@ void getParameters()
     
     fscanf(paramsFile,"%s %lf", tmpString, &brLigand);
     if (TALKATIVE) printf("This is bound ligand radius: %lf\n", brLigand);
+    
+    fscanf(paramsFile,"%s %lf", tmpString, &kBound);
+    if (TALKATIVE) printf("This is bound ligand spring constant: %lf\n", kBound);
     
     fscanf(paramsFile,"%s %lf", tmpString, &baserLigand);
     if (TALKATIVE) printf("This is base bound ligand radius: %lf\n", baserLigand);
@@ -64,6 +70,9 @@ void getParameters()
     
     fscanf(paramsFile,"%s %s", tmpString, occupiedSitesNoSpace);
     if (TALKATIVE) printf("This is occupied Sites: %s\n", occupiedSitesNoSpace);
+    
+    fscanf(paramsFile,"%s %s", tmpString, filamentFilename);
+    if (TALKATIVE) printf("This is filament filename: %s\n", filamentFilename);
     
     fscanf(paramsFile,"%s %s", tmpString, iSiteFilename);
     if (TALKATIVE) printf("This is iSite filename: %s\n", iSiteFilename);

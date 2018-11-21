@@ -22,13 +22,17 @@ double reeiSite[NFILMAX][NMAX], rMBar[NFILMAX], rM2Bar[NFILMAX], rMiSiteBar[NFIL
 
 double distiSiteToLigand[NFILMAX][NMAX][NMAX], selfBind[NFILMAX][NMAX][NMAX], selfBindFraction[NFILMAX][NMAX][NMAX], localConcentration[NFILMAX][NMAX][NMAX];
 
-double occupied[NFILMAX][NMAX];
 double binSize[NFILMAX];
 long binCurrent;
+
+double iSitesOccluded_counter;
+double POcclude_NumSites[NMAX], POcclude_NumSites_sum[NMAX], PAvailable_NumSites[NMAX];
+
 
 /********************************************************************************************************/
 void initializeSummary()
 {
+    
     // summary variables
     for(nf=0;nf<NFil;nf++)
     {
@@ -48,6 +52,7 @@ void initializeSummary()
             PMembraneOcclude_sum[nf][iy]        = 0;
         }
         POccludeBase_sum[nf] = 0;
+        
     //    for(ib=0; ib<bSiteTotal[nf]; ib++)
     //    {
     //        PDeliver[nf][ib]=0;
@@ -62,6 +67,12 @@ void initializeSummary()
             rM2iSiteBar_sum[nf][iy] = 0;
         }
     }
+    
+    for(i=0;i<=NumberiSites;i++)
+    {
+        POcclude_NumSites[i] = 0;
+    }
+    
     
     for(nf=0;nf<NFil;nf++)
     {
@@ -113,6 +124,13 @@ void finalizeSummary()
         
         POccludeBase[nf] = (double)POccludeBase_sum[nf]/(double)(nt-NTCHECK);
         
+        // debugging
+        if(0)
+        {
+            printf("This is the base occlusion for base %ld: %f\n",nf,POccludeBase[nf]);
+            fflush(stdout);
+        }
+        
     //    for(ib=0;ib<bSiteTotal[nf];ib++)
     //    {
     //        PDeliver[nf][ib] = (double)PDeliver_sum[nf][ib]/(double)(nt-NTCHECK);
@@ -128,6 +146,17 @@ void finalizeSummary()
             rM2iSiteBar[nf][iy] = rM2iSiteBar_sum[nf][iy]/(double)(nt-NTCHECK);
         }
     }
+    
+    for(i=0;i<=NumberiSites;i++)
+    {
+        POcclude_NumSites[i]        = (double)POcclude_NumSites_sum[i]/(double)(nt-NTCHECK);
+    }
+    
+    for(i=0;i<=NumberiSites;i++)
+    {
+        PAvailable_NumSites[i]        = (double)POcclude_NumSites[(int)(NumberiSites-i)];
+    }
+    
     
     if(MULTIPLE)
     {
@@ -160,50 +189,59 @@ void finalizeSummary()
                 dimerDist0, // 7
                 baseSepDistance);     // 8
         
+        for(i=0;i<=NumberiSites;i++)
+        {
+            fprintf(fList, " %lf", POcclude_NumSites[i]); // 8 + (i+1)
+        }
+        for(i=0;i<=NumberiSites;i++)
+        {
+            fprintf(fList, " %lf", PAvailable_NumSites[i]); // 8 + (NumberiSites+1) + (i+1)
+        }
+        
         for(nf=0;nf<NFil;nf++)
         {
             
             fprintf(fList, " %ld %f %f %f %f %f",
-                    N[nf],              // 9 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    ksStatistic[nf],    // 10 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    reeBar[nf],         // 11 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    ree2Bar[nf],        // 12 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rMBar[nf],          // 13 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rM2Bar[nf]);        // 14 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    N[nf],              // 9 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    ksStatistic[nf],    // 10 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    reeBar[nf],         // 11 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    ree2Bar[nf],        // 12 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    rMBar[nf],          // 13 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    rM2Bar[nf]);        // 14 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
             
             for (iy=0;iy<iSiteTotal[nf];iy++)
             {
                 fprintf(fList, " %ld %e %e %e %e %f %f",
-                    iSite[nf][iy],              // 15 + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    POcclude[nf][iy],           // 16 + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    1-POcclude[nf][iy],         // 17 + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    PMembraneOcclude[nf][iy],   // 18 + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    Prvec0[nf][iy],             // 19 + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rMiSiteBar[nf][iy],         // 20 + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rM2iSiteBar[nf][iy]);       // 21 + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    iSite[nf][iy],              // 15 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    POcclude[nf][iy],           // 16 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    1-POcclude[nf][iy],         // 17 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    PMembraneOcclude[nf][iy],   // 18 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    Prvec0[nf][iy],             // 19 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    rMiSiteBar[nf][iy],         // 20 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    rM2iSiteBar[nf][iy]);       // 21 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
             }
 
             
             fprintf(fList, " %e %e",
-                    POccludeBase[nf],           // 22 + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
-                    1-POccludeBase[nf]);        // 23 + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
+                    POccludeBase[nf],           // 22 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
+                    1-POccludeBase[nf]);        // 23 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
             
             for(nf2=0;nf2<NFil;nf2++)
             {
                 fprintf(fList, " %f",
-                    reeFilBar[nf][nf2]);        // 24 + 7*(iSiteTotal-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    reeFilBar[nf][nf2]);        // 24 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
             }
             
             for(nf2=0;nf2<NFil;nf2++)
             {
                 fprintf(fList, " %f",
-                        ree2FilBar[nf][nf2]);   // 25 + 7*(iSiteTotal-1) + (NFil-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                        ree2FilBar[nf][nf2]);   // 25 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (NFil-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
             }
             
 //            for (ib=0;ib<bSiteTotal[nf];ib++)
 //            {
 //                fprintf(fList, " %ld",
-//                    bSite[nf][ib]);             // 26 + 7*iSiteTotal + ib
+//                    bSite[nf][ib]);             // 26 + 2*(NumberiSites+1) + 7*iSiteTotal + ib
 //            }
 //
 //            for (iy=0; iy<iSiteTotal[nf]; iy++)
@@ -251,23 +289,72 @@ void finalizeSummary()
                 }
             }
             
-            if (CD3ZETA)
+        } // end printing data for each filament
+        
+        if (CD3ZETA)
+        {
+            for (i=0; i<NumberiSites;i++)
             {
-                sscanf(occupiedSites,"%lf_%lf_%lf_%lf_%lf_%lf", &occupied[nf][0],&occupied[nf][1],&occupied[nf][2],&occupied[nf][3], &occupied[nf][4],&occupied[nf][5]);
-                
-                for (iy=0; iy<iSiteTotal[nf];iy++)
-                {
-                    fprintf(fList, " %lf", occupied[nf][iy]);
-                }
-                
-                // eventually want this to depend on filament
-                fprintf(fList, " %s", occupiedSitesNoSpace);
+                fprintf(fList, " %lf", occupied[i]);
             }
             
-            
-        } // end printing data for each filament
+            fprintf(fList, " %s", occupiedSitesNoSpace);
+        }
+        
         fprintf(fList, "\n");
         fclose(fList);
+    }
+    if(verboseTF && VISUALIZE)
+    {
+        //print second file with only parameters for the run
+        char listNameParams[200];
+        strcpy(listNameParams,listName);
+        strcat(listNameParams,"_VisualParameters");
+        
+        fList = fopen(listNameParams,"a");
+        
+        // formulas only work for identical filaments
+        fprintf(fList, "%d %d %d %ld %f %f",
+                MEMBRANE,   // 1
+                MULTIPLE,   // 2
+                BASEBOUND,  // 3
+                NFil,       // 4
+                irLigand,   // 5
+                brLigand);     // 6
+        
+        for(nf=0;nf<NFil;nf++)
+        {
+            
+            fprintf(fList, " %ld %ld %ld %ld",
+                    nf,                 // 8 +
+                    N[nf],              // 9 +
+                    iSiteTotal[nf],     // 10 +
+                    bSiteTotal[nf]);   // 11 +
+            
+            for (iy=0;iy<iSiteTotal[nf];iy++)
+            {
+                fprintf(fList, " %ld",
+                        iSite[nf][iy]);             // 13 + iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+            }
+            if(MULTIPLE)
+            {
+                for (ib=0;ib<bSiteTotal[nf];ib++)
+                {
+                    fprintf(fList, " %ld",
+                            bSite[nf][ib]);             // 14 + iSiteTotal[nf]-1 + bBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                }
+            }
+            
+        } // end printing data for each filament
+        if(BASEBOUND)
+        {
+            fprintf(fList, " %f",
+                    baserLigand);        // 1
+        }
+        
+        fprintf(fList, "\n");
+        fclose(fList);
+
     }
 }
 
@@ -363,7 +450,7 @@ void dataRecording()
         {
 
             fprintf(fList, " %f %f %f %f",
-                    ree[nf],                // 8 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf])*nf
+                    ree[nf],                // 8 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3)*nf
                     rM[nf],                 // 9
                     rH[nf],                 // 10
                     ksStatistic[nf]);       // 11
@@ -407,6 +494,11 @@ void dataRecording()
                             iLigandCenter[nf][iy][1],    // 24 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
                             iLigandCenter[nf][iy][2]);   // 25 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
                 }
+                
+                    fprintf(fList, " %f %f %f",
+                            baseLigandCenter[nf][0],    // 26 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                            baseLigandCenter[nf][1],    // 27 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                            baseLigandCenter[nf][2]);   // 28 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
 
             }
 
@@ -414,12 +506,26 @@ void dataRecording()
             
             if (VISUALIZE)
             {
+                if(MULTIPLE)
+                {
+                    for (ib=0;ib<bSiteTotal[nf];ib++)
+                    {
+                        fprintf(fList, " %f %f %f",
+                                bLigandCenter[nf][iy][0],    // 29 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                                bLigandCenter[nf][iy][1],    // 30 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                                bLigandCenter[nf][iy][2]);   // 31 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                    }
+                }
+            }
+            
+            if (VISUALIZE)
+            {
                 if(BASEBOUND)
                 {
                     fprintf(fList," %f %f %f",
-                            baseCenter[0],      // 1 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf])*NFil
-                            baseCenter[1],      // 2 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf])*NFil
-                            baseCenter[2]);     // 3 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf])*NFil
+                            baseCenter[0],      // 1 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3 + MULTIPLE*3*bSiteTotal[nf])*NFil
+                            baseCenter[1],      // 2 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3 + MULTIPLE*3*bSiteTotal[nf])*NFil
+                            baseCenter[2]);     // 3 + 7 + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf] + 3 + MULTIPLE*3*bSiteTotal[nf])*NFil
                 }
             }
             
@@ -460,6 +566,21 @@ void dataRecording()
                 
             }
         }
+        
+        // find how many iSites total are occluded
+        iSitesOccluded_counter = 0;
+        
+        for(nf=0;nf<NFil;nf++)
+        {
+            for(iy=0;iy<iSiteTotal[nf];iy++)
+            {
+                iSitesOccluded_counter += (long)(stericOcclusion[nf][iy]>0);
+            }
+        }
+
+        POcclude_NumSites_sum[(int)(iSitesOccluded_counter)] += 1;
+        
+        
         for(nf=0;nf<NFil;nf++)
         {
             POccludeBase_sum[nf]  += (long)(stericOcclusionBase[nf]>0);
