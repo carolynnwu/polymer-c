@@ -473,12 +473,13 @@ void dataRecording()
             
             if (VISUALIZE)
             {
-                 
+                // print base locations
                 fprintf(fList, " %f %f %f",
                         rBase[nf][0],   // 17 + (NFil-1) + 3*(iSiteTotal[nf]-1)
                         rBase[nf][1],   // 18 + (NFil-1) + 3*(iSiteTotal[nf]-1)
                         rBase[nf][2]);  // 19 + (NFil-1) + 3*(iSiteTotal[nf]-1)
-                 
+                
+                // print segment locations
                 for (i=0;i<N[nf];i++)
                 {
                     fprintf(fList, " %f %f %f",
@@ -486,7 +487,8 @@ void dataRecording()
                             r[nf][i][1],    // 21 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*i
                             r[nf][i][2]);   // 22 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*i
                 }
-                 
+                
+                // print iSite ligand centers
                 for (iy=0;iy<iSiteTotal[nf];iy++)
                 {
                     fprintf(fList, " %f %f %f",
@@ -495,28 +497,29 @@ void dataRecording()
                             iLigandCenter[nf][iy][2]);   // 25 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
                 }
                 
-                    fprintf(fList, " %f %f %f",
-                            baseLigandCenter[nf][0],    // 26 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
-                            baseLigandCenter[nf][1],    // 27 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
-                            baseLigandCenter[nf][2]);   // 28 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
-
-            }
-
-        } // end of filament loop (all output location numbers + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf])*nf )
-            
-            if (VISUALIZE)
-            {
+                // print  base ligand centers
+                fprintf(fList, " %f %f %f",
+                        baseLigandCenter[nf][0],    // 26 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                        baseLigandCenter[nf][1],    // 27 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                        baseLigandCenter[nf][2]);   // 28 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                
+                
+                // print bound site ligand centers
                 if(MULTIPLE)
                 {
                     for (ib=0;ib<bSiteTotal[nf];ib++)
                     {
                         fprintf(fList, " %f %f %f",
-                                bLigandCenter[nf][iy][0],    // 29 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
-                                bLigandCenter[nf][iy][1],    // 30 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
-                                bLigandCenter[nf][iy][2]);   // 31 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                                bLigandCenter[nf][ib][0],    // 29 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                                bLigandCenter[nf][ib][1],    // 30 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
+                                bLigandCenter[nf][ib][2]);   // 31 + (NFil-1) + 3*(iSiteTotal[nf]-1) + 3*(N[nf]-1) + 3*iy
                     }
                 }
+
             }
+
+        } // end of filament loop (all output location numbers + (4 + NFil + 3*iSiteTotal[nf] + 1 + 3 + 3*N[nf] + 3*iSiteTotal[nf])*nf )
+
             
             if (VISUALIZE)
             {
