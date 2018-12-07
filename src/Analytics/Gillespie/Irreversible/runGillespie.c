@@ -45,6 +45,11 @@ void runGillespie()
         }
     }
 
+    /****************************** Initialize Variables ***********************/
+    for(iy=0;iy<iSiteTotal;iy++)
+    {
+        transitionTime[iy] = 0;
+    }
     
     /******************************* Gillespie ******************************************/
     
@@ -112,6 +117,11 @@ void runGillespie()
             // use this update for "backwards" transitionMatrix (i.e. backwards binary)
             //path += (newState+1)*pow(10,(iSiteTotal-stepCount-1));
 
+            // record time to transition
+            transitionTime[stepCount] += timeStep;
+            
+            if(0)//debugging
+                printf("Transition: %d, Time: %f\n",stepCount,timeStep);
             
             //update time and state
             timeTotal += timeStep;

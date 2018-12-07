@@ -44,7 +44,7 @@ FILE *timeOutputFile;
 
 
 
-double timeTotal,randTime[ISITEMAX],timeStep,timeSum;
+double timeTotal,randTime[ISITEMAX],timeStep,timeSum,transitionTime[ISITEMAX];
 double pathArray[STATEMAX][2],timeArray[STATEMAX];
 int currentState,iy,it,iterations, stepCount,path;
 

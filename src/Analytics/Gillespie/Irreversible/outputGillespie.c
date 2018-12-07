@@ -8,6 +8,7 @@ void outputGillespie();
 
 double topPaths[NTOPPATHS][5],pathArrayShort[STATEMAX][5],maxPath[5],leastPath[5];
 int factorial,frequency,topLocation,topPathsLocation[NTOPPATHS],topFrequency, maxFreq, maxLocation,leastLocation;
+double transitionTime_Avg[ISITEMAX];
 double MFTP,leastFreq;
 int pass, pathTotal;
 
@@ -26,6 +27,20 @@ void outputGillespie()
     /************* MFTP ******************/
     MFTP = timeSum/iterations; //find mean first passage time - avg time it takes to move from 000000 to 111111
     
+    /************* Mean Time Between States ************/
+    for(iy=0;iy<iSiteTotal;iy++)
+    {
+        transitionTime_Avg[iy] = transitionTime[iy]/iterations;
+    }
+    
+    if(1)//debugging
+    {
+        for(iy=0;iy<iSiteTotal;iy++)
+        {
+            printf("Transition: %d, Mean Time: %f\n",iy,transitionTime_Avg[iy]);
+            printf("Transition: %d, Mean Rate: %e\n",iy,1/transitionTime_Avg[iy]);
+        }
+    }
     /******************** PATHS ************************/
     
     //find the top twenty fastest paths
@@ -176,6 +191,12 @@ void outputGillespie()
             fprintf(summaryOutputFile, "\n");
         }
         
+        //print time to transition between states (e.g. 0->1, 1->2...)
+        for (iy=0;iy<iSiteTotal;iy++)
+        {
+            fprintf(summaryOutputFile, "%d %f %e\n", iy,transitionTime_Avg[iy],1/(double)transitionTime_Avg[iy]);
+        }
+        
         fclose(summaryOutputFile);
 
     }
@@ -194,6 +215,12 @@ void outputGillespie()
         }
         
         fprintf(outputFile, "\n");
+    }
+    
+    //print time to transition between states (e.g. 0->1, 1->2...)
+    for (iy=0;iy<iSiteTotal;iy++)
+    {
+        fprintf(outputFile, "%d %f %e\n", iy,transitionTime_Avg[iy],1/(double)transitionTime_Avg[iy]);
     }
     
     fclose(outputFile);
