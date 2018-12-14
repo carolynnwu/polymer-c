@@ -1,7 +1,19 @@
 /*** Allard Group jun.allard@uci.edu                    ***/
 
 void runGillespie();
+void findPathIndex();
 
+/*******************************************************************************/
+//  GLOBAL VARIABLES
+/*******************************************************************************/
+
+double remainderFactorial;
+double remainderVector[ISITEMAX];
+double positionInRemainder[ISITEMAX];
+
+
+
+/*******************************************************************************/
 void runGillespie()
 {
     
@@ -65,7 +77,10 @@ void runGillespie()
         
         currentState=0;
         stepCount = 0;
-        path=0;
+        for(i=0;i<iSiteTotal;i++)
+        {
+            path[i]=0;
+        }
         
         while (currentState < pow(2,iSiteTotal)-1) //while loop vs for loop?
         {
@@ -111,10 +126,12 @@ void runGillespie()
             
             // create path number
             //use this update for "forwards" transitionMatrix (i.e. forwards binary, backwards phosphorylation)
-            path += (iSiteTotal-newState)*pow(10,(iSiteTotal-stepCount-1));
+            path[stepCount] = (iSiteTotal-newState);
+            //path += (iSiteTotal-newState)*pow(10,(iSiteTotal-stepCount-1));
 
             
             // use this update for "backwards" transitionMatrix (i.e. backwards binary)
+            //path[stepCount] = (newState+1);
             //path += (newState+1)*pow(10,(iSiteTotal-stepCount-1));
 
             // record time to transition
@@ -140,8 +157,9 @@ void runGillespie()
         }
         
         // record which path is used and how long it took
-        pathArray[path][0]++;
-        pathArray[path][1] += timeTotal;
+        findPathIndex();
+        pathArray[pathIndex][0]++;
+        pathArray[pathIndex][1] += timeTotal;
         
         //for MFPT
         timeSum += timeTotal;
@@ -160,6 +178,61 @@ void runGillespie()
     
     
 }
+
+
+/********** Find index of path ***********/
+void findPathIndex()
+{
+    
+    // initialize
+    int nullcounter;
+    int pathIndex = 1;
+    
+    for (i=1;i<=iSiteTotal;i++)
+    {
+        remainderVector[i-1] = i;
+        positionInRemainder[i-1] = 0;
+    }
+    
+    // find index
+    for(i=1;i<=iSiteTotal;i++)
+    {
+        j=1;
+        nullcounter = 0;
+        while(remainderVector[j]!=path[i-1] && j<=iSiteTotal)
+        {
+            if(remainderVector[j]==-1)
+            {
+                nullcounter++;
+            }
+            j++;
+        }
+        positionInRemainder[i-1] = j-nullcounter;
+        remainderVector[j] = -1;
+        
+        remainderFactorial = 1;
+        if((iSiteTotal-(i-1)-1) > 0)
+        {
+        for(k=1;k<=(iSiteTotal-(i-1)-1);k++)
+        {
+            remainderFactorial *= k;
+        }
+        }
+        else
+        {
+            if((iSiteTotal-(i-1)-1)==0)
+                remainderFactorial = 1;
+        }
+        
+        pathIndex += (positionInRemainder[i-1]-1)*remainderFactorial;
+        
+    }
+    
+}
+
+
+
+
 
 
 

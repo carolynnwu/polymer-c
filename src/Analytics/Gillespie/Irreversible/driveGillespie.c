@@ -9,7 +9,7 @@
 #define NBINS      100
 #define PI         3.14159265359
 #define INF        1e14
-#define ISITEMAX   9
+#define ISITEMAX   12 // max iSiteMax before reach StateMax limit
 #define STATEMAX   1000000000
 #define ITMAX      1e9
 #define NTOPPATHS  50
@@ -46,7 +46,8 @@ FILE *timeOutputFile;
 
 double timeTotal,randTime[ISITEMAX],timeStep,timeSum,transitionTime[ISITEMAX];
 double pathArray[STATEMAX][2],timeArray[STATEMAX];
-int currentState,iy,it,iterations, stepCount,path;
+int currentState,iy,it,iterations, stepCount,pathIndex;
+double path[ISITEMAX];
 
 
 double stateMatrix[STATEMAX][ISITEMAX];
