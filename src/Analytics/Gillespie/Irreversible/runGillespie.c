@@ -181,6 +181,7 @@ void runGillespie()
 
 
 /********** Find index of path ***********/
+/** code to accept a permutation of the values 1...iSiteTotal and return the index of that permutation in the ordered set of all permutations 1...iSiteTotal **/
 void findPathIndex()
 {
     
@@ -198,7 +199,7 @@ void findPathIndex()
     
     // initialize
     int nullcounter;
-    int pathIndex = 1;
+    int pathIndex = 0; // start at 0 since C indexing begins at 0, start at 1 in language beginning with 1
     
     for (i=1;i<=iSiteTotal;i++)
     {
@@ -211,16 +212,16 @@ void findPathIndex()
     {
         j=1;
         nullcounter = 0;
-        while(remainderVector[j]!=path[i-1] && j<=iSiteTotal)
+        while(remainderVector[j-1]!=path[i-1] && j<=iSiteTotal)
         {
-            if(remainderVector[j]==-1)
+            if(remainderVector[j-1]==-1)
             {
                 nullcounter++;
             }
             j++;
         }
         positionInRemainder[i-1] = j-nullcounter;
-        remainderVector[j] = -1;
+        remainderVector[j-1] = -1;
         
         remainderFactorial = 1;
         if((iSiteTotal-(i-1)-1) > 0)
