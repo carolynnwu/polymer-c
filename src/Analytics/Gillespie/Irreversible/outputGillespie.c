@@ -52,11 +52,11 @@ void outputGillespie()
     //creates smaller matrix of all paths
     
     pathTotal=0;
-    for (j=0;j<pow(10,iSiteTotal+1);j++)
+    for (j=0;j<factorial;j++)
     {
         if (pathArray[j][0] != 0)
         {
-            pathArrayShort[pathTotal][0] = j; //path sequence
+            pathArrayShort[pathTotal][0] = j; //path index
             pathArrayShort[pathTotal][1] = pathArray[j][0]; //total times path was taken
             pathArrayShort[pathTotal][2] = pathArray[j][1]; //sum of all times when path was taken
             pathArrayShort[pathTotal][3] = pathArray[j][0]/iterations; //probability of path being taken
@@ -69,10 +69,6 @@ void outputGillespie()
     if (TALKATIVE)
     {
         printf("This is how many paths it thinks it took: %d\n", pathTotal);
-        if (pathTotal > factorial)
-        {
-            printf("Too many paths calculated!");
-        }
     }
     
     

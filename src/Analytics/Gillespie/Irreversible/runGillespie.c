@@ -184,6 +184,18 @@ void runGillespie()
 void findPathIndex()
 {
     
+    //debugging
+    if(1)
+    {
+        printf("Path:\n");
+        fflush(stdout);
+        for(i=0;i<iSiteTotal;i++)
+        {
+            printf("%f ",path[i]);
+            fflush(stdout);
+        }
+    }
+    
     // initialize
     int nullcounter;
     int pathIndex = 1;
@@ -226,6 +238,14 @@ void findPathIndex()
         
         pathIndex += (positionInRemainder[i-1]-1)*remainderFactorial;
         
+        
+    }
+    
+    //debugging
+    if(1)
+    {
+        printf("Path index: %f\n",pathIndex);
+        fflush(stdout);
     }
     
 }
