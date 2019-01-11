@@ -1,7 +1,7 @@
 /*** Allard Group jun.allard@uci.edu                    ***/
 
 void runGillespie();
-void findPathIndex();
+int findPathIndex();
 
 /*******************************************************************************/
 //  GLOBAL VARIABLES
@@ -157,9 +157,17 @@ void runGillespie()
         }
         
         // record which path is used and how long it took
-        findPathIndex();
+        pathIndex = findPathIndex();
         pathArray[pathIndex][0]++;
         pathArray[pathIndex][1] += timeTotal;
+        
+        //debugging
+        if(0)
+        {
+            printf("Path index: %d\n",pathIndex);
+            fflush(stdout);
+        }
+        
         
         //for MFPT
         timeSum += timeTotal;
@@ -182,11 +190,11 @@ void runGillespie()
 
 /********** Find index of path ***********/
 /** code to accept a permutation of the values 1...iSiteTotal and return the index of that permutation in the ordered set of all permutations 1...iSiteTotal **/
-void findPathIndex()
+int findPathIndex()
 {
     
     //debugging
-    if(1)
+    if(0)
     {
         printf("Path:\n");
         fflush(stdout);
@@ -243,11 +251,13 @@ void findPathIndex()
     }
     
     //debugging
-    if(1)
+    if(0)
     {
-        printf("Path index: %f\n",pathIndex);
+        printf("Path index: %d\n",pathIndex);
         fflush(stdout);
     }
+    
+    return pathIndex;
     
 }
 
