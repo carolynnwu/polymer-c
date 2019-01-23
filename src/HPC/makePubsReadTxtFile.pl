@@ -18,33 +18,19 @@ for (my $i0 = 1; $i0 <= $i0Max; $i0++)
 	{
 		my $PARABOLAWIDTH = 10**(-1+0.5*($i1-1));
         
-        
-        open(my $fileToRead, '<', $occupiediSitesFile)
-            or die "Could not open file '$occupiediSitesFile' $!";
-        
-        open(my $fileToReadNoSpace, '<', $occupiediSitesFileNoSpace)
-            or die "Could not open file '$occupiediSitesFileNoSpace' $!";
-        
-        while (my $line = <$fileToRead>)
-        {
-            chomp $line;
-            
-            my $lineNoSpace = <$fileToReadNoSpace>;
-            chomp $lineNoSpace;
+        my $fileName = $seriesName . "ParabolaDepth" . "." . $i0 . "." . "ParabolaWidth" . "." . $i1 ;
+        my $runName =  $fileName . ".pub";
 
-
-            my $fileName = $seriesName . "ParabolaDepth" . "." . $i0 . "." . "ParabolaWidth" . "." . $i1 . "." . $. ;
-            my $runName =  $fileName . ".pub";
-	
-            open (FOOD, ">pubs/$runName" );
-            print FOOD << "EOF";
+        open (FOOD, ">pubs/$runName" );
+        print FOOD << "EOF";
 
 #!/bin/bash
 #\$ -N $seriesName
+#\$ -t 1-64
 #\$ -q free*,pub*,abio,bio
 #\$ -ckpt blcr
-#\$ -e logs/$runName.err
-#\$ -o logs/$runName.log
+#\$ -e logs/$fileName.\$SGE_TASK_ID
+#\$ -o logs/$fileName.\$SGE_TASK_ID
 
 cd /pub/laraclemens/polymer-c_runs/Mar212017ElectrostaticsPhosphorylation
 
@@ -52,16 +38,21 @@ echo Running on host `hostname`
 echo Time is `date`
 echo Directory is `pwd`
 
-# Run your executable and then stuff
-./metropolis.out parameters.txt $fileName $line $lineNoSpace $PARABOLADEPTH $PARABOLAWIDTH
+OCCUPIEDFILE=$occupiediSitesFile
+OCCUPIED=\$(awk "NR==\$SGE_TASK_ID" \$OCCUPIEDFILE)
+
+OCCUPIEDNOSPACEFILE=$occupiediSitesFileNoSpace
+OCCUPIEDNOSPACE=\$(awk "NR==\$SGE_TASK_ID" \$OCCUPIEDNOSPACEFILE)
+
+# Run your executable
+if [ ! -e $fileName.\$SGE_TASK_ID ]
+    then
+    ./metropolis.out parameters.txt $fileName.\$SGE_TASK_ID \$OCCUPIED \$OCCUPIEDNOSPACE $PARABOLADEPTH $PARABOLAWIDTH
+fi
 
 echo Finished at `date`
 
 EOF
 		close FOOD;
         }
-        
-        close $fileToRead;
-        close $fileToReadNoSpace;
-	}
 }
