@@ -28,7 +28,7 @@ for (my $i0 = 1; $i0 <= $i0Max; $i0++)
 #\$ -N $seriesName
 #\$ -t 1-64
 #\$ -q free*,pub*,abio,bio
-#\$ -ckpt blcr
+#\$ -ckpt restart
 #\$ -e logs/$fileName.\$SGE_TASK_ID
 #\$ -o logs/$fileName.\$SGE_TASK_ID
 

@@ -38,7 +38,7 @@ for (my $i0 = 1; $i0 <= $i0Max; $i0++)
 #!/bin/bash
 #\$ -N $seriesName
 #\$ -q free*,pub*,abio,bio
-#\$ -ckpt blcr
+#\$ -ckpt restart
 #\$ -e logs/$runName.err
 #\$ -o logs/$runName.log
 
