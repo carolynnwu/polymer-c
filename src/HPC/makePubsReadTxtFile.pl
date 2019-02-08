@@ -29,8 +29,8 @@ for (my $i0 = 1; $i0 <= $i0Max; $i0++)
 #\$ -t 1-64
 #\$ -q free*,pub*,abio,bio
 #\$ -ckpt restart
-#\$ -e logs/$fileName.\$SGE_TASK_ID
-#\$ -o logs/$fileName.\$SGE_TASK_ID
+#\$ -e logs/
+#\$ -o logs/
 
 cd /pub/laraclemens/polymer-c_runs/Mar212017ElectrostaticsPhosphorylation
 
