@@ -31,7 +31,7 @@ copyrepo:
 
 	git -C ~/Documents/PolymerGit log -1 --pretty=format:%H > "CommitUsedHash.txt"
 
-	cp -r ~/Documents/PolymerGit/src/PolymerCode/ .
+	rsync -r ~/Documents/PolymerGit/src/PolymerCode/ . --exclude='.git'
 
 parallel:
 
