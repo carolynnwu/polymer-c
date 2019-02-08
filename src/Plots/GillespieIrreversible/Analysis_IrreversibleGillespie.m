@@ -1,4 +1,4 @@
-%% Analysis of CD3 Zeta Mouse Gillespie Data
+%% Analysis of Irreversible Gillespie Data
 % Lara Clemens - lclemens@uci.edu
 
 clear all;
@@ -42,7 +42,106 @@ end
 
 switch (model)
     
-    case 1
+        case 1
+        
+        % find files
+        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/1.LocalStructuring/';
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Irreversible/',phosDirection,'/CatFiles'];
+        filetitle = strcat('Gillespie',iSiteSpacing,'Membrane',num2str(membrane));
+        
+        %
+        locationTotal = 6;
+        sweep = -1:1:5; % includes control
+        sweepParameter = 'StiffenRange';
+        
+        xlabelModel = 'Range of Stiffening';
+        units = '(Kuhn lengths)';
+        
+        % create location to save figures
+        savefilesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState,'/',phosDirection,'/Sequence'];
+        
+        % figure parameters
+        lw = 2;
+        ms = 10;
+        colors = flipud(cool(9));
+        legendlabels = {'No Stiffening', 'StiffenRange = 0','StiffenRange = 1','StiffenRange = 2','StiffenRange = 3','StiffenRange = 4','StiffenRange = 5','StiffenRange = 6','StiffenRange = 7','StiffenRange = 8','StiffenRange = 9','StiffenRange = 10'};
+        legendlabelsAbbrev = {'None', '0','1','2','3','4','5','6','7','8','9','10'};
+        
+        
+    case 2
+      
+        % find files
+        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Irreversible/',phosDirection,'/CatFiles'];
+        filetitle = strcat('Gillespie',iSiteSpacing,'MembraneAssociation');
+        
+        %
+        locationTotal = 6;
+        sweep = 0:2:20; % includes control
+        sweepParameter = 'EP0';
+        
+        % create location to save figures
+        savefilesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/',phosDirection,'/Sequence'];
+        
+        % figure parameters
+        lw = 2;
+        ms = 10;
+        colors = parula(11);
+        legendlabelsAbbrev = {'0','1','2','3','4','5','6','7','8','9','10'};
+        legendlabels = {['EP0', num2str(sweep)]};
+        
+        xlabelModel = 'EP0';
+        units = 'kBT'; 
+        
+    case 3
+        
+        filefolder = '~/Documents/Papers/MultisiteDisorder/Data';
+        filesubfolder = strcat(iSiteSpacing,'_','MultipleBindingMembrane',membraneState);
+        
+        filetitle = strcat('Gillespie',iSiteSpacing,'Membrane',num2str(membrane));
+        sweepParameter = 'irLigand';
+        
+        legendlabels = {'irLigand = 1','irLigand = 2','irLigand = 3','irLigand = 4','irLigand = 5','irLigand = 6','irLigand = 7','irLigand = 8','irLigand = 9','irLigand = 10','irLigand = 11','irLigand = 12','irLigand = 13','irLigand = 14'};
+        legendlabelsAbbrev = 1:14;
+        
+        locationTotal = 6;
+        sweep = 1:1:14;
+        
+        xlabelModel = 'Radius of Binding Ligand';
+        units = '(Kuhn lengths)';
+        %
+        % create location to save figures
+        savefilesubfolder = strcat(filesubfolder,'/GillespiePlots');
+        
+        colors = cool(20);
+        
+     case 4
+      
+        % find files
+        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/TwoSites/3.Gillespie/Irreversible/',phosDirection,'/CatFiles'];
+        filetitle = strcat('Gillespie',iSiteSpacing,'MembraneAssociation');
+        
+        %
+        locationTotal = 2;
+        sweep = 0:2:20; % includes control
+        sweepParameter = 'EP0';
+        
+        % create location to save figures
+        savefilesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/',phosDirection,'/Sequence'];
+        
+        % figure parameters
+        lw = 2;
+        ms = 10;
+        colors = parula(11);
+        legendlabelsAbbrev = {'0','1','2','3','4','5','6','7','8','9','10'};
+        legendlabels = {['EP0', num2str(sweep)]};
+        
+        xlabelModel = 'EP0';
+        units = 'kBT'; 
+        
+    
+    case 10
         
         % find files
         filefolder    = '~/Documents/polymer-c_runs/20181206TestGillespieMeanRateStiffnessFull';
@@ -69,7 +168,7 @@ switch (model)
 
         modificationLabel = '(Phosphorylated)';
         
-     case 2
+     case 20
         
         % find files
         filefolder    = '~/Documents/polymer-c_runs/20181206GillespieMeanRateSimBind';
@@ -94,7 +193,7 @@ switch (model)
         legendlabels = {'No Stiffening', 'StiffenRange = 0','StiffenRange = 1','StiffenRange = 2','StiffenRange = 3','StiffenRange = 4','StiffenRange = 5','StiffenRange = 6','StiffenRange = 7','StiffenRange = 8','StiffenRange = 9','StiffenRange = 10'};
         legendlabelsAbbrev = {'None', '0','1','2','3','4','5','6','7','8','9','10'};
         
-      case 3
+      case 30
         
         % find files
         filefolder    = '~/Documents/polymer-c_runs/20181206GillespieMeanRateSimBindibEqMemOn';
@@ -331,7 +430,12 @@ title(title1,'FontName','Arial','FontSize',24);
 
 
 %% Create bar graphs
-sequence = {'123456','654321'};
+switch (spacing)
+    case 4
+        sequence = {'12','21'};
+    otherwise
+        sequence = {'123456','654321'};
+end
 
 %% Plot Probability versus Sequence - No Labels
 
@@ -343,7 +447,7 @@ for l=1:length(sequentialProbability)-1
     b(l).EdgeColor = colors(l,:);
 end
 % print reference line
-hline = refline([0 0.0014]);
+hline = refline([0 1/factorial(locationTotal)]);
 hline.Color = 'k';
 hline.LineWidth = 2.5;
 hline.LineStyle = '--';
@@ -352,19 +456,35 @@ hline.LineStyle = '--';
 set(gca,'xtick',[1,2]);
 set(gca,'xticklabel',[]);
 switch (model)
+    
     case 1
+        if(phos)
+            ylim([0 0.012]);
+        else
+            ylim([0 0.012]);
+        end
+    case 2
+        if(phos)
+            ylim([0 0.016]);
+            yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014 0.016]);
+        else
+            ylim([0 4*10^(-3)]);
+            yticks(10.^(-3).*[0 0.5 1 1.5 2 2.5 3 3.5 4]);
+        end
+    case 3
+    case 4
+    case 10
         if(phos)
             ylim([0 0.015]);
         else
             ylim([0 0.006]);
         end
-    case 2
-    case 3
+    case 20
+    case 30
         if(phos)
             ylim([0 0.002])
             yticks([0 0.0005 0.001 0.0015 0.002]);
         end
-    case 4
 end
 set(gca,'yticklabel',[]);
 
@@ -391,7 +511,7 @@ for l=1:length(sequentialProbability)-1
     b(l).EdgeColor = colors(l,:);
 end
 % print reference line
-hline = refline([0 0.0014]);
+hline = refline([0 1/factorial(locationTotal)]);
 hline.Color = 'k';
 hline.LineWidth = 2.5;
 hline.LineStyle = '--';
@@ -403,19 +523,35 @@ xlabel1 = 'Sequence';
 ylabel1 = 'Probability';
 title1 = 'Probability vs Sequence';
 switch (model)
+    
     case 1
+        if(phos)
+            ylim([0 0.012]);
+        else
+            ylim([0 0.012]);
+        end
+    case 2
+        if(phos)
+            ylim([0 0.016]);
+            yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014 0.016]);
+        else
+            ylim([0 4*10^(-3)]);
+            yticks(10.^(-3).*[0 0.5 1 1.5 2 2.5 3 3.5 4]);
+        end
+    case 3
+    case 4
+    case 10
         if(phos)
             ylim([0 0.015]);
         else
             ylim([0 0.006]);
         end
-    case 2
-    case 3
+    case 20
+    case 30
         if(phos)
             ylim([0 0.002])
             yticks([0 0.0005 0.001 0.0015 0.002]);
         end
-    case 4
 end
 
 % print position and labels
@@ -425,6 +561,23 @@ set(gca,'FontName','Arial','FontSize',30);
 xlabel(xlabel1,'FontName','Arial','FontSize',24);
 ylabel(ylabel1,'FontName','Arial','FontSize',24);
 title(title1,'FontName','Arial','FontSize',24);
+
+% % colorbar
+% switch (model)
+%     case 1
+%         set(gcf,'Colormap',cool)
+%         colormap cool;
+%         h = colorbar;
+%         h = colorbar('Ticks',[0 7/9],'TickLabels',{'',''},'YDir','Reverse');
+%         set(h,'ylim',[0 7/9]);
+%     case 2
+%         set(gcf,'Colormap',parula)
+%         colormap parula;
+%         h = colorbar;
+%         h = colorbar('Ticks',[0 1],'TickLabels',{'',''});
+%         set(h,'ylim',[0 1]);
+% end
+
 
 % colorbar
 set(gcf,'Colormap',cool)
@@ -473,12 +626,12 @@ for s = 1:size(sweep,2)
     sortedAvgTime = sortrows(preSortAvgTime,2);
     
     % what is this one for?
-    sequenceRankAvgTime(1,s) = find(sortedAvgTime(:,1)==123456);
-    sequenceRankAvgTime(2,s) = find(sortedAvgTime(:,1)==654321);
+    sequenceRankAvgTime(1,s) = find(sortedAvgTime(:,1)==str2num(sequence{1}));
+    sequenceRankAvgTime(2,s) = find(sortedAvgTime(:,1)==str2num(sequence{2}));
     
     % collect location in sequenceRankAvgTime of 123456, 654321
-    sequenceRankAvgTimeMemToTail(1,s) = find(sortedAvgTime(:,1)==123456);
-    sequenceRankAvgTimeTailToMem(1,s) = find(sortedAvgTime(:,1)==654321);
+    sequenceRankAvgTimeMemToTail(1,s) = find(sortedAvgTime(:,1)==str2num(sequence{1}));
+    sequenceRankAvgTimeTailToMem(1,s) = find(sortedAvgTime(:,1)==str2num(sequence{2}));
     
     % collect average time
     sequenceRankAvgTimeMemToTail(2,s) = sortedAvgTime(sequenceRankAvgTimeMemToTail(1,s),2);
@@ -494,11 +647,11 @@ for s = 1:size(sweep,2)
     preSortProbability(:,1) = path;
     preSortProbability(:,2) = probability(:,s+1);
     sortedProbability = sortrows(preSortProbability,2);
-    sequenceRankProbability(1,s) = find(sortedProbability(:,1)==123456);
-    sequenceRankProbability(2,s) = find(sortedProbability(:,1)==654321);
+    sequenceRankProbability(1,s) = find(sortedProbability(:,1)==str2num(sequence{1}));
+    sequenceRankProbability(2,s) = find(sortedProbability(:,1)==str2num(sequence{2}));
     
-    sequenceRankProbabilityMemToTail(1,s) = find(sortedProbability(:,1)==123456);
-    sequenceRankProbabilityTailToMem(1,s) = find(sortedProbability(:,1)==654321);
+    sequenceRankProbabilityMemToTail(1,s) = find(sortedProbability(:,1)==str2num(sequence{1}));
+    sequenceRankProbabilityTailToMem(1,s) = find(sortedProbability(:,1)==str2num(sequence{2}));
     
     sequenceRankProbabilityMemToTail(2,s) = sortedProbability(sequenceRankProbabilityMemToTail(1,s),2);
     sequenceRankProbabilityTailToMem(2,s) = sortedProbability(sequenceRankProbabilityTailToMem(1,s),2);
@@ -522,7 +675,7 @@ for s = 1:size(sweep,2)
 end
 
 
-markerlabels = {'Sequence = 123456','Sequence = 654321'};
+markerlabels = {['Sequence = ',sequence{1}],['Sequence = ',sequence{2}]};
 legendlabelswithmarkers = horzcat(legendlabels,markerlabels)
 
 figure(31); hold on;
@@ -549,7 +702,7 @@ end
 figure(41); hold on;
 plot(sequenceRankProbabilityMemToTail(1,:),sequenceRankProbabilityMemToTail(2,:),'xk','LineWidth',lw,'MarkerSize',ms);
 plot(sequenceRankProbabilityTailToMem(1,:),sequenceRankProbabilityTailToMem(2,:),'ok','LineWidth',lw,'MarkerSize',ms);
-plot([1 720],[0.0014 0.0014],'--k','LineWidth',2);
+plot([1 factorial(locationTotal)],[1/factorial(locationTotal) 1/factorial(locationTotal)],'--k','LineWidth',2);
 xlabel1 = 'Rank';
 ylabel1 = 'Probability';
 title1 = 'Probability vs Rank';
@@ -559,7 +712,7 @@ set(gca,'FontName','Arial','FontSize',24);
 xlabel(xlabel1,'FontName','Arial','FontSize',24);
 ylabel(ylabel1,'FontName','Arial','FontSize',24);
 title(title1,'FontName','Arial','FontSize',24);
-legend(horzcat(legendlabelswithmarkers,{'Random Probability = 1/720'}),'Location','northwest');
+legend(horzcat(legendlabelswithmarkers,{['Random Probability = 1/',num2str(factorial(locationTotal)]}),'Location','northwest');
 
 if (saveTF)
     % % save figure
