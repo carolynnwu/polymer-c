@@ -18,15 +18,24 @@ LOGFILENAME="o*"
 ##############################################
 ##############################################
 # Make cat folders
-mkdir CatFiles
 
-cd CatFiles
+# start in code part of folder
+if [ ! -d "CatFiles"];
+then
+    mkdir CatFiles
 
-mkdir CatLogs
+    cd CatFiles
 
-mkdir MissingFiles
+    mkdir CatLogs
 
-cd ..
+    mkdir MissingFiles
+
+    cd ..
+fi
+
+echo "We are here: $PWD"
+
+# end in code part of folder
 
 ##############################################
 ##############################################
@@ -36,21 +45,26 @@ for ((ITER=$ITERMIN;ITER<=$ITERMAX;ITER++))
 do
     cd $FOLDERNAME.$ITER/logs
 
-    for ((I2=1;I2<=$I2MAX;I2++))
-    do
-            if [ -e $FILENAME.$LOGFILENAME.$I2 ]
-                then
-                    echo "/************************/\n\n" >> $FILENAME.$ITER.log
-                    echo "$FILENAME.$LOGFILENAME.$I2\n" >> $FILENAME.$ITER.log
-                    cat $FILENAME.$LOGFILENAME.$I2 >> $FILENAME.$ITER.log
-            else
-                then
-                    echo "Log file $FILENAME.$LOGFILENAME.$I2 does not exist."
-            fi
 
-    done
+    if [ ! -e $FILENAME.$ITER.log];
+    then
+        for ((I2=1;I2<=$I2MAX;I2++))
+        do
+                if [ -e $FILENAME.$LOGFILENAME.$I2 ];
+                    then
+                        echo "/************************/\n\n" >> $FILENAME.$ITER.log
+                        echo "$FILENAME.$LOGFILENAME.$I2\n" >> $FILENAME.$ITER.log
+                        cat $FILENAME.$LOGFILENAME.$I2 >> $FILENAME.$ITER.log
+                else
+                        echo "Log file $FILENAME.$LOGFILENAME.$I2 does not exist."
+                fi
 
-    cp $FILENAME.$ITER.log ../../CatFiles/CatLogs/
+        done
+
+        cp $FILENAME.$ITER.log ../../CatFiles/CatLogs/
+
+        echo "Finished concatenating log file $ITER."
+    fi
 
     cd ../..
 done
@@ -60,6 +74,8 @@ wait
 
 echo "Done concatenating log files."
 
+echo "We are here: $PWD"
+
 ##############################################
 ##############################################
 
@@ -68,31 +84,39 @@ for ((ITER=$ITERMIN;ITER<=$ITERMAX;ITER++))
 do
     cd $FOLDERNAME.$ITER
 
-    for ((I2=1;I2<=$I2MAX;I2++))
-    do
-        if [ -e $FILENAME.$ITER.$I2 ]
+    if [ ! -e $FILENAME.$ITER.cat];
+    then
+
+        for ((I2=1;I2<=$I2MAX;I2++))
+        do
+            if [ -e $FILENAME.$ITER.$I2 ];
+                then
+                    cat $FILENAME$FOLDERNAME.$ITER.$I2 >> $FILENAME.$ITER.cat
+            else
+                    echo "$FILENAME$FOLDERNAME.$ITER.$I2\n" >> MissingFiles.$ITER
+            fi
+
+        done
+
+        if [ $((wc -l $FILENAME.$ITER.cat)) > $I2MAX];
             then
-                cat $FILENAME$FOLDERNAME.$ITER.$I2 >> $FILENAME.$ITER.cat
-        else
-            then
-                echo "$FILENAME$FOLDERNAME.$ITER.$I2\n" >> MissingFiles.$ITER
+                echo "Too many lines in cat file $FILENAME.$ITER.cat.\n" >> ../CatFiles/CatFiles.err
         fi
 
-    done
+        cp $FILENAME.$ITER.cat ../CatFiles/
 
-    if [ $((wc -l $FILENAME.$ITER.cat)) > $I2MAX]
-        then
-            echo "Too many lines in cat file $FILENAME.$ITER.cat.\n" >> ../CatFiles/CatFiles.err
+        cp MissingFiles.$ITER ../CatFiles/MissingFiles/
+
+        echo "Finished concatenating output files $ITER."
     fi
 
-    cp $FILENAME.$ITER.cat ../CatFiles/
+    cd ../
 
-    cp MissingFiles.$ITER ../CatFiles/MissingFiles/
-
-    cd ../..
 done
 
 echo "Done concatenating output files."
+
+echo "We are here: $PWD"
 
 ##############################################
 ##############################################
@@ -102,7 +126,7 @@ echo "Done concatenating output files."
 for ((ITER=$ITERMIN;ITER<=$ITERMAX;ITER++))
 do
 
-tar -czvf $FOLDERNAME.$ITER.tar.gz $FOLDERNAME.$ITER
+    tar -czvf $FOLDERNAME.$ITER.tar.gz $FOLDERNAME.$ITER/
 
 done
 
