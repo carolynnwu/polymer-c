@@ -20,7 +20,7 @@ LOGFILENAME="o*"
 # Make cat folders
 
 # start in code part of folder
-if [ ! -d "CatFiles"];
+if [[ ! -d "CatFiles" ]];
 then
     mkdir CatFiles
 
@@ -46,11 +46,11 @@ do
     cd $FOLDERNAME.$ITER/logs
 
 
-    if [ ! -e $FILENAME.$ITER.log];
+    if [[ ! -e "$FILENAME.$ITER.log" ]];
     then
         for ((I2=1;I2<=$I2MAX;I2++))
         do
-                if [ -e $FILENAME.$LOGFILENAME.$I2 ];
+                if [[ -e "$FILENAME.$LOGFILENAME.$I2" ]];
                     then
                         echo "/************************/\n\n" >> $FILENAME.$ITER.log
                         echo "$FILENAME.$LOGFILENAME.$I2\n" >> $FILENAME.$ITER.log
@@ -84,33 +84,38 @@ for ((ITER=$ITERMIN;ITER<=$ITERMAX;ITER++))
 do
     cd $FOLDERNAME.$ITER
 
-    if [ ! -e $FILENAME.$ITER.cat];
+    echo "We are here: $PWD"
+
+    if [[ ! -e "$FILENAME$FOLDERNAME.$ITER.cat" ]];
     then
 
         for ((I2=1;I2<=$I2MAX;I2++))
         do
-            if [ -e $FILENAME.$ITER.$I2 ];
+            if [ -e "$FILENAME$FOLDERNAME.$ITER.$I2" ];
                 then
-                    cat $FILENAME$FOLDERNAME.$ITER.$I2 >> $FILENAME.$ITER.cat
+                    cat $FILENAME$FOLDERNAME.$ITER.$I2 >> $FILENAME$FOLDERNAME.$ITER.cat
             else
                     echo "$FILENAME$FOLDERNAME.$ITER.$I2\n" >> MissingFiles.$ITER
             fi
 
         done
 
-        if [ $((wc -l $FILENAME.$ITER.cat)) > $I2MAX];
-            then
-                echo "Too many lines in cat file $FILENAME.$ITER.cat.\n" >> ../CatFiles/CatFiles.err
+#if [ $((wc -l "$FILENAME$FOLDERNAME.$ITER.cat")) > $I2MAX];
+#           then
+#               echo "Too many lines in cat file $FILENAME.$ITER.cat.\n" >> ../CatFiles/CatFiles.err
+#       fi
+
+        cp $FILENAME$FOLDERNAME.$ITER.cat ../CatFiles/
+
+        if [[ -e MissingFiles.$ITER ]];
+        then
+            cp MissingFiles.$ITER ../CatFiles/MissingFiles/
         fi
-
-        cp $FILENAME.$ITER.cat ../CatFiles/
-
-        cp MissingFiles.$ITER ../CatFiles/MissingFiles/
 
         echo "Finished concatenating output files $ITER."
     fi
 
-    cd ../
+    cd ..
 
 done
 
@@ -123,14 +128,44 @@ echo "We are here: $PWD"
 
 # Tar individual output files into single folder
 
-for ((ITER=$ITERMIN;ITER<=$ITERMAX;ITER++))
-do
+if [[ ! -e "$FOLDERNAME.$ITER.tar.gz" ]];
+then
 
-    tar -czvf $FOLDERNAME.$ITER.tar.gz $FOLDERNAME.$ITER/
+    for ((ITER=$ITERMIN;ITER<=$ITERMAX;ITER++))
+    do
 
-done
+        tar -czvf $FOLDERNAME.$ITER.tar.gz $FOLDERNAME.$ITER/
 
-tar -czvf Data_IndividualFiles.tar.gz $FOLDERNAME.*.tar.gz
+    done
+
+fi
+
+if [[ ! -e "Data_IndividualFiles.tar.gz" ]];
+then
+    tar -czvf Data_IndividualFiles.tar.gz $FOLDERNAME.*.tar.gz
+fi
 
 echo "Finished archiving files."
+
+##############################################
+##############################################
+
+# Remove non archived files
+
+echo "We are here: $PWD"
+
+if [[ -e "Data_IndividualFiles.tar.gz" ]];
+then
+    for ((ITER=$ITERMIN;ITER<=$ITERMAX;ITER++))
+    do
+        if [[ -e "$FOLDERNAME.$ITER.tar.gz" ]];
+        then
+
+            rm -rf $FOLDERNAME.$ITER/
+
+        fi
+
+    done
+fi
+
 
