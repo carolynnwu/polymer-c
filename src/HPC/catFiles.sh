@@ -50,13 +50,14 @@ do
     then
         for ((I2=1;I2<=$I2MAX;I2++))
         do
-                if [[ -e "$FILENAME.$LOGFILENAME.$I2" ]];
+                if [[ 0 -lt $(ls $FILENAME.$LOGFILENAME.$I2 2>/dev/null | wc -w) ]];
                     then
-                        echo "/************************/\n\n" >> $FILENAME.$ITER.log
-                        echo "$FILENAME.$LOGFILENAME.$I2\n" >> $FILENAME.$ITER.log
-                        cat $FILENAME.$LOGFILENAME.$I2 >> $FILENAME.$ITER.log
+                        TEMPFILENAME="$(ls $FILENAME.$LOGFILENAME.$I2)"
+                        echo -e "/************************/\n\n" >> $FILENAME.$ITER.log
+                        echo -e "$TEMPFILENAME\n" >> $FILENAME.$ITER.log
+                        cat $TEMPFILENAME >> $FILENAME.$ITER.log
                 else
-                        echo "Log file $FILENAME.$LOGFILENAME.$I2 does not exist."
+                        echo -e "Log file $FILENAME.$LOGFILENAME.$I2 does not exist.\n"
                 fi
 
         done
@@ -91,19 +92,24 @@ do
 
         for ((I2=1;I2<=$I2MAX;I2++))
         do
-            if [ -e "$FILENAME$FOLDERNAME.$ITER.$I2" ];
+            if [[ -e "$FILENAME$FOLDERNAME.$ITER.$I2" ]];
                 then
                     cat $FILENAME$FOLDERNAME.$ITER.$I2 >> $FILENAME$FOLDERNAME.$ITER.cat
             else
-                    echo "$FILENAME$FOLDERNAME.$ITER.$I2\n" >> MissingFiles.$ITER
+                    echo -e "$FILENAME$FOLDERNAME.$ITER.$I2\n" >> MissingFiles.$ITER
             fi
 
         done
 
-#if [ $((wc -l "$FILENAME$FOLDERNAME.$ITER.cat")) > $I2MAX];
-#           then
-#               echo "Too many lines in cat file $FILENAME.$ITER.cat.\n" >> ../CatFiles/CatFiles.err
-#       fi
+        if [[ "$(wc -l < $FILENAME$FOLDERNAME.$ITER.cat)" -gt "$I2MAX" ]];
+           then
+               echo -e "Too many lines in cat file $FILENAME.$ITER.cat.\n" >> ../CatFiles/CatFiles.err
+        fi
+
+        if [[ "$(wc -l < $FILENAME$FOLDERNAME.$ITER.cat)" -lt "$I2MAX" ]];
+            then
+                echo -e "Missing lines in cat file $FILENAME.$ITER.cat.\n" >> ../CatFiles/CatFiles.err
+        fi
 
         cp $FILENAME$FOLDERNAME.$ITER.cat ../CatFiles/
 
@@ -162,6 +168,8 @@ then
         then
 
             rm -rf $FOLDERNAME.$ITER/
+
+            rm $FOLDERNAME.$ITER.tar.gz
 
         fi
 
