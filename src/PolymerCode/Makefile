@@ -40,3 +40,8 @@ parallel:
 	chmod a+x batchMetropolis.sh
 
 	./batchMetropolis.sh 7 v
+
+copycat:
+	chmod a+x copyCatFiles.sh
+
+	./copyCatFiles.sh
