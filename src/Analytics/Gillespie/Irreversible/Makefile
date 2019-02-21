@@ -16,4 +16,11 @@ copyrepo:
 
 	cp -r ~/Documents/PolymerGit/src/Analytics/Gillespie/Irreversible/ .
 
+hoc:
+	gcc -O3 driveGillespie.c -o gillespie.out -lm
+	
+	chmod a+x submitPubs.pl
+
+	./submitPubs.pl
+
 
