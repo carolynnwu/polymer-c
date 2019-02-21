@@ -4,6 +4,4 @@
 
 cp CatFiles/*.cat ../CatFiles/
 
-cp MissingFiles.$ITER ../CatFiles/MissingFiles/
-
 echo "Finished copying cat files."
