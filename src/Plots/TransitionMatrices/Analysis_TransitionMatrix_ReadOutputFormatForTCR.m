@@ -4,18 +4,25 @@
 clear all;
 close all;
 
-%% Initialize
+%% Initialize model
 
-% initialization switch for which model we're inspecting
-spacing = 2; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
+% Pick model
+spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
 membrane = 1; % 0 for membrane off, 1 for membrane on
-model = 7; % 1 = stiffening, 2 = stiffening full range, 3 = multiple binding, 4 = multiple binding ibEqual
-writeTransitionMatrix = 1; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
+model = 10; % 1x = LocalStructuring, 3x = Simultaneous Binding
+
+% 10 = Local Structuring
+
+% 30 = Simultaneous Binding SH2
+
+% Save Transition Matrices and Figures
+writeTransitionMatrix = 0; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
 saveTF = 0;
 
 %% 
 
-savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
+%savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
+savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/';
 
 switch (spacing)
     case 0
@@ -36,7 +43,7 @@ end
 
 switch (model)
     
-    case 1
+    case 10
         % model name
         modelName = 'LocalStructuring';
         
@@ -54,48 +61,22 @@ switch (model)
         
         % 
         locationTotal = 6;
-        sweep = -1:1:10;
+        NFil = 1;
+        iSiteTotal(1:NFil) = [6];
+        sweep = -1:1:103;
+        %sweep = -1:1:103;
+        %sweep = [-1 1:2:15 19:6:103];
         sweepParameter = 'StiffenRange';
         
         % figure parameters
         legendlabels = {'No Stiffening', 'StiffenRange = 0','StiffenRange = 1','StiffenRange = 2','StiffenRange = 3','StiffenRange = 4','StiffenRange = 5','StiffenRange = 6','StiffenRange = 7','StiffenRange = 8','StiffenRange = 9','StiffenRange = 10'};
-        colors = flipud(cool(9));
+        colorIndices = sweep+2;
+        colors = flipud(cool(max(sweep)+2));
         ms = 10;
         lw = 2;
         modificationLabel = '(Phosphorylated)';
         
-    case 2
-        % model name
-        modelName = 'LocalStructuringFullRange';
-        
-        % find files
-        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/1.LocalStructuring';
-        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/1.OcclusionProbabilities/CatFilesFullStiffenRange'];
-        filetitle     = strcat(iSiteSpacing,'Membrane',num2str(membrane));
-        
-        % save transition matrices location
-        transitionMatrixfolder    = '~/Documents/Papers/MultisiteDisorder/Data/1.LocalStructuring';
-        transitionMatrixsubfolder = [iSiteSpacing,'/Membrane',membraneState,'/2.TransitionMatrices'];
-        
-        % save figures location
-        savesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState];
-        
-        % 
-        locationTotal = 6;
-        %sweep = -1:4:103;
-        sweep = [-1 1:2:15 19:6:103];
-        sweepParameter = 'StiffenRange';
-        
-        % figure parameters
-        legendlabels = {'No Stiffening', 'StiffenRange = 0','StiffenRange = 1','StiffenRange = 2','StiffenRange = 3','StiffenRange = 4','StiffenRange = 5','StiffenRange = 6','StiffenRange = 7','StiffenRange = 8','StiffenRange = 9','StiffenRange = 10'};
-        colorIndices = [0 2*sweep(2:end)+1]+1;
-        colors = flipud(cool(2*max(sweep)+2));
-        
-        lw = 1.4;
-        ms = 8;
-        modificationLabel = '(Phosphorylated)';
-        
-    case 3
+    case 30
         % model name
         modelName = 'SimultaneousBindingSH2';
         
@@ -113,17 +94,20 @@ switch (model)
         
         % 
         locationTotal = 6;
+        NFil = 1;
+        iSiteTotal(1:NFil) = [6];
         sweep = 1:1:14;
         sweepParameter = 'irLigand';
         
         % figure parameters
         legendlabels = {'irLigand = 1','irLigand = 2','irLigand = 3','irLigand = 4','irLigand = 5','irLigand = 6','irLigand = 7','irLigand = 8','irLigand = 9','irLigand = 10','irLigand = 11','irLigand = 12','irLigand = 13','irLigand = 14'};
-        colors = flipud(cool(16));
+        colorIndices = sweep;
+        colors = flipud(cool(max(sweep)));
         lw = 2;
         ms = 10;
         modificationLabel = '(Bound)';
         
-    case 4
+    case 31
         
         % model name
         modelName = 'SimultaneousBindingibEqual';
@@ -142,17 +126,20 @@ switch (model)
         
         % 
         locationTotal = 6;
+        NFil = 1;
+        iSiteTotal(1:NFil) = [6];
         sweep = 1:1:7;
         sweepParameter = 'ibRadius';
         
         % figure parameters
         legendlabels = {'ibRadius = 1','ibRadius = 2','ibRadius = 3','ibRadius = 4','ibRadius = 5','ibRadius = 6','ibRadius = 7','ibRadius = 8','ibRadius = 9','ibRadius = 10','ibRadius = 11','ibRadius = 12','ibRadius = 13','ibRadius = 14'};
-        colors = flipud(cool(9));
+        colorIndices = sweep;
+        colors = flipud(cool(max(sweep)));
         ms = 10;
         lw = 2;
         modificationLabel = '(Bound)';
         
-     case 5
+     case 32
         
         % model name
         modelName = 'SimultaneousBindingCoarseGrainibEqual';
@@ -171,6 +158,8 @@ switch (model)
         
         % 
         locationTotal = 3;
+        NFil = 1;
+        iSiteTotal(1:NFil) = [3];
         sweep = 1:1:14;
         sweepParameter = 'ibRadius';
         
@@ -181,38 +170,8 @@ switch (model)
         ms = 10;
         lw = 2;
         modificationLabel = '(Bound)';
-             
-    case 6 % Testing bound ligand energy
         
-        % model name
-        modelName = 'SimultaneousBindingibEqual';
-        
-        % find files
-        filefolder    = '~/Documents/pub/lclemens/polymer-c_runs/';
-        filesubfolder = ['20181106CD3ZetaSimultaneousBindingEnergyTest/CatFiles'];
-        filetitle     = strcat(iSiteSpacing,'Membrane',num2str(membrane));
-        
-        % save transition matrices location
-        %transitionMatrixfolder    = '~/Documents/Papers/MultisiteDisorder/Data/3.SimultaneousBinding/';
-        %transitionMatrixsubfolder = [iSiteSpacing,'/Membrane',membraneState,'/CoarseGrainibEqual/2.TransitionMatrices'];
-        
-        % save figures location
-        %savesubfolder = ['3.SimultaneousBinding/',iSiteSpacing,'/Membrane',membraneState,'/CoarseGrainibEqual'];
-        
-        % 
-        locationTotal = 6;
-        sweep = 1:1:7;
-        sweepParameter = 'ibRadius';
-        
-        % figure parameters
-        legendlabels = {'ibRadius = 1','ibRadius = 2','ibRadius = 3','ibRadius = 4','ibRadius = 5','ibRadius = 6','ibRadius = 7','ibRadius = 8','ibRadius = 9','ibRadius = 10','ibRadius = 11','ibRadius = 12','ibRadius = 13','ibRadius = 14'};
-        colorIndices = sweep;
-        colors = flipud(cool(max(sweep)));
-        ms = 10;
-        lw = 2;
-        modificationLabel = '(Bound)';
-        
-    case 7 % TCR - separation distance 5 Kuhn
+    case 33 % TCR - separation distance 5 Kuhn
         
         % model name
         modelName = 'SimultaneousBindingibEqual';
@@ -244,44 +203,8 @@ switch (model)
         lw = 2;
         modificationLabel = '(Bound)';
         
-    case 8 % TCR - six identical epsilon
-        
-        % model name
-        modelName = 'SimultaneousBindingibEqual';
-        
-        % find files
-        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/3.SimultaneousBinding';
-        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/ControlSepDist200/1.OcclusionProbabilities/CatFiles'];
-        filetitle     = strcat(iSiteSpacing,'Membrane',num2str(membrane));
-        
-        % save transition matrices location
-        transitionMatrixfolder    = '~/Documents/Papers/MultisiteDisorder/Data/3.SimultaneousBinding/';
-        transitionMatrixsubfolder = [iSiteSpacing,'/Membrane',membraneState,'/ControlSepDist200/2.TransitionMatrices'];
-        
-        % save figures location
-        savesubfolder = ['3.SimultaneousBinding/',iSiteSpacing,'/Membrane',membraneState,'/ControlSepDist200'];
-        
-        % 
-        locationTotal = 6;
-        NFil = 6;
-        iSiteTotal(1:NFil) = [1 1 1 1 1 1];
-        sweep = 1:1:10;
-        sweepParameter = 'ibRadius';
-        
-        % figure parameters
-        legendlabels = {'ibRadius = 1','ibRadius = 2','ibRadius = 3','ibRadius = 4','ibRadius = 5','ibRadius = 6','ibRadius = 7','ibRadius = 8','ibRadius = 9','ibRadius = 10','ibRadius = 11','ibRadius = 12','ibRadius = 13','ibRadius = 14'};
-        colorIndices = sweep;
-        colors = flipud(cool(max(sweep)));
-        ms = 10;
-        lw = 2;
-        modificationLabel = '(Bound)';
         
 end
-
-
-
-
-
 
 
 %% Initialize variables
@@ -292,16 +215,8 @@ avgRates = zeros(length(sweep),locationTotal,2);
 %% Create transition matrices, calculate average binding rates
 
 for s = 1:length(sweep)
-%     
-%     if (sweep(s)==-1)
-%         filename = strcat(iSiteSpacing,'Membrane',num2str(membrane),'Control.cat.txt');
-%     else
-%         filename = strcat(filetitle,sweepParameter,'.',num2str(sweep(s)),'.cat.txt');
-%     end
-    
-
-    filename = strcat(filetitle,sweepParameter,'.',num2str(sweep(s)),'.cat.txt');
-    
+    % choose file
+    filename = strcat(filetitle,sweepParameter,'.',num2str(sweep(s)),'.cat');
     disp(filename);
     
     % initialize 
@@ -326,7 +241,10 @@ for s = 1:length(sweep)
 
     % up to total number of iSites - 6 for mouse CD3Zeta
     siteCounter = 1;
-    ind = 16+2*(locationTotal+1);
+    
+    % starting index - 8+2*(locationTotal+1) is output only once, 6+2 takes
+    % us to the correct index in the filament output
+    ind = 8+2*(locationTotal+1)+6+2; 
     for nf = 1:NFil
         
         if(nf>1)
@@ -334,10 +252,7 @@ for s = 1:length(sweep)
         end
         
         for iy = 1:iSiteTotal(nf)
-            %POcc(:,1:locationTotal) = M(:,16+2*(locationTotal+1)+7*(0:1:locationTotal-1));
-            disp(ind+7*(iy-1));
             POcc(:,siteCounter) = M(:,ind + 7*(iy-1));
-            %16 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
             siteCounter = siteCounter + 1;
         end
     end
@@ -383,9 +298,7 @@ for s = 1:length(sweep)
     phosphataseRateMatrix = zeros(2^locationTotal,2^locationTotal);
     
     for i=1:2^locationTotal
-        
         for j=1:2^locationTotal
-            
             if(sum(xor(binaryArray(i,:),binaryArray(j,:)))==1)
                 transitionIndex = find(xor(binaryArray(i,:),binaryArray(j,:)));
                 rateMatrix(i,j) = AllTransition2(i,transitionIndex); % insert rate into appropriate location
@@ -394,7 +307,6 @@ for s = 1:length(sweep)
                 else
                     phosphataseRateMatrix(i,j)  = AllTransition2(i,transitionIndex);
                 end
-                
             end
         end
     end
@@ -408,19 +320,17 @@ for s = 1:length(sweep)
     
     %% Write to File
     if(writeTransitionMatrix)
-        if (sweep(s)==-1)
-            savefilenameK = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.Kinase','.','Control');
-            savefilenameP = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.Phosphatase','.','Control');
-            savefilenamePInv = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.PhosphataseInv','.','Control');
-        else
-            savefilenameK = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.Kinase','.',num2str(sweep(s)));
-            savefilenameP = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.Phosphatase','.',num2str(sweep(s)));
-            savefilenamePInv = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.PhosphataseInv','.',num2str(sweep(s)));
-        end
         
+        % Create save name for transition matrix
+        savefilenameK = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.Kinase','.',num2str(sweep(s)));
+        savefilenameP = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.Phosphatase','.',num2str(sweep(s)));
+        savefilenamePInv = strcat(modelName,iSiteSpacing,'Membrane',membraneState,'.PhosphataseInv','.',num2str(sweep(s)));
+        
+        % Save full matrix - for Reversible Gillespie
         dlmwrite(fullfile(transitionMatrixfolder,transitionMatrixsubfolder,'FullMatrix',savefilenameK),kinaseRateMatrix,'\n');
         dlmwrite(fullfile(transitionMatrixfolder,transitionMatrixsubfolder,'FullMatrix',savefilenameP),phosphataseRateMatrix,'\n');
         
+        % Save just POcc/PBind for Irreversible Gillespie
         dlmwrite(fullfile(transitionMatrixfolder,transitionMatrixsubfolder,'Phos',savefilenameK),KinaseTransition,'\n');
         dlmwrite(fullfile(transitionMatrixfolder,transitionMatrixsubfolder,'Dephos',savefilenameP),PhosphataseTransition,'\n');
         dlmwrite(fullfile(transitionMatrixfolder,transitionMatrixsubfolder,'Dephos',savefilenamePInv),PhosphataseTransitionInverted,'\n');
@@ -442,17 +352,39 @@ for s = 1:length(sweep)
     % find average rates of transition from one state to another
     avgRates(s,:,1) = sumRates(s,:,1)./totalRates;
     avgRates(s,:,2) = sumRates(s,:,2)./totalRates;
-        
-    % find fold change 
-    disp('Phos 1:6/1');
-    disp(avgRates(s,:,1)./avgRates(s,1,1));
-    disp('Phos 1/1:6');
-    disp(avgRates(s,1,1)./avgRates(s,:,1));
-    disp('Dephos 1:6/1');
-    disp(avgRates(s,:,2)./avgRates(s,1,2));
-    disp('Dephos 1/1:6');
-    disp(avgRates(s,1,2)./avgRates(s,:,2));
+
 end
+
+%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% Plot Cooperativity - Phosphorylation no Labels
 
