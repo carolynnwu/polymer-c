@@ -24,6 +24,9 @@ saveTF = 0;
 %savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
 savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/';
 
+% from driveM file
+NTCHECK = 200000;
+
 switch (spacing)
     case 0
         iSiteSpacing = 'CD3Zeta';
@@ -63,7 +66,7 @@ switch (model)
         locationTotal = 6;
         NFil = 1;
         iSiteTotal(1:NFil) = [6];
-        sweep = -1:1:103;
+        sweep = -1:1:10;
         %sweep = -1:1:103;
         %sweep = [-1 1:2:15 19:6:103];
         sweepParameter = 'StiffenRange';
@@ -235,6 +238,7 @@ for s = 1:length(sweep)
     
     M = dlmread(fullfile(filefolder,filesubfolder, filename));
 
+    ntMetropolis = M(:,1);
     OccupiedLocations = M(:,end);
 
     OccupiedLocationsMatrix(:,1:locationTotal) = M(:,(end-locationTotal):(end-1));
@@ -257,6 +261,7 @@ for s = 1:length(sweep)
         end
     end
     PBind(:,1:locationTotal) = 1-POcc(:,1:locationTotal);
+    
     
     POcc_NumSites(:,1:locationTotal+1) = M(:,8+(1:(locationTotal+1)));
     PAvail_NumSites(:,1:locationTotal+1) = M(:,8+(locationTotal+1)+(1:(locationTotal+1)));

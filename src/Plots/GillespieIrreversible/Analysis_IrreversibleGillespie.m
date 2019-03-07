@@ -4,22 +4,40 @@
 clear all;
 close all;
 
-%% Initialize
+%% Initialize Model Choice
 
+% temporary for loop
+for sf = 1
+    
+    if( sf == 0 )
+        sweep = -1:1:103;
+        savefilesubsubfolder = ['/FullStiffenRange'];
+    elseif( sf == 1 )
+        savefilesubsubfolder = [''];
+        sweep = -1:1:10;
+    end
+    
+    for spacing = 0:1
+        for membrane = 0:1
+            for phos = 0:1
+
+            
 % initialization switch for which model we're inspecting
 model = 10; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
 
-spacing = 1; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
-membrane = 0; % 0 for membrane off, 1 for membrane on
-phos = 1; % 1 = phosphorylation, 0 = dephosphorylation
+% spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
+% membrane = 1; % 0 for membrane off, 1 for membrane on
+% phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
 
 % save or not save plots
-saveTF = 0;
+saveTF = 1;
 save1 = 0; % save only ProbVSSequence plot
 
-%% 
+%% Model Parameters
 
 savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures';
+%savefilesubsubfolder = ['/FullStiffenRange'];
+%subsubfolder = ['']
 %savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
 
 switch spacing
@@ -56,14 +74,14 @@ switch (model)
         
         %
         locationTotal = 6;
-        sweep = -1:1:103; % includes control
+        %sweep = -1:1:10; % includes control
         sweepParameter = 'StiffenRange';
         
         xlabelModel = 'Range of Stiffening';
         units = '(Kuhn lengths)';
         
         % create location to save figures
-        savefilesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState,'/',phosDirection,'/Sequence'];
+        savefilesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState,'/Plots/',phosDirection];
         
         % figure parameters
         lw = 2;
@@ -74,6 +92,10 @@ switch (model)
         legendlabelsAbbrev = {'None', '0','1','2','3','4','5','6','7','8','9','10'};
         
         modificationLabel = '(Phosphorylated)';
+        
+        % set GillespieRuns from Gillespie algorithm
+        % this would be better if printed in Gillespie output
+        GillespieRuns = 200000000;
         
       
         
@@ -231,6 +253,7 @@ end
 path = zeros(factorial(locationTotal),1);
 avgTime = zeros(factorial(locationTotal),size(sweep,2)+1);
 probability = zeros(factorial(locationTotal),size(sweep,2)+1);
+stdErrGillespie = zeros(factorial(locationTotal),size(sweep,2)+1);
 
 % create list of permutations of numbers 1-6
 permutations = sortrows(perms(1:1:locationTotal));
@@ -247,8 +270,9 @@ end
 % attach path to each so becomes vector e.g. [path, avgTime]
 avgTime(:,1) = path(:);
 probability(:,1) = path(:);
+stdErrGillespie(:,1) = path(:);
 
-%% Read Files
+%% READ FILES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% READ FILES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -280,6 +304,8 @@ for s=1:length(sweep)
         avgTime(k,s+1) = M(k+1,5);
     end
     
+    stdErrGillespie(:,s+1) = sqrt(probability(:,s+1).*(1-probability(:,s+1)))./sqrt(GillespieRuns);
+    
 end
 
 %% AVERAGE TRANSITION RATE PLOTS
@@ -293,23 +319,31 @@ end
 
 figure(12); clf; hold on; box on;
 for s=1:length(sweep)
-    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'Color',colors(s,:),'LineWidth',lw);
+    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','Color',colors(s,:),'LineWidth',lw);
 end
 switch model
-    case {2,3,4}
+    case {30,40}
         set(gca,'yscale','log');
     otherwise
 end
+set(gca,'xlim',[0 locationTotal-1]);
 set(gca,'XTick',0:1:locationTotal-1);
 switch model
-    case 1
+    case 10
+        if max(sweep) > 15
+            ylim([0 1]);
+        elseif max(sweep) <= 15
+            if (phos)
+                ylim([0 0.035]);
+            else
+                ylim([0 1]);
+            end
+        end
+    case {20,30}
         ylim([0 1]);
-    case {2,3}
-        ylim([0 1]);
-    case { 4}
+    case { 40}
         ylim([10^(-7) 1]);
 end
-set(h,'ylim',[0 1]);
 
 % print position and labels
 pos = get(gca, 'position');
@@ -318,15 +352,15 @@ set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','positi
 if (saveTF)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModified';
-    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'fig');
-    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefiletitle),'-depsc');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'-depsc');
 end
 
 %% Average Transition Rates VS Number of Modified Sites - Labels
 
 figure(120); clf; hold on; box on;
 for s=1:length(sweep)
-    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'Color',colors(s,:),'LineWidth',lw);
+    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','Color',colors(s,:),'LineWidth',lw);
 end
 switch model
     case {30,31,32,33}
@@ -340,7 +374,15 @@ set(gca,'XTick',0:1:locationTotal-1);
 set(gca,'XTickLabel',{'0 -> 1', '1 -> 2', '2 -> 3', '3 -> 4','4 -> 5', '5 -> 6', '6 -> 7', '7 -> 8', '8 -> 9', '9 -> 10'});
 switch model
     case 10
-        ylim([0 1]);
+        if max(sweep) > 15
+            ylim([0 1]);
+        elseif max(sweep) <= 15
+            if (phos)
+                ylim([0 0.035]);
+            else
+                ylim([0 1]);
+            end
+        end
     case {20,30}
         ylim([0 1]);
     case {40}
@@ -361,8 +403,8 @@ title(title1,'FontName','Arial','FontSize',24);
 if (saveTF)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModifiedLabels';
-    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'fig');
-    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefiletitle),'-depsc');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'-depsc');
 end
 
 %% SEQUENCE PROBABILITY PLOTS
@@ -382,9 +424,11 @@ sequentialProbability = zeros(2,size(sweep,2)+1);
 
 sequentialAvgTime(1,:) = avgTime(1,:);
 sequentialProbability(1,:) = probability(1,:);
+sequentialStdErrGillespie(1,:) = stdErrGillespie(1,:);
 
 sequentialAvgTime(2,:) = avgTime(factorial(locationTotal),:);
 sequentialProbability(2,:) = probability(factorial(locationTotal),:);
+sequentialStdErrGillespie(2,:) = stdErrGillespie(factorial(locationTotal),:);
 
 %% Create bar graphs
 switch (spacing)
@@ -398,6 +442,12 @@ end
 
 ax=figure(2); clf; box on; hold on;
 b=bar(sequentialProbability(:,2:end));
+individualBarWidth = b(1).BarWidth/length(sweep);
+for iBar = 1:length(b)
+    XBar = (b(iBar).XData - 0.5*b(iBar).BarWidth + 0.5*individualBarWidth)+(iBar-1)*individualBarWidth;
+    errorbar(XBar,sequentialProbability(:,iBar+1),sequentialStdErrGillespie(:,iBar+1),'.k');
+end
+
 w = (length(sequentialProbability)-1);
 for l=1:length(sequentialProbability)-1
     b(l).FaceColor = colors(l,:);
@@ -415,9 +465,19 @@ set(gca,'xticklabel',[]);
 switch (model)
     case 10
         if(phos)
-            ylim([0 0.012]);
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.014]);
+                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+            end
         else
-            ylim([0 0.012]);
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.014]);
+                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+            end
         end
     case 20
         if(phos)
@@ -443,8 +503,8 @@ set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','positi
 if (saveTF)
     % % save figure
     savefiletitle = 'ProbVSSequence';
-    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'fig');
-    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefiletitle),'-depsc');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'-depsc');
 %     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'epsc');
 end
 
@@ -452,6 +512,12 @@ end
 
 ax=figure(20); clf; box on; hold on;
 b=bar(sequentialProbability(:,2:end));
+individualBarWidth = b(1).BarWidth/length(sweep);
+for iBar = 1:length(b)
+    XBar = (b(iBar).XData - 0.5*b(iBar).BarWidth + 0.5*individualBarWidth)+(iBar-1)*individualBarWidth;
+    errorbar(XBar,sequentialProbability(:,iBar+1),sequentialStdErrGillespie(:,iBar+1),'.k');
+end
+
 w = (length(sequentialProbability)-1);
 for l=1:length(sequentialProbability)-1
     b(l).FaceColor = colors(l,:);
@@ -473,9 +539,19 @@ switch (model)
     
     case 10
         if(phos)
-            ylim([0 0.012]);
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.014]);
+                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+            end
         else
-            ylim([0 0.012]);
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.014]);
+                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+            end
         end
     case 20
         if(phos)
@@ -513,11 +589,13 @@ h = colorbar('Ticks',[colors(colortickind(1)) colors(length(sweep)-5) colors(col
 if (saveTF)
     % % save figure
     savefiletitle = 'ProbVSSequenceLabels';
-    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'fig');
-    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'epsc');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'epsc');
 end
-
-
+            end
+        end
+    end
+end
 
 
 
