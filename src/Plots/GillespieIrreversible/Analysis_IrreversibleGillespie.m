@@ -7,31 +7,44 @@ close all;
 %% Initialize Model Choice
 
 % temporary for loop
-for sf = 1
-    
-    if( sf == 0 )
-        sweep = -1:1:103;
-        savefilesubsubfolder = ['/FullStiffenRange'];
-    elseif( sf == 1 )
-        savefilesubsubfolder = [''];
-        sweep = -1:1:10;
-    end
-    
-    for spacing = 0:1
-        for membrane = 0:1
-            for phos = 0:1
+
+% spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
+% membrane = 1; % 0 for membrane off, 1 for membrane on
+% phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
+for spacing = 1
+    for membrane = 0:1
+        for phos = 0:1
+            for sf = 0:1:2
+                clearvars -except spacing membrane phos sf
+
+                switch sf
+                    case 0
+                        sweep = -1:1:103;
+                        savefilesubsubfolder = ['/FullStiffenRange'];
+                        saveRatesPlot = 1;
+                        saveSeqPlot = 1;
+
+                    case 1
+                        savefilesubsubfolder = [''];
+                        sweep = -1:1:10;
+                        saveRatesPlot = 0;
+                        saveSeqPlot = 1;
+
+                    case 2
+                        savefilesubsubfolder = [''];
+                        sweep = -1:1:5;
+                        saveRatesPlot = 1;
+                        saveSeqPlot = 0;
+
+                end
 
             
 % initialization switch for which model we're inspecting
 model = 10; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
 
-% spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
-% membrane = 1; % 0 for membrane off, 1 for membrane on
-% phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
 
-% save or not save plots
-saveTF = 1;
-save1 = 0; % save only ProbVSSequence plot
+
+
 
 %% Model Parameters
 
@@ -328,28 +341,58 @@ switch model
 end
 set(gca,'xlim',[0 locationTotal-1]);
 set(gca,'XTick',0:1:locationTotal-1);
+set(gca,'xticklabel',[]);
 switch model
     case 10
+
         if max(sweep) > 15
             ylim([0 1]);
         elseif max(sweep) <= 15
-            if (phos)
-                ylim([0 0.035]);
-            else
-                ylim([0 1]);
-            end
+            if (spacing) % Even Sites
+                if (membrane) % Membrane On
+                    if (phos) % Phos
+                        ylim([0 0.03]);
+                    else
+                        ylim([0 1]);
+                    end
+                else % Membrane Off
+                    if (phos)
+                        ylim([0.02 0.04]);
+                        yticks([0.02 0.025 0.03 0.035 0.04]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            else % CD3Zeta
+                if (membrane) % Membrane On
+                    if (phos)
+                        ylim([0.02 0.06]);
+                    else
+                        ylim([0 1]);
+                    end
+                else % Membrane Off
+                    if (phos)
+                        ylim([0.02 0.05]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            end   
         end
+
+                
     case {20,30}
         ylim([0 1]);
     case { 40}
         ylim([10^(-7) 1]);
 end
+set(gca,'yticklabel',[]);
 
 % print position and labels
 pos = get(gca, 'position');
 set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','position',[0.5,0.5,1.9,1.9]);
 
-if (saveTF)
+if (saveRatesPlot)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModified';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
@@ -374,15 +417,42 @@ set(gca,'XTick',0:1:locationTotal-1);
 set(gca,'XTickLabel',{'0 -> 1', '1 -> 2', '2 -> 3', '3 -> 4','4 -> 5', '5 -> 6', '6 -> 7', '7 -> 8', '8 -> 9', '9 -> 10'});
 switch model
     case 10
+        
         if max(sweep) > 15
             ylim([0 1]);
         elseif max(sweep) <= 15
-            if (phos)
-                ylim([0 0.035]);
-            else
-                ylim([0 1]);
-            end
+            if (spacing) % Even Sites
+                if (membrane) % Membrane On
+                    if (phos)
+                        ylim([0 0.03]);
+                    else
+                        ylim([0 1]);
+                    end
+                else % Membrane Off
+                    if (phos)
+                        ylim([0.02 0.04]);
+                        yticks([0.02 0.025 0.03 0.035 0.04]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            else % CD3Zeta
+                if (membrane)
+                    if (phos)
+                        ylim([0.02 0.06]);
+                    else
+                        ylim([0 1]);
+                    end
+                else
+                    if (phos)
+                        ylim([0.02 0.05]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            end   
         end
+        
     case {20,30}
         ylim([0 1]);
     case {40}
@@ -400,7 +470,7 @@ xlabel(xlabel1,'FontName','Arial','FontSize',24);
 ylabel(ylabel1,'FontName','Arial','FontSize',24);
 title(title1,'FontName','Arial','FontSize',24);
 
-if (saveTF)
+if (saveRatesPlot)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModifiedLabels';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
@@ -464,6 +534,7 @@ set(gca,'xtick',[1,2]);
 set(gca,'xticklabel',[]);
 switch (model)
     case 10
+
         if(phos)
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
@@ -479,6 +550,7 @@ switch (model)
                 yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
             end
         end
+        
     case 20
         if(phos)
             ylim([0 0.016]);
@@ -500,7 +572,7 @@ pos = get(gca, 'position');
 set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','position',[0.5,0.5,1.9,1.9]);
 %set(gca,'units','inches','position',[0.5,0.5,1.7,1.2]);
 
-if (saveTF)
+if (saveSeqPlot)
     % % save figure
     savefiletitle = 'ProbVSSequence';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
@@ -586,7 +658,7 @@ h = colorbar('Ticks',[colors(colortickind(1)) colors(length(sweep)-5) colors(col
 % set(h,'ylim',colorTicks);
 
 %legend(horzcat(legendlabels,{'Random Probability = 1/720'}),'Location','northwest');
-if (saveTF)
+if (saveSeqPlot)
     % % save figure
     savefiletitle = 'ProbVSSequenceLabels';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
