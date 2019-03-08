@@ -8,7 +8,7 @@ close all;
 
 % Pick model
 spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
-membrane = 1; % 0 for membrane off, 1 for membrane on
+membrane = 0; % 0 for membrane off, 1 for membrane on
 model = 10; % 1x = LocalStructuring, 3x = Simultaneous Binding
 
 % 10 = Local Structuring
@@ -66,8 +66,8 @@ switch (model)
         locationTotal = 6;
         NFil = 1;
         iSiteTotal(1:NFil) = [6];
-        sweep = -1:1:10;
-        %sweep = -1:1:103;
+        %sweep = -1:1:10;
+        sweep = -1:1:103;
         %sweep = [-1 1:2:15 19:6:103];
         sweepParameter = 'StiffenRange';
         
