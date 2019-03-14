@@ -8,7 +8,7 @@ close all;
 
 % Pick model
 spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
-membrane = 0; % 0 for membrane off, 1 for membrane on
+membrane = 1; % 0 for membrane off, 1 for membrane on
 model = 10; % 1x = LocalStructuring, 3x = Simultaneous Binding
 
 % 10 = Local Structuring
@@ -16,13 +16,13 @@ model = 10; % 1x = LocalStructuring, 3x = Simultaneous Binding
 % 30 = Simultaneous Binding SH2
 
 % Save Transition Matrices and Figures
-writeTransitionMatrix = 0; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
+writeTransitionMatrix = 1; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
 saveTF = 0;
 
 %% 
 
-%savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
-savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/';
+savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
+%savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/';
 
 % from driveM file
 NTCHECK = 200000;
