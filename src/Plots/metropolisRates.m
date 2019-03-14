@@ -3,6 +3,9 @@ clear all; close all;
 folder = '~/Documents/PolymerGit/src/PolymerCode';
 filename = 'OccupiediSitesMouse.txt';
 
+savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/1.LocalStructuring/RatesStatesExample';
+saveTF=1;
+
 % state matrix - 0 or 1;
 phosphoStates = dlmread(fullfile(folder,filename),'_');
 
@@ -21,8 +24,19 @@ hm.ColorbarVisible = 'off';
 for l=1:64
     ydispLabels{l} = {''};
 end
+for l=1:6
+    xdispLabels{l} = {''};
+end
 hm.CellLabelColor = 'None';
 hm.YDisplayLabels = ydispLabels;
+hm.XDisplayLabels = xdispLabels;
+set(gcf,'Position',[1 1 135 1400]);
+
+if(saveTF)
+    savefilename = 'PhosphoStates';
+    saveas(gcf,fullfile(savefolder,savefilename),'fig');
+    saveas(gcf,fullfile(savefolder,savefilename),'epsc');
+end
 
 %% Use rates matrix - sorted by combination
 
@@ -67,24 +81,73 @@ PBind(:,1:locationTotal) = 1-POcc(:,1:locationTotal);
     
 % PLOT VARIABLES
 PBindPlot = (1-POcc).*(1-phosphoStates);
+PBindPlot(PBindPlot==0) = NaN;
 
 PlotData = [phosphoStates, PBindPlot];
 
+%%
+figure(400);clf; 
+hm = heatmap(sites,states,PBind);
 % Horizontal
 %figure(3); clf;
 %hm = heatmap(states,sites,PBindPlot');
 %hm.ColorLimits = [0 max(PBindPlot(PBindPlot > 0))];
 
+%% No labels
 % Vertical - phosphostates on yaxis
 figure(4); clf;
 hm = heatmap(sites,states,PBindPlot);
-hm.ColorLimits = [0 max(PBindPlot(PBindPlot > 0))];
+hm.Colormap = pink;
+hm.ColorbarVisible = 'off';
+%hm.MissingDataLabel = 'Phosphorylated';
+hm.MissingDataLabel = '';
+hm.ColorLimits = [0 ceil(max(PBindPlot(PBindPlot > 0))*20)/20];
 for l=1:64
     ydispLabels{l} = {''};
 end
 
 hm.YDisplayLabels = ydispLabels;
+hm.CellLabelFormat = '%0.4f';
 
+for l=1:6
+    xdispLabels{l} = {''};
+end
+hm.XDisplayLabels = xdispLabels;
+set(gcf,'Position',[1 1 400 1400]);
+
+if(saveTF)
+    savefilename = 'RatesExample';
+    saveas(gcf,fullfile(savefolder,savefilename),'fig');
+    saveas(gcf,fullfile(savefolder,savefilename),'epsc');
+end
+
+%%
+figure(40); clf;
+hm = heatmap(sites,states,PBindPlot);
+hm.Colormap = pink;
+hm.MissingDataLabel = 'Phosphorylated';
+
+hm.ColorLimits = [0 ceil(max(PBindPlot(PBindPlot > 0))*20)/20];
+for l=1:64
+    ydispLabels{l} = {''};
+end
+
+hm.YDisplayLabels = ydispLabels;
+hm.CellLabelFormat = '%0.4f';
+
+for l=1:6
+    xdispLabels{l} = {''};
+end
+hm.XDisplayLabels = xdispLabels;
+set(gcf,'Position',[1 1 400 1400]);
+
+if(saveTF)
+    savefilename = 'RatesExampleLabels';
+    saveas(gcf,fullfile(savefolder,savefilename),'fig');
+    saveas(gcf,fullfile(savefolder,savefilename),'epsc');
+end
+
+%%
 % Vertical - phosphostates on yaxis
 figure(5); clf;
 hm = heatmap(PlotData);
@@ -105,3 +168,5 @@ for i=1:2
 end
 
 hm.XDisplayLabels = xdispLabels;
+
+
