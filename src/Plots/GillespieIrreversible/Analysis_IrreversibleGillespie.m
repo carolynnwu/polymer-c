@@ -11,10 +11,10 @@ close all;
 % spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
 % membrane = 1; % 0 for membrane off, 1 for membrane on
 % phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
-for spacing = 1
+for spacing = 0:1
     for membrane = 0:1
-        for phos = 0:1
-            for sf = 0:1:2
+        for phos = 1
+            for sf = 1
                 clearvars -except spacing membrane phos sf
 
                 switch sf
@@ -22,7 +22,7 @@ for spacing = 1
                         sweep = -1:1:103;
                         savefilesubsubfolder = ['/FullStiffenRange'];
                         saveRatesPlot = 1;
-                        saveSeqPlot = 1;
+                        saveSeqPlot = 0;
 
                     case 1
                         savefilesubsubfolder = [''];
@@ -285,6 +285,24 @@ avgTime(:,1) = path(:);
 probability(:,1) = path(:);
 stdErrGillespie(:,1) = path(:);
 
+%% Find indices of paths where x is i-th event
+% Only works for locationTotal <= 9 (NOT TCR)
+
+% initialize
+eventIndices = zeros(locationTotal,factorial(locationTotal)/locationTotal);
+secondToLastEventProbability = zeros(locationTotal,length(sweep));
+
+% find second to last event
+eventIndex = 5; % options: 1 to locationTotal
+eventModifier = locationTotal-eventIndex;
+
+% find index of paths where designated event is x
+secondToLastEvent = mod(floor(path(:)/10^(eventModifier)),10);
+
+for eInd = 1:locationTotal
+    eventIndices(eInd,:) = find(secondToLastEvent == eInd);
+end
+
 %% READ FILES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% READ FILES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -318,6 +336,15 @@ for s=1:length(sweep)
     end
     
     stdErrGillespie(:,s+1) = sqrt(probability(:,s+1).*(1-probability(:,s+1)))./sqrt(GillespieRuns);
+    
+    
+    %% Find probability path has x as i-th event
+    % Only works for locationTotal <= 9 (NOT TCR)
+
+    for eInd = 1:locationTotal
+        secondToLastEventProbability(eInd,s) = sum(probability(eventIndices(eInd,:),s+1));
+        %disp(secondToLastEventProbability(eInd,s));
+    end
     
 end
 
@@ -366,9 +393,9 @@ switch model
             else % CD3Zeta
                 if (membrane) % Membrane On
                     if (phos)
-                        ylim([0.02 0.06]);
+                        ylim([0.005 0.02]);
                     else
-                        ylim([0 1]);
+                        ylim([0 0.6]);
                     end
                 else % Membrane Off
                     if (phos)
@@ -439,9 +466,9 @@ switch model
             else % CD3Zeta
                 if (membrane)
                     if (phos)
-                        ylim([0.02 0.06]);
+                        ylim([0.005 0.02]);
                     else
-                        ylim([0 1]);
+                        ylim([0 0.6]);
                     end
                 else
                     if (phos)
@@ -664,13 +691,149 @@ if (saveSeqPlot)
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'epsc');
 end
+
+
+%% SEQUENCE PROBABILITY PLOTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% SECOND TO LAST EVENT PROBABILITY PLOTS %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Plot Probability versus Sequence - No Labels
+
+ax=figure(3); clf; box on; hold on;
+b=bar(secondToLastEventProbability(:,1:end));
+individualBarWidth = b(1).BarWidth/length(sweep);
+%for iBar = 1:length(b)
+    %XBar = (b(iBar).XData - 0.5*b(iBar).BarWidth + 0.5*individualBarWidth)+(iBar-1)*individualBarWidth;
+    %errorbar(XBar,sequentialProbability(:,iBar+1),sequentialStdErrGillespie(:,iBar+1),'.k');
+%end
+
+w = (length(sequentialProbability)-1);
+for l=1:length(sequentialProbability)-1
+    b(l).FaceColor = colors(l,:);
+    b(l).EdgeColor = colors(l,:);
+end
+% print reference line
+hline = refline([0 1/(locationTotal)]);
+hline.Color = 'k';
+hline.LineWidth = 2.5;
+hline.LineStyle = '--';
+
+% axis labels
+set(gca,'xtick',[1,2]);
+set(gca,'xticklabel',[]);
+switch (model)
+    case 10
+
+        if(phos)
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
+            end
+        else
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
             end
         end
-    end
+end
+set(gca,'yticklabel',[]);
+
+% print position and labels
+pos = get(gca, 'position');
+set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','position',[0.5,0.5,1.9,1.9]);
+%set(gca,'units','inches','position',[0.5,0.5,1.7,1.2]);
+
+if (saveSeqPlot)
+    % % save figure
+    savefiletitle = 'ProbVSEvent';
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'-depsc');
+%     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'epsc');
+end
+
+%% Plot Probability versus Sequence - Labels
+
+ax=figure(30); clf; box on; hold on;
+b=bar(secondToLastEventProbability(:,1:end));
+individualBarWidth = b(1).BarWidth/length(sweep);
+% for iBar = 1:length(b)
+%     XBar = (b(iBar).XData - 0.5*b(iBar).BarWidth + 0.5*individualBarWidth)+(iBar-1)*individualBarWidth;
+%     errorbar(XBar,sequentialProbability(:,iBar+1),sequentialStdErrGillespie(:,iBar+1),'.k');
+% end
+
+w = (length(sequentialProbability)-1);
+for l=1:length(sequentialProbability)-1
+    b(l).FaceColor = colors(l,:);
+    b(l).EdgeColor = colors(l,:);
+end
+% print reference line
+hline = refline([0 1/(locationTotal)]);
+hline.Color = 'k';
+hline.LineWidth = 2.5;
+hline.LineStyle = '--';
+
+% axis labels
+set(gca,'xtick',[1 2 3 4 5 6]);
+%set(gca,'xticklabel',sequence);
+xlabel1 = 'Binding Site';
+ylabel1 = 'Probability';
+title1 = 'Probability of Second to Last Event Being Given Binding Site';
+switch (model)
+    
+    case 10
+        if(phos) 
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
+            end
+        else
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
+            end
+        end
+end
+
+% print position and labels
+pos = get(gcf, 'position');
+set(gcf,'units','centimeters','position',[1,4,40,30]);
+set(gca,'FontName','Arial','FontSize',30);
+xlabel(xlabel1,'FontName','Arial','FontSize',24);
+ylabel(ylabel1,'FontName','Arial','FontSize',24);
+title(title1,'FontName','Arial','FontSize',24);
+
+% colorbar
+set(gcf,'Colormap',flipud(colormapName))
+colortickind = [length(sweep) 1];
+%clims = [0 1]
+clims = [colors(colortickind(1)) colors(colortickind(2))];
+% cbar = colorbar('Ticks',[colors_fig(colortickind(1)) colors_fig(colortickind(2))],'TickLabels',{'10^{2}','10^{-2}'},'ylim',clims);
+h = colorbar('Ticks',[colors(colortickind(1)) colors(length(sweep)-5) colors(colortickind(2))],'TickLabels',{'',''},'ylim',clims);
+% set(h,'ylim',colorTicks);
+
+%legend(horzcat(legendlabels,{'Random Probability = 1/720'}),'Location','northwest');
+if (saveSeqPlot)
+    % % save figure
+    savefiletitle = 'ProbVSEventLabels';
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'epsc');
 end
 
 
 
+            end
+        end
+    end
+end
 
 %% EXTRA PLOTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
