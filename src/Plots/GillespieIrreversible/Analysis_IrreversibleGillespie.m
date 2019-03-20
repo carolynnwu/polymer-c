@@ -11,15 +11,18 @@ close all;
 % spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
 % membrane = 1; % 0 for membrane off, 1 for membrane on
 % phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
-for spacing = 0:1
-    for membrane = 0:1
+for spacing = 0
+    for membrane = 0
         for phos = 1
-            for sf = 1
+            for sf = 0
                 clearvars -except spacing membrane phos sf
 
                 switch sf
                     case 0
-                        sweep = -1:1:103;
+                        %sweep = -1:1:103;
+                        %sweep = [-1:2:45 47:4:103]; % acceptably many curves
+                        %sweep = [-1:2:45 48:5:103];% acceptably many curves
+                        sweep = [-1:3:4 5:2:31 33:3:45 48:5:103]; % probably correct
                         savefilesubsubfolder = ['/FullStiffenRange'];
                         saveRatesPlot = 1;
                         saveSeqPlot = 0;
@@ -97,9 +100,17 @@ switch (model)
         savefilesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState,'/Plots/',phosDirection];
         
         % figure parameters
-        lw = 2;
+        if (sf==0)
+            lw = 1;
+        else
+            lw = 2;
+        end
         ms = 10;
-        colors = flipud(cool(length(sweep)));
+        if (sf==0)
+            colors = flipud(cool(max(sweep)+2));
+        else
+            colors = flipud(cool(length(sweep)));
+        end
         colormapName = cool;
         legendlabels = {'No Stiffening', 'StiffenRange = 0','StiffenRange = 1','StiffenRange = 2','StiffenRange = 3','StiffenRange = 4','StiffenRange = 5','StiffenRange = 6','StiffenRange = 7','StiffenRange = 8','StiffenRange = 9','StiffenRange = 10'};
         legendlabelsAbbrev = {'None', '0','1','2','3','4','5','6','7','8','9','10'};
@@ -359,7 +370,15 @@ end
 
 figure(12); clf; hold on; box on;
 for s=1:length(sweep)
-    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','Color',colors(s,:),'LineWidth',lw);
+    plot_line = plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','LineWidth',lw);
+    if (sf==0)
+        plot_line.Color = colors(sweep(s)+2,:);
+        plot_line.MarkerFaceColor = colors(sweep(s)+2,:);
+        plot_line.MarkerSize = 3;
+    else
+        plot_line.Color = colors(s,1);
+        plot_line.MarkerFaceColor = colors(s,:);
+    end
 end
 switch model
     case {30,40}
@@ -430,7 +449,15 @@ end
 
 figure(120); clf; hold on; box on;
 for s=1:length(sweep)
-    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','Color',colors(s,:),'LineWidth',lw);
+    plot_line = plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','LineWidth',lw);
+    if (sf==0)
+        plot_line.Color = colors(sweep(s)+2,:);
+        plot_line.MarkerFaceColor = colors(sweep(s)+2,:);
+        plot_line.MarkerSize = 3;
+    else
+        plot_line.Color = colors(s,1);
+        plot_line.MarkerFaceColor = colors(s,:);
+    end
 end
 switch model
     case {30,31,32,33}
@@ -566,15 +593,15 @@ switch (model)
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.015]);
+                yticks([0 0.005 0.01 0.015]);
             end
         else
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.006]);
+                yticks([0 0.001 0.002 0.003 0.004 0.005 0.006]);
             end
         end
         
@@ -641,15 +668,15 @@ switch (model)
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.015]);
+                yticks([0 0.005 0.01 0.015]);
             end
         else
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.006]);
+                yticks([0 0.001 0.002 0.003 0.004 0.005 0.006]);
             end
         end
     case 20
