@@ -60,7 +60,7 @@ switch (model)
         transitionMatrixsubfolder = [iSiteSpacing,'/Membrane',membraneState,'/2.TransitionMatrices'];
         
         % save figures location
-        savesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState];
+        savesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState,'/Plots'];
         
         % 
         locationTotal = 6;
@@ -401,7 +401,7 @@ for s = 1:length(sweep)
 end
 % set first position - 2.5in by 2.5in with no labels
 switch (model)
-    case 1 % stiff
+    case 10 % stiff
         %set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -418,51 +418,7 @@ switch (model)
                 set(gca,'YTick',[0.01,0.015,0.02, 0.025,0.03]);
             end
         end
-    case 2 % sim bind SH2
-        if(~spacing)
-            if(~membrane)
-                ylim([0,1]); % CD3ZetaMembrane0
-            else
-                ylim([0,1]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([0,1]); % EvenSitesMembrane0
-            else
-                ylim([0,1]); % EvenSitesMembrane1
-            end
-        end 
-    case 3 % sim bind SH2
-        set(gca,'YScale','log');
-        if(~spacing)
-            if(~membrane)
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane0
-            else
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([10^(-4),10^0]); % EvenSitesMembrane0
-            else
-                ylim([10^(-4),10^0]); % EvenSitesMembrane1
-            end
-        end        
-    case {4,6} % sim bind ibEqual
-        set(gca,'YScale','log');
-        if(~spacing)
-            if(~membrane)
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane0
-            else
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([10^(-4),10^0]); % EvenSitesMembrane0
-            else
-                ylim([10^(-4),10^0]); % EvenSitesMembrane1
-            end
-        end 
-     case 5 % sim bind ibEqual
+     case {5,7} % sim bind ibEqual
         set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -476,22 +432,7 @@ switch (model)
             else
                 ylim([10^(-5),10^0]); % EvenSitesMembrane1
             end
-        end  
-      case 7 % sim bind ibEqual TCR
-        set(gca,'YScale','log');
-        if(~spacing)
-            if(~membrane)
-                ylim([10^(-5),10^0]); % CD3ZetaMembrane0
-            else
-                ylim([10^(-5),10^0]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([10^(-5),10^0]); % EvenSitesMembrane0
-            else
-                ylim([10^(-5),10^0]); % EvenSitesMembrane1
-            end
-        end   
+        end     
       case 8 % sim bind ibEqual TCR
         set(gca,'YScale','log');
         if(~spacing)
@@ -513,21 +454,19 @@ set(gca,'XTickLabel',[]);
 set(gcf,'units','inches','position',[[1,1],3.5,3.5]);
 set(gca,'units','inches','position',[[0.5,0.5],2.5,2.5]);
 
+
 if(saveTF)
     switch model
         case 2
-            figure(1);
-            savesubsubfolder = 'Phos';
-            savefilename = 'AvgBindVSTotalModifiedFullStiffenRange';
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
+            savesubsubfolder = 'Phos/FullStiffenRange';
         otherwise
-            figure(1);
             savesubsubfolder = 'Phos';
-            savefilename = 'AvgBindVSTotalModified';
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
     end
+    
+    figure(1);
+        savefilename = 'AvgBindVSTotalModifiedNoPathLabels';
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
 end
 
 %% Plot Cooperativity - Phosphorylation with Labels
@@ -544,7 +483,7 @@ xlabel1 = {['Number of Modified Sites'],modificationLabel};
 ylabel1 = {['Average Binding Rate'],['(per free space binding)']};
 title1 = 'Average Binding Rate vs Total Modified Sites';
 switch (model)
-    case 1 % stiff
+    case 10 % stiff
         %set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -562,51 +501,8 @@ switch (model)
 
             end
         end
-    case 2 % sim bind SH2
-        if(~spacing)
-            if(~membrane)
-                ylim([0,1]); % CD3ZetaMembrane0
-            else
-                ylim([0,1]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([0,1]); % EvenSitesMembrane0
-            else
-                ylim([0,1]); % EvenSitesMembrane1
-            end
-        end 
-    case 3 % sim bind SH2
-        set(gca,'YScale','log');
-        if(~spacing)
-            if(~membrane)
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane0
-            else
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([10^(-4),10^0]); % EvenSitesMembrane0
-            else
-                ylim([10^(-4),10^0]); % EvenSitesMembrane1
-            end
-        end        
-    case {4,6} % sim bind ibEqual
-        set(gca,'YScale','log');
-        if(~spacing)
-            if(~membrane)
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane0
-            else
-                ylim([10^(-4),10^0]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([10^(-4),10^0]); % EvenSitesMembrane0
-            else
-                ylim([10^(-4),10^0]); % EvenSitesMembrane1
-            end
-        end    
-     case 5 % sim bind ibEqual
+  
+     case {5,7} % sim bind ibEqual
         set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -621,22 +517,7 @@ switch (model)
                 ylim([10^(-5),10^0]); % EvenSitesMembrane1
             end
         end  
-        
-      case 7 % sim bind ibEqual TCR
-        set(gca,'YScale','log');
-        if(~spacing)
-            if(~membrane)
-                ylim([10^(-5),10^0]); % CD3ZetaMembrane0
-            else
-                ylim([10^(-5),10^0]); % CD3ZetaMembrane1
-            end
-        else
-            if(~membrane)
-                ylim([10^(-5),10^0]); % EvenSitesMembrane0
-            else
-                ylim([10^(-5),10^0]); % EvenSitesMembrane1
-            end
-        end   
+  
       case 8 % sim bind ibEqual TCR
         set(gca,'YScale','log');
         if(~spacing)
@@ -664,7 +545,7 @@ title(title1,'FontName','Arial','FontSize',18);
 
 % set colorbar parameters based on model
 switch (model)
-    case 1
+    case 10
         set(gcf,'Colormap',cool)
         colormap cool;
         h = colorbar;
@@ -675,39 +556,24 @@ switch (model)
         colormap cool;
         h = colorbar;
         h = colorbar('Ticks',[0 1],'TickLabels',{'',''},'YDir','reverse');
-    case 3
-    case 4
-        set(gcf,'Colormap',cool)
-        colormap cool;
-        h = colorbar;
-        h = colorbar('Ticks',[0 7/9],'TickLabels',{'',''},'YDir','reverse');
-        set(h,'ylim',[0 7/9]);
-    case 5
-        set(gcf,'Colormap',cool)
-        colormap cool;
-        h = colorbar;
-        h = colorbar('Ticks',[0 1],'TickLabels',{'',''},'YDir','reverse');
-        set(h,'ylim',[0 1]);
 end
 
 % save figure with labels attached
+
 if(saveTF)
     switch model
         case 2
-            figure(10);
-            savesubsubfolder = 'Phos';
-            savefilename = 'AvgBindVSTotalModifiedLabelsFullStiffenRange';
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
-
+            savesubsubfolder = 'Phos/FullStiffenRange';
         otherwise
-            figure(10);
             savesubsubfolder = 'Phos';
-            savefilename = 'AvgBindVSTotalModifiedLabels';
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
     end
+    
+    figure(10);
+        savefilename = 'AvgBindVSTotalModifiedNoPathLabels';
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
 end
+
 
 %% Plot Cooperativity - Dephosphorylation no Labels
 figure(2); clf; hold on; box on;
@@ -721,23 +587,21 @@ set(gca,'XTickLabel',[]);
 set(gcf,'units','inches','position',[[1,1],3.5,3.5]);
 set(gca,'units','inches','position',[[0.5,0.5],2.5,2.5]);
 
-if(saveTF)
-        switch model
-            case 2
-                figure(2);
-                savesubsubfolder = 'Dephos';
-                savefilename = 'AvgBindVSTotalModifiedFullStiffenRange';
-                saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-                saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
 
-            otherwise
-                figure(2);
-                savesubsubfolder = 'Dephos';
-                savefilename = 'AvgBindVSTotalModified';
-                saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-                saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
-        end
+if(saveTF)
+    switch model
+        case 2
+            savesubsubfolder = 'Dephos/FullStiffenRange';
+        otherwise
+            savesubsubfolder = 'Dephos';
+    end
+    
+    figure(2);
+        savefilename = 'AvgBindVSTotalModifiedNoPath';
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
 end
+
 
 %% Plot Cooperativity - Dephosphorylation with Labels
 figure(20); clf; hold on; box on;
@@ -760,7 +624,7 @@ xlabel(xlabel1,'FontName','Arial','FontSize',18);
 ylabel(ylabel1,'FontName','Arial','FontSize',18);
 title(title1,'FontName','Arial','FontSize',18);
 switch (model)
-    case 1
+    case 10
         %set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -778,28 +642,11 @@ switch (model)
 
     case 3
         set(gca,'YScale','log');
-    case 4
-        set(gca,'YScale','log');
-    case 5
-        set(gca,'YScale','log');
 end
 
 % set colorbar parameters
 switch (model)
-    case 1
-        set(gcf,'Colormap',cool)
-        colormap cool;
-        h = colorbar;
-        h = colorbar('Ticks',[0 7/9],'TickLabels',{'',''},'YDir','reverse');
-        set(h,'ylim',[0 7/9]);
-    case 3
-    case 4
-        set(gcf,'Colormap',cool)
-        colormap cool;
-        h = colorbar;
-        h = colorbar('Ticks',[0 7/9],'TickLabels',{'',''},'YDir','reverse');
-        set(h,'ylim',[0 7/9]);
-    case 5
+    case 10
         set(gcf,'Colormap',cool)
         colormap cool;
         h = colorbar;
@@ -810,19 +657,15 @@ end
 if(saveTF)
     switch model
         case 2
-            figure(20);
-            savesubsubfolder = 'Dephos';
-            savefilename = 'AvgBindVSTotalModifiedLabelsFullStiffenRange';
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
-
+            savesubsubfolder = 'Dephos/FullStiffenRange';
         otherwise
-            figure(20);
             savesubsubfolder = 'Dephos';
-            savefilename = 'AvgBindVSTotalModifiedLabels';
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
-            saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
     end
+    
+    figure(20);
+        savefilename = 'AvgBindVSTotalModifiedNoPathLabels';
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
+        saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
 end
 
 
