@@ -7,31 +7,47 @@ close all;
 %% Initialize Model Choice
 
 % temporary for loop
-for sf = 1
-    
-    if( sf == 0 )
-        sweep = -1:1:103;
-        savefilesubsubfolder = ['/FullStiffenRange'];
-    elseif( sf == 1 )
-        savefilesubsubfolder = [''];
-        sweep = -1:1:10;
-    end
-    
-    for spacing = 0:1
-        for membrane = 0:1
-            for phos = 0:1
+
+% spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
+% membrane = 1; % 0 for membrane off, 1 for membrane on
+% phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
+for spacing = 0
+    for membrane = 0
+        for phos = 1
+            for sf = 0
+                clearvars -except spacing membrane phos sf
+
+                switch sf
+                    case 0
+                        %sweep = -1:1:103;
+                        %sweep = [-1:2:45 47:4:103]; % acceptably many curves
+                        %sweep = [-1:2:45 48:5:103];% acceptably many curves
+                        sweep = [-1:3:4 5:2:31 33:3:45 48:5:103]; % probably correct
+                        savefilesubsubfolder = ['/FullStiffenRange'];
+                        saveRatesPlot = 1;
+                        saveSeqPlot = 0;
+
+                    case 1
+                        savefilesubsubfolder = [''];
+                        sweep = -1:1:10;
+                        saveRatesPlot = 0;
+                        saveSeqPlot = 1;
+
+                    case 2
+                        savefilesubsubfolder = [''];
+                        sweep = -1:1:5;
+                        saveRatesPlot = 1;
+                        saveSeqPlot = 0;
+
+                end
 
             
 % initialization switch for which model we're inspecting
 model = 10; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
 
-% spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
-% membrane = 1; % 0 for membrane off, 1 for membrane on
-% phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
 
-% save or not save plots
-saveTF = 1;
-save1 = 0; % save only ProbVSSequence plot
+
+
 
 %% Model Parameters
 
@@ -84,9 +100,17 @@ switch (model)
         savefilesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState,'/Plots/',phosDirection];
         
         % figure parameters
-        lw = 2;
+        if (sf==0)
+            lw = 1;
+        else
+            lw = 2;
+        end
         ms = 10;
-        colors = flipud(cool(length(sweep)));
+        if (sf==0)
+            colors = flipud(cool(max(sweep)+2));
+        else
+            colors = flipud(cool(length(sweep)));
+        end
         colormapName = cool;
         legendlabels = {'No Stiffening', 'StiffenRange = 0','StiffenRange = 1','StiffenRange = 2','StiffenRange = 3','StiffenRange = 4','StiffenRange = 5','StiffenRange = 6','StiffenRange = 7','StiffenRange = 8','StiffenRange = 9','StiffenRange = 10'};
         legendlabelsAbbrev = {'None', '0','1','2','3','4','5','6','7','8','9','10'};
@@ -272,6 +296,24 @@ avgTime(:,1) = path(:);
 probability(:,1) = path(:);
 stdErrGillespie(:,1) = path(:);
 
+%% Find indices of paths where x is i-th event
+% Only works for locationTotal <= 9 (NOT TCR)
+
+% initialize
+eventIndices = zeros(locationTotal,factorial(locationTotal)/locationTotal);
+secondToLastEventProbability = zeros(locationTotal,length(sweep));
+
+% find second to last event
+eventIndex = 5; % options: 1 to locationTotal
+eventModifier = locationTotal-eventIndex;
+
+% find index of paths where designated event is x
+secondToLastEvent = mod(floor(path(:)/10^(eventModifier)),10);
+
+for eInd = 1:locationTotal
+    eventIndices(eInd,:) = find(secondToLastEvent == eInd);
+end
+
 %% READ FILES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% READ FILES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -306,6 +348,15 @@ for s=1:length(sweep)
     
     stdErrGillespie(:,s+1) = sqrt(probability(:,s+1).*(1-probability(:,s+1)))./sqrt(GillespieRuns);
     
+    
+    %% Find probability path has x as i-th event
+    % Only works for locationTotal <= 9 (NOT TCR)
+
+    for eInd = 1:locationTotal
+        secondToLastEventProbability(eInd,s) = sum(probability(eventIndices(eInd,:),s+1));
+        %disp(secondToLastEventProbability(eInd,s));
+    end
+    
 end
 
 %% AVERAGE TRANSITION RATE PLOTS
@@ -319,7 +370,15 @@ end
 
 figure(12); clf; hold on; box on;
 for s=1:length(sweep)
-    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','Color',colors(s,:),'LineWidth',lw);
+    plot_line = plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','LineWidth',lw);
+    if (sf==0)
+        plot_line.Color = colors(sweep(s)+2,:);
+        plot_line.MarkerFaceColor = colors(sweep(s)+2,:);
+        plot_line.MarkerSize = 3;
+    else
+        plot_line.Color = colors(s,1);
+        plot_line.MarkerFaceColor = colors(s,:);
+    end
 end
 switch model
     case {30,40}
@@ -328,28 +387,58 @@ switch model
 end
 set(gca,'xlim',[0 locationTotal-1]);
 set(gca,'XTick',0:1:locationTotal-1);
+set(gca,'xticklabel',[]);
 switch model
     case 10
+
         if max(sweep) > 15
             ylim([0 1]);
         elseif max(sweep) <= 15
-            if (phos)
-                ylim([0 0.035]);
-            else
-                ylim([0 1]);
-            end
+            if (spacing) % Even Sites
+                if (membrane) % Membrane On
+                    if (phos) % Phos
+                        ylim([0 0.03]);
+                    else
+                        ylim([0 1]);
+                    end
+                else % Membrane Off
+                    if (phos)
+                        ylim([0.02 0.04]);
+                        yticks([0.02 0.025 0.03 0.035 0.04]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            else % CD3Zeta
+                if (membrane) % Membrane On
+                    if (phos)
+                        ylim([0.005 0.02]);
+                    else
+                        ylim([0 0.6]);
+                    end
+                else % Membrane Off
+                    if (phos)
+                        ylim([0.02 0.05]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            end   
         end
+
+                
     case {20,30}
         ylim([0 1]);
     case { 40}
         ylim([10^(-7) 1]);
 end
+set(gca,'yticklabel',[]);
 
 % print position and labels
 pos = get(gca, 'position');
 set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','position',[0.5,0.5,1.9,1.9]);
 
-if (saveTF)
+if (saveRatesPlot)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModified';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
@@ -360,7 +449,15 @@ end
 
 figure(120); clf; hold on; box on;
 for s=1:length(sweep)
-    plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','Color',colors(s,:),'LineWidth',lw);
+    plot_line = plot(0:1:(locationTotal-1),transitionRate_Avg(s,:)./(locationTotal:-1:1),'-s','LineWidth',lw);
+    if (sf==0)
+        plot_line.Color = colors(sweep(s)+2,:);
+        plot_line.MarkerFaceColor = colors(sweep(s)+2,:);
+        plot_line.MarkerSize = 3;
+    else
+        plot_line.Color = colors(s,1);
+        plot_line.MarkerFaceColor = colors(s,:);
+    end
 end
 switch model
     case {30,31,32,33}
@@ -374,15 +471,42 @@ set(gca,'XTick',0:1:locationTotal-1);
 set(gca,'XTickLabel',{'0 -> 1', '1 -> 2', '2 -> 3', '3 -> 4','4 -> 5', '5 -> 6', '6 -> 7', '7 -> 8', '8 -> 9', '9 -> 10'});
 switch model
     case 10
+        
         if max(sweep) > 15
             ylim([0 1]);
         elseif max(sweep) <= 15
-            if (phos)
-                ylim([0 0.035]);
-            else
-                ylim([0 1]);
-            end
+            if (spacing) % Even Sites
+                if (membrane) % Membrane On
+                    if (phos)
+                        ylim([0 0.03]);
+                    else
+                        ylim([0 1]);
+                    end
+                else % Membrane Off
+                    if (phos)
+                        ylim([0.02 0.04]);
+                        yticks([0.02 0.025 0.03 0.035 0.04]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            else % CD3Zeta
+                if (membrane)
+                    if (phos)
+                        ylim([0.005 0.02]);
+                    else
+                        ylim([0 0.6]);
+                    end
+                else
+                    if (phos)
+                        ylim([0.02 0.05]);
+                    else
+                        ylim([0 1]);
+                    end
+                end
+            end   
         end
+        
     case {20,30}
         ylim([0 1]);
     case {40}
@@ -400,7 +524,7 @@ xlabel(xlabel1,'FontName','Arial','FontSize',24);
 ylabel(ylabel1,'FontName','Arial','FontSize',24);
 title(title1,'FontName','Arial','FontSize',24);
 
-if (saveTF)
+if (saveRatesPlot)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModifiedLabels';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
@@ -464,21 +588,23 @@ set(gca,'xtick',[1,2]);
 set(gca,'xticklabel',[]);
 switch (model)
     case 10
+
         if(phos)
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.015]);
+                yticks([0 0.005 0.01 0.015]);
             end
         else
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.006]);
+                yticks([0 0.001 0.002 0.003 0.004 0.005 0.006]);
             end
         end
+        
     case 20
         if(phos)
             ylim([0 0.016]);
@@ -500,7 +626,7 @@ pos = get(gca, 'position');
 set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','position',[0.5,0.5,1.9,1.9]);
 %set(gca,'units','inches','position',[0.5,0.5,1.7,1.2]);
 
-if (saveTF)
+if (saveSeqPlot)
     % % save figure
     savefiletitle = 'ProbVSSequence';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
@@ -542,15 +668,15 @@ switch (model)
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.015]);
+                yticks([0 0.005 0.01 0.015]);
             end
         else
             if(max(sweep)>15)
                 ylim([0 max(max(probability(:,2:end)))]);
             else
-                ylim([0 0.014]);
-                yticks([0 0.002 0.004 0.006 0.008 0.01 0.012 0.014]);
+                ylim([0 0.006]);
+                yticks([0 0.001 0.002 0.003 0.004 0.005 0.006]);
             end
         end
     case 20
@@ -586,19 +712,155 @@ h = colorbar('Ticks',[colors(colortickind(1)) colors(length(sweep)-5) colors(col
 % set(h,'ylim',colorTicks);
 
 %legend(horzcat(legendlabels,{'Random Probability = 1/720'}),'Location','northwest');
-if (saveTF)
+if (saveSeqPlot)
     % % save figure
     savefiletitle = 'ProbVSSequenceLabels';
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'epsc');
 end
+
+
+%% SEQUENCE PROBABILITY PLOTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% SECOND TO LAST EVENT PROBABILITY PLOTS %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Plot Probability versus Sequence - No Labels
+
+ax=figure(3); clf; box on; hold on;
+b=bar(secondToLastEventProbability(:,1:end));
+individualBarWidth = b(1).BarWidth/length(sweep);
+%for iBar = 1:length(b)
+    %XBar = (b(iBar).XData - 0.5*b(iBar).BarWidth + 0.5*individualBarWidth)+(iBar-1)*individualBarWidth;
+    %errorbar(XBar,sequentialProbability(:,iBar+1),sequentialStdErrGillespie(:,iBar+1),'.k');
+%end
+
+w = (length(sequentialProbability)-1);
+for l=1:length(sequentialProbability)-1
+    b(l).FaceColor = colors(l,:);
+    b(l).EdgeColor = colors(l,:);
+end
+% print reference line
+hline = refline([0 1/(locationTotal)]);
+hline.Color = 'k';
+hline.LineWidth = 2.5;
+hline.LineStyle = '--';
+
+% axis labels
+set(gca,'xtick',[1,2]);
+set(gca,'xticklabel',[]);
+switch (model)
+    case 10
+
+        if(phos)
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
+            end
+        else
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
             end
         end
-    end
+end
+set(gca,'yticklabel',[]);
+
+% print position and labels
+pos = get(gca, 'position');
+set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','position',[0.5,0.5,1.9,1.9]);
+%set(gca,'units','inches','position',[0.5,0.5,1.7,1.2]);
+
+if (saveSeqPlot)
+    % % save figure
+    savefiletitle = 'ProbVSEvent';
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'-depsc');
+%     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'epsc');
+end
+
+%% Plot Probability versus Sequence - Labels
+
+ax=figure(30); clf; box on; hold on;
+b=bar(secondToLastEventProbability(:,1:end));
+individualBarWidth = b(1).BarWidth/length(sweep);
+% for iBar = 1:length(b)
+%     XBar = (b(iBar).XData - 0.5*b(iBar).BarWidth + 0.5*individualBarWidth)+(iBar-1)*individualBarWidth;
+%     errorbar(XBar,sequentialProbability(:,iBar+1),sequentialStdErrGillespie(:,iBar+1),'.k');
+% end
+
+w = (length(sequentialProbability)-1);
+for l=1:length(sequentialProbability)-1
+    b(l).FaceColor = colors(l,:);
+    b(l).EdgeColor = colors(l,:);
+end
+% print reference line
+hline = refline([0 1/(locationTotal)]);
+hline.Color = 'k';
+hline.LineWidth = 2.5;
+hline.LineStyle = '--';
+
+% axis labels
+set(gca,'xtick',[1 2 3 4 5 6]);
+%set(gca,'xticklabel',sequence);
+xlabel1 = 'Binding Site';
+ylabel1 = 'Probability';
+title1 = 'Probability of Second to Last Event Being Given Binding Site';
+switch (model)
+    
+    case 10
+        if(phos) 
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
+            end
+        else
+            if(max(sweep)>15)
+                ylim([0 max(max(probability(:,2:end)))]);
+            else
+                ylim([0 0.3]);
+                yticks([0 0.1 0.2 0.3]);
+            end
+        end
+end
+
+% print position and labels
+pos = get(gcf, 'position');
+set(gcf,'units','centimeters','position',[1,4,40,30]);
+set(gca,'FontName','Arial','FontSize',30);
+xlabel(xlabel1,'FontName','Arial','FontSize',24);
+ylabel(ylabel1,'FontName','Arial','FontSize',24);
+title(title1,'FontName','Arial','FontSize',24);
+
+% colorbar
+set(gcf,'Colormap',flipud(colormapName))
+colortickind = [length(sweep) 1];
+%clims = [0 1]
+clims = [colors(colortickind(1)) colors(colortickind(2))];
+% cbar = colorbar('Ticks',[colors_fig(colortickind(1)) colors_fig(colortickind(2))],'TickLabels',{'10^{2}','10^{-2}'},'ylim',clims);
+h = colorbar('Ticks',[colors(colortickind(1)) colors(length(sweep)-5) colors(colortickind(2))],'TickLabels',{'',''},'ylim',clims);
+% set(h,'ylim',colorTicks);
+
+%legend(horzcat(legendlabels,{'Random Probability = 1/720'}),'Location','northwest');
+if (saveSeqPlot)
+    % % save figure
+    savefiletitle = 'ProbVSEventLabels';
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'epsc');
 end
 
 
 
+            end
+        end
+    end
+end
 
 %% EXTRA PLOTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

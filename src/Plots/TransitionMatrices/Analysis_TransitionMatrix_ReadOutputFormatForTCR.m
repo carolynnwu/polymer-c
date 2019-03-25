@@ -16,13 +16,13 @@ model = 10; % 1x = LocalStructuring, 3x = Simultaneous Binding
 % 30 = Simultaneous Binding SH2
 
 % Save Transition Matrices and Figures
-writeTransitionMatrix = 0; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
+writeTransitionMatrix = 1; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
 saveTF = 0;
 
 %% 
 
-%savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
-savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/';
+savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
+%savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/';
 
 % from driveM file
 NTCHECK = 200000;
@@ -66,8 +66,8 @@ switch (model)
         locationTotal = 6;
         NFil = 1;
         iSiteTotal(1:NFil) = [6];
-        sweep = -1:1:10;
-        %sweep = -1:1:103;
+        %sweep = -1:1:10;
+        sweep = -1:1:103;
         %sweep = [-1 1:2:15 19:6:103];
         sweepParameter = 'StiffenRange';
         
