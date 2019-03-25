@@ -9,19 +9,20 @@ close all;
 % Pick model
 spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
 membrane = 1; % 0 for membrane off, 1 for membrane on
-model = 10; % 1x = LocalStructuring, 3x = Simultaneous Binding
+model = 11; % 1x = LocalStructuring, 3x = Simultaneous Binding
 
 % 10 = Local Structuring
 
 % 30 = Simultaneous Binding SH2
 
 % Save Transition Matrices and Figures
-writeTransitionMatrix = 1; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
-saveTF = 0;
+writeTransitionMatrix = 0; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
+saveTF = 1;
 
 %% 
 
-savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
+%savefilefolder = '~/Documents/Papers/MultisiteDisorder/Figures';
+savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures';
 %savefilefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/';
 
 % from driveM file
@@ -67,7 +68,42 @@ switch (model)
         NFil = 1;
         iSiteTotal(1:NFil) = [6];
         %sweep = -1:1:10;
-        sweep = -1:1:103;
+        %sweep = -1:1:103;
+        %sweep = [-1 1:2:15 19:6:103];
+        sweep = [-1 1:2:11 12:1:15 19:6:103];
+        %sweep = [-1:3:4 5:2:31 33:3:45 48:5:103]; % probably correct
+        sweepParameter = 'StiffenRange';
+        
+        % figure parameters
+        legendlabels = {'No Stiffening', 'StiffenRange = 0','StiffenRange = 1','StiffenRange = 2','StiffenRange = 3','StiffenRange = 4','StiffenRange = 5','StiffenRange = 6','StiffenRange = 7','StiffenRange = 8','StiffenRange = 9','StiffenRange = 10'};
+        colorIndices = sweep+2;
+        colors = flipud(cool(max(sweep)+2));
+        ms = 5;
+        lw = 1;
+        modificationLabel = '(Phosphorylated)';
+    
+    case 11
+        % model name
+        modelName = 'LocalStructuring';
+        
+        % find files
+        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/1.LocalStructuring';
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/1.OcclusionProbabilities/CatFiles'];
+        filetitle     = strcat(iSiteSpacing,'Membrane',num2str(membrane));
+        
+        % save transition matrices location
+        transitionMatrixfolder    = '~/Documents/Papers/MultisiteDisorder/Data/1.LocalStructuring';
+        transitionMatrixsubfolder = [iSiteSpacing,'/Membrane',membraneState,'/2.TransitionMatrices'];
+        
+        % save figures location
+        savesubfolder = ['1.LocalStructuring/',iSiteSpacing,'/Membrane',membraneState,'/Plots'];
+        
+        % 
+        locationTotal = 6;
+        NFil = 1;
+        iSiteTotal(1:NFil) = [6];
+        %sweep = -1:1:10;
+        sweep = -1:1:5;
         %sweep = [-1 1:2:15 19:6:103];
         sweepParameter = 'StiffenRange';
         
@@ -401,7 +437,15 @@ for s = 1:length(sweep)
 end
 % set first position - 2.5in by 2.5in with no labels
 switch (model)
-    case 10 % stiff
+
+    case 10
+        if(~spacing)
+            ylim([0 1]);
+        else
+            ylim([0 1]);
+        end
+        
+     case 11 % stiff
         %set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -418,6 +462,7 @@ switch (model)
                 set(gca,'YTick',[0.01,0.015,0.02, 0.025,0.03]);
             end
         end
+        
      case {5,7} % sim bind ibEqual
         set(gca,'YScale','log');
         if(~spacing)
@@ -457,7 +502,7 @@ set(gca,'units','inches','position',[[0.5,0.5],2.5,2.5]);
 
 if(saveTF)
     switch model
-        case 2
+        case 10
             savesubsubfolder = 'Phos/FullStiffenRange';
         otherwise
             savesubsubfolder = 'Phos';
@@ -483,7 +528,16 @@ xlabel1 = {['Number of Modified Sites'],modificationLabel};
 ylabel1 = {['Average Binding Rate'],['(per free space binding)']};
 title1 = 'Average Binding Rate vs Total Modified Sites';
 switch (model)
-    case 10 % stiff
+    
+    
+    case 10
+        if(~spacing)
+            ylim([0 1]);
+        else
+            ylim([0 1]);
+        end
+        
+    case 11 % stiff
         %set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -545,7 +599,7 @@ title(title1,'FontName','Arial','FontSize',18);
 
 % set colorbar parameters based on model
 switch (model)
-    case 10
+    case 11
         set(gcf,'Colormap',cool)
         colormap cool;
         h = colorbar;
@@ -562,7 +616,7 @@ end
 
 if(saveTF)
     switch model
-        case 2
+        case 10
             savesubsubfolder = 'Phos/FullStiffenRange';
         otherwise
             savesubsubfolder = 'Phos';
@@ -590,7 +644,7 @@ set(gca,'units','inches','position',[[0.5,0.5],2.5,2.5]);
 
 if(saveTF)
     switch model
-        case 2
+        case 10
             savesubsubfolder = 'Dephos/FullStiffenRange';
         otherwise
             savesubsubfolder = 'Dephos';
@@ -624,7 +678,15 @@ xlabel(xlabel1,'FontName','Arial','FontSize',18);
 ylabel(ylabel1,'FontName','Arial','FontSize',18);
 title(title1,'FontName','Arial','FontSize',18);
 switch (model)
+    
     case 10
+        if(~spacing)
+            ylim([0 1]);
+        else
+            ylim([0 1]);
+        end
+        
+    case 11
         %set(gca,'YScale','log');
         if(~spacing)
             if(~membrane)
@@ -646,7 +708,7 @@ end
 
 % set colorbar parameters
 switch (model)
-    case 10
+    case 11
         set(gcf,'Colormap',cool)
         colormap cool;
         h = colorbar;
@@ -656,7 +718,7 @@ end
 
 if(saveTF)
     switch model
-        case 2
+        case 10
             savesubsubfolder = 'Dephos/FullStiffenRange';
         otherwise
             savesubsubfolder = 'Dephos';
