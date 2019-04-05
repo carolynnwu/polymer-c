@@ -12,38 +12,41 @@ close all;
 % membrane = 1; % 0 for membrane off, 1 for membrane on
 % phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
 for spacing = 0
-    for membrane = 0
+    for membrane = 1
         for phos = 1
-            for sf = 0
-                clearvars -except spacing membrane phos sf
-
-                switch sf
-                    case 0
-                        %sweep = -1:1:103;
-                        %sweep = [-1:2:45 47:4:103]; % acceptably many curves
-                        %sweep = [-1:2:45 48:5:103];% acceptably many curves
-                        sweep = [-1:3:4 5:2:31 33:3:45 48:5:103]; % probably correct
-                        savefilesubsubfolder = ['/FullStiffenRange'];
-                        saveRatesPlot = 1;
-                        saveSeqPlot = 0;
-
-                    case 1
-                        savefilesubsubfolder = [''];
-                        sweep = -1:1:10;
-                        saveRatesPlot = 0;
-                        saveSeqPlot = 1;
-
-                    case 2
-                        savefilesubsubfolder = [''];
-                        sweep = -1:1:5;
-                        saveRatesPlot = 1;
-                        saveSeqPlot = 0;
-
-                end
+%             for sf = 0
+%                 clearvars -except spacing membrane phos sf
+% 
+%                 switch sf
+%                     case 0
+%                         %sweep = -1:1:103;
+%                         %sweep = [-1:2:45 47:4:103]; % acceptably many curves
+%                         %sweep = [-1:2:45 48:5:103];% acceptably many curves
+%                         sweep = [-1:3:4 5:2:31 33:3:45 48:5:103]; % probably correct
+%                         savefilesubsubfolder = ['/FullStiffenRange'];
+%                         saveRatesPlot = 1;
+%                         saveSeqPlot = 0;
+% 
+%                     case 1
+%                         savefilesubsubfolder = [''];
+%                         sweep = -1:1:10;
+%                         saveRatesPlot = 0;
+%                         saveSeqPlot = 1;
+% 
+%                     case 2
+%                         savefilesubsubfolder = [''];
+%                         sweep = -1:1:5;
+%                         saveRatesPlot = 1;
+%                         saveSeqPlot = 0;
+% 
+%                 end
 
             
 % initialization switch for which model we're inspecting
-model = 10; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
+model = 33; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
+
+saveRatesPlot = 0;
+saveSeqPlot = 0;
 
 
 
@@ -249,7 +252,31 @@ switch (model)
         legendlabelsAbbrev = 1:10;
         
         locationTotal = 10;
-        sweep = 1:1:10;
+        sweep = 1:1:12;
+        
+        xlabelModel = 'Radius of Ligand';
+        units = '(Kuhn lengths)';
+        %
+        % create location to save figures
+        savefilesubfolder = ['3.SimultaneousBinding/','TCR','/Membrane',membraneState,'/ibEqual/',phosDirection,'/Sequence'];
+        
+        colors = flipud(cool(11));
+        lw = 2;
+        ms = 10;
+        
+        modificationLabel = '(Phosphorylated)';
+        
+     case 33
+        
+        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/3.SimultaneousBinding/';
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/SepDist17/3.Gillespie/Irreversible/','CatFiles/',phosDirection];
+        filetitle = strcat('IrreversibleGillespie',iSiteSpacing,'Membrane',membraneState,phosDirection);
+        
+        sweepParameter = 'ibRadius';
+        legendlabelsAbbrev = 1:10;
+        
+        locationTotal = 10;
+        sweep = 1:1:13;
         
         xlabelModel = 'Radius of Ligand';
         units = '(Kuhn lengths)';
@@ -351,10 +378,13 @@ for s=1:length(sweep)
     
     %% Find probability path has x as i-th event
     % Only works for locationTotal <= 9 (NOT TCR)
-
-    for eInd = 1:locationTotal
-        secondToLastEventProbability(eInd,s) = sum(probability(eventIndices(eInd,:),s+1));
-        %disp(secondToLastEventProbability(eInd,s));
+    switch model
+        case {32,33}
+        otherwise
+        for eInd = 1:locationTotal
+            secondToLastEventProbability(eInd,s) = sum(probability(eventIndices(eInd,:),s+1));
+            %disp(secondToLastEventProbability(eInd,s));
+        end
     end
     
 end
@@ -376,7 +406,7 @@ for s=1:length(sweep)
         plot_line.MarkerFaceColor = colors(sweep(s)+2,:);
         plot_line.MarkerSize = 3;
     else
-        plot_line.Color = colors(s,1);
+        plot_line.Color = colors(s,:);
         plot_line.MarkerFaceColor = colors(s,:);
     end
 end
@@ -429,8 +459,9 @@ switch model
                 
     case {20,30}
         ylim([0 1]);
-    case { 40}
-        ylim([10^(-7) 1]);
+    case { 32,33,34}
+        set(gca,'YScale','log');
+        ylim([10^(-9) 10^(0)]);
 end
 set(gca,'yticklabel',[]);
 
@@ -455,7 +486,7 @@ for s=1:length(sweep)
         plot_line.MarkerFaceColor = colors(sweep(s)+2,:);
         plot_line.MarkerSize = 3;
     else
-        plot_line.Color = colors(s,1);
+        plot_line.Color = colors(s,:);
         plot_line.MarkerFaceColor = colors(s,:);
     end
 end
@@ -509,8 +540,9 @@ switch model
         
     case {20,30}
         ylim([0 1]);
-    case {40}
-        ylim([10^(-7) 1]);
+    case {32,33}
+        set(gca,'YScale','log');
+        ylim([10^(-9) 10^(0)]);
 end
 set(gcf,'Colormap',colormapName)
 h = colorbar;
@@ -857,7 +889,7 @@ end
 
 
 
-            end
+            %end
         end
     end
 end
