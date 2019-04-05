@@ -8,19 +8,22 @@ close all;
 
 % which model and movie parameters
 membraneVisible = 1; % 0 = don't show membrane, 1 = show membrane
-model = 4; % switch for file location and parameters
-movie = 1; % 0 = don't save movie, 1 = save movie
-kinaseVisible = 1; % 0 = don't show kinases on iSites, 1 = show kinases
+model = 2; % switch for file location and parameters
+movie = 0; % 0 = don't save movie, 1 = save movie
+kinaseVisible = 0; % 0 = don't show kinases on iSites, 1 = show kinases
 scale = 1; %0 = kuhn length, 1 = nanometers, % auto scale is off - needs debugging.  currently using set(gca) method
+saveFinalFrame = 0;
 
 % how many iterations, from which part of the file
 start = 1;
-stop = 5000;
-stepsize = 100;
+stop = 15;
+stepsize = 5;
 iterations = start:stepsize:stop;
 
-filefolder = '~/Documents/Papers/MultisiteDisorder/Analysis/Visual/TCR/';
+filefolder = '~/Documents/Papers/MultisiteDisorder/Data/4.Visual/TCRInit/';
 %filefolder = 'VisualizeData';
+
+savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/3.SimultaneousBinding/TCR/MembraneOn';
 
 
 %% model parameters
@@ -95,6 +98,7 @@ switch(model)
         else
             axes = [-60, 60];
         end
+        savesubfolder = 'SepDist5/Plots/Visuals/';
 
     case 3
         filename = 'TCRNoneBoundBaseSep5.txt';
@@ -305,7 +309,7 @@ for j=1:length(iterations)
     end
     dim = [0.1 0.1 0.1 0.1];
     str = num2str(j);
-    annotation('textbox',dim,'String',str);
+    %annotation('textbox',dim,'String',str);
     set(gca, 'Color',[0.94, 0.94, 0.94]);
     set(gcf, 'Color','w');
     axis 'equal';
@@ -468,3 +472,32 @@ end
 if (movie)
     close(Visual3D);
 end
+
+%% Save Final Frame as Snapshot - with Labels
+
+if(saveFinalFrame)
+    savename = erase(filename,'.txt');
+    savename = [savename,'Labels'];
+    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'epsc');
+    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'fig');
+end
+
+%% Save Final Frame as Snapshot - without Labels
+
+finalFrame = gcf;
+finalFrameAxes = gca;
+set(finalFrameAxes,'XLabel',[]);
+set(finalFrameAxes,'YLabel',[]);
+set(finalFrameAxes,'ZLabel',[]);
+set(finalFrameAxes,'XTickLabel',[]);
+set(finalFrameAxes,'YTickLabel',[]);
+set(finalFrameAxes,'ZTickLabel',[]);
+
+if(saveFinalFrame)
+    savename = erase(filename,'.txt');
+    savename = [savename,'NoLabels'];
+    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'epsc');
+    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'fig');
+end
+    
+    
