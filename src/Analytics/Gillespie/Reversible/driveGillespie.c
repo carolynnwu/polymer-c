@@ -6,6 +6,7 @@
 #define ISITEMAX   9
 #define STATEMAX   1000
 #define ITMAX      1000000000 // use 1e8 on HPC for memory restrictions
+#define ENDSTORAGEMAX 10000000 // True max: ITMAX. Unlikely to use though. Use less for memory constraints.
 #define TALKATIVE  1
 
 #include <math.h>
@@ -45,8 +46,8 @@ int stateStorage[100000],numberStatesStored;
 double timeStorage[100000];
 
 double timeAvgDuration;
-int stateStorage_End[ITMAX];
-double timeStorage_End[ITMAX];
+int stateStorage_End[ENDSTORAGEMAX];
+double timeStorage_End[ENDSTORAGEMAX];
 
 double reverseRate;
 
