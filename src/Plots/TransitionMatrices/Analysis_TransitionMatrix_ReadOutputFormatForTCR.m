@@ -7,16 +7,16 @@ close all;
 %% Initialize model
 
 % Pick model
-spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
+spacing = 2; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
 membrane = 1; % 0 for membrane off, 1 for membrane on
-model = 11; % 1x = LocalStructuring, 3x = Simultaneous Binding
+model = 34; % 1x = LocalStructuring, 3x = Simultaneous Binding
 
 % 10 = Local Structuring
 
 % 30 = Simultaneous Binding SH2
 
 % Save Transition Matrices and Figures
-writeTransitionMatrix = 0; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
+writeTransitionMatrix = 1; % 0 = do not create transitionMatrix files, 1 = create transitionMatrix files
 saveTF = 1;
 
 %% 
@@ -225,13 +225,45 @@ switch (model)
         transitionMatrixsubfolder = [iSiteSpacing,'/Membrane',membraneState,'/SepDist5/2.TransitionMatrices'];
         
         % save figures location
-        savesubfolder = ['3.SimultaneousBinding/',iSiteSpacing,'/Membrane',membraneState,'/SepDist5'];
+        savesubfolder = ['3.SimultaneousBinding/',iSiteSpacing,'/Membrane',membraneState,'/SepDist5/Plots'];
         
         % 
         locationTotal = 10;
         NFil = 6;
         iSiteTotal(1:NFil) = [1 1 3 3 1 1];
         sweep = 1:1:10;
+        sweepParameter = 'ibRadius';
+        
+        % figure parameters
+        legendlabels = {'ibRadius = 1','ibRadius = 2','ibRadius = 3','ibRadius = 4','ibRadius = 5','ibRadius = 6','ibRadius = 7','ibRadius = 8','ibRadius = 9','ibRadius = 10','ibRadius = 11','ibRadius = 12','ibRadius = 13','ibRadius = 14'};
+        colorIndices = sweep;
+        colors = flipud(cool(max(sweep)));
+        ms = 10;
+        lw = 2;
+        modificationLabel = '(Bound)';
+        
+    case 34 % TCR - separation distance175 Kuhn
+        
+        % model name
+        modelName = 'SimultaneousBindingibEqual';
+        
+        % find files
+        filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/3.SimultaneousBinding';
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/SepDist17/1.OcclusionProbabilities/CatFiles'];
+        filetitle     = strcat(iSiteSpacing,'Membrane',num2str(membrane));
+        
+        % save transition matrices location
+        transitionMatrixfolder    = '~/Documents/Papers/MultisiteDisorder/Data/3.SimultaneousBinding/';
+        transitionMatrixsubfolder = [iSiteSpacing,'/Membrane',membraneState,'/SepDist17/2.TransitionMatrices'];
+        
+        % save figures location
+        savesubfolder = ['3.SimultaneousBinding/',iSiteSpacing,'/Membrane',membraneState,'/SepDist17/Plots'];
+        
+        % 
+        locationTotal = 10;
+        NFil = 6;
+        iSiteTotal(1:NFil) = [1 1 3 3 1 1];
+        sweep = 1:1:13;
         sweepParameter = 'ibRadius';
         
         % figure parameters
@@ -493,6 +525,12 @@ switch (model)
                 ylim([10^(-3),10^0]); % EvenSitesMembrane1
             end
         end  
+        
+    case 34 % sim bind ibEqual TCR
+        set(gca,'YScale','log');
+        if(spacing==2)
+            ylim([10^(-6),10^0]); % TCRMembrane1
+        end  
 end
 set(gca,'YTickLabel',[]);
 set(gca,'XTickLabel',[]);
@@ -509,7 +547,7 @@ if(saveTF)
     end
     
     figure(1);
-        savefilename = 'AvgBindVSTotalModifiedNoPathLabels';
+        savefilename = 'AvgBindVSTotalModifiedNoPath';
         saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'fig');
         saveas(gcf,fullfile(savefilefolder,savesubfolder,savesubsubfolder,savefilename),'epsc');
 end
@@ -586,7 +624,13 @@ switch (model)
             else
                 ylim([10^(-3),10^0]); % EvenSitesMembrane1
             end
-        end  
+        end 
+        
+    case 34 % sim bind ibEqual TCR
+        set(gca,'YScale','log');
+        if(spacing==2)
+            ylim([10^(-6),10^0]); % TCRMembrane1
+        end 
 end
 
 % set second position and show labels
@@ -603,9 +647,9 @@ switch (model)
         set(gcf,'Colormap',cool)
         colormap cool;
         h = colorbar;
-        h = colorbar('Ticks',[0 7/9],'TickLabels',{'',''},'YDir','reverse');
-        set(h,'ylim',[0 7/9]);
-    case 2
+        h = colorbar('Ticks',[0 1],'TickLabels',{'',''},'YDir','reverse');
+        set(h,'ylim',[0 1]);
+    case {2,33,34}
         set(gcf,'Colormap',cool)
         colormap cool;
         h = colorbar;
@@ -640,8 +684,12 @@ set(gca,'YTickLabel',[]);
 set(gca,'XTickLabel',[]);
 set(gcf,'units','inches','position',[[1,1],3.5,3.5]);
 set(gca,'units','inches','position',[[0.5,0.5],2.5,2.5]);
-
-
+switch model
+    case 10
+        
+    case {3,33,34}
+        set(gca,'YScale','log');
+end
 if(saveTF)
     switch model
         case 10
@@ -702,7 +750,7 @@ switch (model)
             end
         end
 
-    case 3
+    case {3,33,34}
         set(gca,'YScale','log');
 end
 
@@ -712,8 +760,8 @@ switch (model)
         set(gcf,'Colormap',cool)
         colormap cool;
         h = colorbar;
-        h = colorbar('Ticks',[0 7/9],'TickLabels',{'',''},'YDir','reverse');
-        set(h,'ylim',[0 7/9]);
+        h = colorbar('Ticks',[0 1],'TickLabels',{'',''},'YDir','reverse');
+        set(h,'ylim',[0 1]);
 end
 
 if(saveTF)
