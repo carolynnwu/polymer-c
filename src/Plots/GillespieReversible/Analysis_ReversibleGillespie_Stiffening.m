@@ -3,7 +3,7 @@ clear all; close all;
 
 %% Initialize model parameters
 
-saveTF = 0; % save figures
+saveTF = 1; % save figures
 
 spacing = 0; % 0 = CD3Zeta spacing, 1 = evenly spaced tyrosines
 membrane = 1; % 0 = no membrane, 1 = membrane
@@ -36,25 +36,26 @@ filefolder = '~/Documents/Papers/MultisiteDisorder/Data/1.LocalStructuring/';
 filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Reversible/',typeReversible,'/CatFiles'];
 
 % save location for figures
-savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/1.LocalStructuring/';
-savesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/Hill/',typeReversible];
+%savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/1.LocalStructuring/';
+savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/1.LocalStructuring/';
+savesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/Plots/Hill/',typeReversible];
 
 % range of parameter sweep
-stiffenrange = -1:1:5;
-totalAAImmPerMod = [0, stiffenrange(2:end)*2+1];
+sweep = -1:1:5;
+totalAAImmPerMod = [0, sweep(2:end)*2+1];
 % figure parameters
-colors = flipud(cool(9));
+colors = flipud(cool(max(sweep)+2));
 lw = 2;
 ms_hill = 2;
 ms_coeff = 7;
 ms_lw = 1.5;
 
-hillcoeffEst = zeros(length(stiffenrange),1);
-hillcoeffEstPhos = zeros(length(stiffenrange),1);
+hillcoeffEst = zeros(length(sweep),1);
+hillcoeffEstPhos = zeros(length(sweep),1);
 
-for s = 1:length(stiffenrange)
+for s = 1:length(sweep)
 
-    filename = ['GillespieReversibleLocalStructuring',iSiteSpacing,'Membrane',num2str(membrane),typeReversible,'.',num2str(stiffenrange(s)),'.cat.txt'];
+    filename = ['GillespieReversibleLocalStructuring',iSiteSpacing,'Membrane',num2str(membrane),typeReversible,'.',num2str(sweep(s)),'.cat.txt'];
 
 
     %% Import data, parse into variables
@@ -249,7 +250,7 @@ legend('StiffRange = None','StiffRange = 0','StiffRange = 1','StiffRange = 2','S
 % colorbar
 colormap cool;
 h = colorbar('Ticks',[0 1],'TickLabels',{'',''},'YDir','reverse');
-set(h,'ylim',[0 7/9]);
+set(h,'ylim',[0 1]);
 
 if(saveTF)
     saveas(gcf,fullfile(savefolder,savesubfolder,'PhosFractionVSPhosRateLabels'),'fig');
@@ -263,14 +264,19 @@ end
 gray = [0.7 0.7 0.7];
 figure(34); hold on; box on;
 plot(totalAAImmPerMod,HillCoeffMaxSlope,'-k','LineWidth',lw);
-for s=1:length(stiffenrange)
+for s=1:length(sweep)
     plot(totalAAImmPerMod(s),HillCoeffMaxSlope(s),'o','LineWidth',ms_lw,'Color',colors(s,:),'MarkerSize',ms_coeff,'MarkerFaceColor',colors(s,:),'MarkerEdgeColor','k');
 end
 plot(totalAAImmPerMod,hillcoeffEst,'-','Color',gray,'LineWidth',lw);
-for s=1:length(stiffenrange)
+for s=1:length(sweep)
     plot(totalAAImmPerMod(s),hillcoeffEst(s),'o','LineWidth',ms_lw,'Color',colors(s,:),'MarkerSize',ms_coeff,'MarkerFaceColor',colors(s,:),'MarkerEdgeColor',gray);
 end
-ylim([0.8 2]);
+switch constant
+    case {0,1}
+        ylim([0.8 2]);
+    case 2
+        ylim([0.6 1.5]);
+end
 xlim([0 11]);
 set(gca,'XTick',0:1:11);
 set(gca,'XTickLabel',[]);
@@ -285,18 +291,23 @@ end
 
 figure(340); hold on; box on;
 plot(totalAAImmPerMod,HillCoeffMaxSlope,'-k','LineWidth',lw);
-for s=1:length(stiffenrange)
+for s=1:length(sweep)
     plot(totalAAImmPerMod(s),HillCoeffMaxSlope(s),'o','LineWidth',ms_lw,'Color',colors(s,:),'MarkerSize',ms_coeff,'MarkerFaceColor',colors(s,:),'MarkerEdgeColor','k');
 end
 plot(totalAAImmPerMod,hillcoeffEst,'-','Color',gray,'LineWidth',lw);
-for s=1:length(stiffenrange)
+for s=1:length(sweep)
     plot(totalAAImmPerMod(s),hillcoeffEst(s),'o','LineWidth',ms_lw,'Color',colors(s,:),'MarkerSize',ms_coeff,'MarkerFaceColor',colors(s,:),'MarkerEdgeColor',gray);
 end
 xlabel1 = {'Total amino acids', 'immobiziled per modification'};
 ylabel1 = 'Hill coefficient';
 xlabel(xlabel1,'FontName','Arial','FontSize',18);
 ylabel(ylabel1,'FontName','Arial','FontSize',18);
-ylim([0.8 2]);
+switch constant
+    case {0,1}
+        ylim([0.8 2]);
+    case 2
+        ylim([0.6 1.5]);
+end
 xlim([0 11]);
 set(gca,'XTick',0:1:11);
 colormap cool;
