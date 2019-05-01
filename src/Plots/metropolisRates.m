@@ -4,7 +4,7 @@ folder = '~/Documents/PolymerGit/src/PolymerCode';
 filename = 'OccupiediSitesMouse.txt';
 
 savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/1.LocalStructuring/RatesStatesExample';
-saveTF=1;
+saveTF=0;
 
 % state matrix - 0 or 1;
 phosphoStates = dlmread(fullfile(folder,filename),'_');
@@ -30,7 +30,7 @@ end
 hm.CellLabelColor = 'None';
 hm.YDisplayLabels = ydispLabels;
 hm.XDisplayLabels = xdispLabels;
-set(gcf,'Position',[1 1 135 1400]);
+set(gcf,'units','inches','Position',[0.5 0.5 0.85 8.75]);
 
 if(saveTF)
     savefilename = 'PhosphoStates';
@@ -113,7 +113,7 @@ for l=1:6
     xdispLabels{l} = {''};
 end
 hm.XDisplayLabels = xdispLabels;
-set(gcf,'Position',[1 1 400 1400]);
+set(gcf,'units','inches','Position',[0.5 0.5 2.5 8.75]);
 
 if(saveTF)
     savefilename = 'RatesExample';
@@ -134,12 +134,14 @@ end
 
 hm.YDisplayLabels = ydispLabels;
 hm.CellLabelFormat = '%0.4f';
+hm.FontSize = 12;
+hm.ColorbarVisible = 'off';
 
 for l=1:6
     xdispLabels{l} = {''};
 end
 hm.XDisplayLabels = xdispLabels;
-set(gcf,'Position',[1 1 400 1400]);
+set(gcf,'units','inches','Position',[1 1 2.5 8.75]);
 
 if(saveTF)
     savefilename = 'RatesExampleLabels';
