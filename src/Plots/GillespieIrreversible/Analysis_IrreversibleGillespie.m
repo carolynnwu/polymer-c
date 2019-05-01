@@ -11,9 +11,10 @@ close all;
 % spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
 % membrane = 1; % 0 for membrane off, 1 for membrane on
 % phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
-for spacing = 0
+for spacing = 3
     for membrane = 1
         for phos = 1
+            sf = 1
 %             for sf = 0
 %                 clearvars -except spacing membrane phos sf
 % 
@@ -43,9 +44,9 @@ for spacing = 0
 
             
 % initialization switch for which model we're inspecting
-model = 33; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
+model = 32; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
 
-saveRatesPlot = 0;
+saveRatesPlot = 1;
 saveSeqPlot = 0;
 
 
@@ -245,26 +246,28 @@ switch (model)
      case 32
         
         filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/3.SimultaneousBinding/';
-        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/SepDist5/3.Gillespie/Irreversible/',phosDirection,'/CatFiles'];
-        filetitle = strcat('Gillespie',iSiteSpacing,'Membrane',num2str(membrane));
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/SepDist5/3.Gillespie/Irreversible/','CatFiles/',phosDirection];
+        filetitle = strcat('IrreversibleGillespie',iSiteSpacing,'Membrane',membraneState,phosDirection);
         
         sweepParameter = 'ibRadius';
-        legendlabelsAbbrev = 1:10;
+        legendlabelsAbbrev = 1:14;
         
         locationTotal = 10;
-        sweep = 1:1:12;
+        sweep = 1:1:14;
         
         xlabelModel = 'Radius of Ligand';
         units = '(Kuhn lengths)';
         %
         % create location to save figures
-        savefilesubfolder = ['3.SimultaneousBinding/','TCR','/Membrane',membraneState,'/ibEqual/',phosDirection,'/Sequence'];
+        savefilesubfolder = ['3.SimultaneousBinding/','TCR','/Membrane',membraneState,'/SepDist5/Plots/',phosDirection,'/Sequence'];
         
-        colors = flipud(cool(11));
+        colors = flipud(cool(14));
         lw = 2;
         ms = 10;
         
         modificationLabel = '(Phosphorylated)';
+        
+        GillespieRuns = 1000000000;
         
      case 33
         
@@ -282,13 +285,15 @@ switch (model)
         units = '(Kuhn lengths)';
         %
         % create location to save figures
-        savefilesubfolder = ['3.SimultaneousBinding/','TCR','/Membrane',membraneState,'/ibEqual/',phosDirection,'/Sequence'];
+        savefilesubfolder = ['3.SimultaneousBinding/','TCR','/Membrane',membraneState,'/SepDist17/Plots/',phosDirection,'/Sequence'];
         
-        colors = flipud(cool(11));
-        lw = 2;
+        colors = flipud(cool(13));
+        lw = 1.5;
         ms = 10;
         
         modificationLabel = '(Phosphorylated)';
+        
+        GillespieRuns = 1000000000;
         
         
 end
@@ -325,22 +330,24 @@ stdErrGillespie(:,1) = path(:);
 
 %% Find indices of paths where x is i-th event
 % Only works for locationTotal <= 9 (NOT TCR)
+switch model
+    case {32,33}
+    otherwise
+        % initialize
+        eventIndices = zeros(locationTotal,factorial(locationTotal)/locationTotal);
+        secondToLastEventProbability = zeros(locationTotal,length(sweep));
 
-% initialize
-eventIndices = zeros(locationTotal,factorial(locationTotal)/locationTotal);
-secondToLastEventProbability = zeros(locationTotal,length(sweep));
+        % find second to last event
+        eventIndex = 5; % options: 1 to locationTotal
+        eventModifier = locationTotal-eventIndex;
 
-% find second to last event
-eventIndex = 5; % options: 1 to locationTotal
-eventModifier = locationTotal-eventIndex;
+        % find index of paths where designated event is x
+        secondToLastEvent = mod(floor(path(:)/10^(eventModifier)),10);
 
-% find index of paths where designated event is x
-secondToLastEvent = mod(floor(path(:)/10^(eventModifier)),10);
-
-for eInd = 1:locationTotal
-    eventIndices(eInd,:) = find(secondToLastEvent == eInd);
+        for eInd = 1:locationTotal
+            eventIndices(eInd,:) = find(secondToLastEvent == eInd);
+        end
 end
-
 %% READ FILES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% READ FILES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -389,6 +396,13 @@ for s=1:length(sweep)
     
 end
 
+
+%% save workspace
+save(fullfile(savefilefolder,savefilesubfolder,'Data.mat'));
+
+%% load workspace
+load(fullfile(savefilefolder,savefilesubfolder,'Data.mat'));
+
 %% AVERAGE TRANSITION RATE PLOTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%% AVERAGE TRANSITION RATE PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -408,13 +422,10 @@ for s=1:length(sweep)
     else
         plot_line.Color = colors(s,:);
         plot_line.MarkerFaceColor = colors(s,:);
+        plot_line.MarkerSize = 2;
     end
 end
-switch model
-    case {30,40}
-        set(gca,'yscale','log');
-    otherwise
-end
+
 set(gca,'xlim',[0 locationTotal-1]);
 set(gca,'XTick',0:1:locationTotal-1);
 set(gca,'xticklabel',[]);
@@ -461,7 +472,7 @@ switch model
         ylim([0 1]);
     case { 32,33,34}
         set(gca,'YScale','log');
-        ylim([10^(-9) 10^(0)]);
+        ylim([10^(-10) 10^(0)]);
 end
 set(gca,'yticklabel',[]);
 
@@ -472,8 +483,8 @@ set(gcf,'units','inches','position',[1,1,3,3]); set(gca,'units','inches','positi
 if (saveRatesPlot)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModified';
-    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
-    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'-depsc');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'fig');
+    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefiletitle),'-depsc');
 end
 
 %% Average Transition Rates VS Number of Modified Sites - Labels
@@ -541,10 +552,12 @@ switch model
     case {20,30}
         ylim([0 1]);
     case {32,33}
+        xlim([0 locationTotal-1])
         set(gca,'YScale','log');
-        ylim([10^(-9) 10^(0)]);
+        ylim([10^(-10) 10^(0)]);
 end
-set(gcf,'Colormap',colormapName)
+%set(gcf,'Colormap',colormapName);
+colormap cool;
 h = colorbar;
 h = colorbar('Ticks',[0 1],'TickLabels',{'',''},'YDir','reverse');
 set(h,'ylim',[0 1]);
@@ -559,8 +572,8 @@ title(title1,'FontName','Arial','FontSize',24);
 if (saveRatesPlot)
     % % save figure
     savefiletitle = 'AvgTransRateVSNumberModifiedLabels';
-    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'fig');
-    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'-depsc');
+    saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefiletitle),'fig');
+    print('-painters',fullfile(savefilefolder,savefilesubfolder,savefiletitle),'-depsc');
 end
 
 %% SEQUENCE PROBABILITY PLOTS
@@ -757,6 +770,11 @@ end
 %%%%%%%%%%%%%%%%% SECOND TO LAST EVENT PROBABILITY PLOTS %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+switch model
+    case {32,33}
+    otherwise
+        
 %% Plot Probability versus Sequence - No Labels
 
 ax=figure(3); clf; box on; hold on;
@@ -887,7 +905,7 @@ if (saveSeqPlot)
     saveas(gcf,fullfile(savefilefolder,savefilesubfolder,savefilesubsubfolder,savefiletitle),'epsc');
 end
 
-
+end
 
             %end
         end
