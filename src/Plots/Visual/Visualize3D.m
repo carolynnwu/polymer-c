@@ -12,7 +12,7 @@ model = 2; % switch for file location and parameters
 movie = 0; % 0 = don't save movie, 1 = save movie
 kinaseVisible = 0; % 0 = don't show kinases on iSites, 1 = show kinases
 scale = 1; %0 = kuhn length, 1 = nanometers, % auto scale is off - needs debugging.  currently using set(gca) method
-saveFinalFrame = 0;
+saveFinalFrame = 1;
 
 % how many iterations, from which part of the file
 start = 1;
@@ -131,9 +131,9 @@ end
 
 moviename = [filename,'withKinase'];
 
-lw = 5;
-marker_lw = 3;
-ms = 10;
+lw = 2;
+marker_lw = 2;
+ms = 8;
 %colors = [0.8 0 0; 0 0 0.7; 0.8 0 0.8; 0 0.7 0]
 %colors_fil = [colors(1,:); colors(2,:); colors(3,:); colors(3,:); colors(4,:); colors(1,:)];
 colors_fil = [0.7 0 0; 0 0.5 0.8; 0 0.5 0; 0 0.8 0; 0.7 0 0.7; 1 0 0]
@@ -289,9 +289,11 @@ end
 %% plot
 for j=1:length(iterations)
 
-    figure(1); clf; box on; hold on; 
-    
+    figure(1); clf; box on; hold on; view([51 12]);
+    %set(gca, 'Color',[0.94, 0.94, 0.94]);
     switch(model)
+        case 2
+            set(gcf,'Position',[1 1 270 375]);
         case {4,5}
             view([-32.6 24.8]);
             set(gcf,'Position',[1065 148 1250 1197]);
@@ -478,7 +480,7 @@ end
 if(saveFinalFrame)
     savename = erase(filename,'.txt');
     savename = [savename,'Labels'];
-    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'epsc');
+    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'pdf');
     saveas(gcf,fullfile(savefolder,savesubfolder,savename),'fig');
 end
 
@@ -496,7 +498,7 @@ set(finalFrameAxes,'ZTickLabel',[]);
 if(saveFinalFrame)
     savename = erase(filename,'.txt');
     savename = [savename,'NoLabels'];
-    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'epsc');
+    saveas(gcf,fullfile(savefolder,savesubfolder,savename),'pdf');
     saveas(gcf,fullfile(savefolder,savesubfolder,savename),'fig');
 end
     
