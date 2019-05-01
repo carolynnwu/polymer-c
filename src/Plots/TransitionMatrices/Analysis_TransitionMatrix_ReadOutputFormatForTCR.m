@@ -9,7 +9,7 @@ close all;
 % Pick model
 spacing = 2; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
 membrane = 1; % 0 for membrane off, 1 for membrane on
-model = 34; % 1x = LocalStructuring, 3x = Simultaneous Binding
+model = 33; % 1x = LocalStructuring, 3x = Simultaneous Binding
 
 % 10 = Local Structuring
 
@@ -231,7 +231,7 @@ switch (model)
         locationTotal = 10;
         NFil = 6;
         iSiteTotal(1:NFil) = [1 1 3 3 1 1];
-        sweep = 1:1:10;
+        sweep = 1:1:14;
         sweepParameter = 'ibRadius';
         
         % figure parameters
@@ -526,10 +526,10 @@ switch (model)
             end
         end  
         
-    case 34 % sim bind ibEqual TCR
+    case {33,34} % sim bind ibEqual TCR
         set(gca,'YScale','log');
         if(spacing==2)
-            ylim([10^(-6),10^0]); % TCRMembrane1
+            ylim([10^(-7),10^0]); % TCRMembrane1
         end  
 end
 set(gca,'YTickLabel',[]);
@@ -626,10 +626,10 @@ switch (model)
             end
         end 
         
-    case 34 % sim bind ibEqual TCR
+    case {33,34} % sim bind ibEqual TCR
         set(gca,'YScale','log');
         if(spacing==2)
-            ylim([10^(-6),10^0]); % TCRMembrane1
+            ylim([10^(-7),10^0]); % TCRMembrane1
         end 
 end
 
