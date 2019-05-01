@@ -30,7 +30,7 @@ end
 hm.CellLabelColor = 'None';
 hm.YDisplayLabels = ydispLabels;
 hm.XDisplayLabels = xdispLabels;
-set(gcf,'Position',[1 1 135 1400]);
+set(gcf,'units','inches','Position',[0.25 0.25 0.85 8.75]);
 
 if(saveTF)
     savefilename = 'PhosphoStates';
@@ -113,7 +113,7 @@ for l=1:6
     xdispLabels{l} = {''};
 end
 hm.XDisplayLabels = xdispLabels;
-set(gcf,'Position',[1 1 400 1400]);
+set(gcf,'units','inches','Position',[0.25 0.25 2.5 8.75]);
 
 if(saveTF)
     savefilename = 'RatesExample';
