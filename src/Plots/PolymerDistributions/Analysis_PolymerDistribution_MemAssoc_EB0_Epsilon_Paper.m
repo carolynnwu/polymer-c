@@ -61,24 +61,11 @@ switch (model)
         controlSubfolder = '20180409MembraneAssociationCD3ZetaMembraneOnEB0Zero';
         controlFilename = 'CD3ZetaElectrostaticsDistributionControl';
         
-    case 2
-        subfolder = '20180307CD3ZetaElectrostaticsEP0Sweep';
-        
-        filenamePrefix = 'CD3ZetaElectrostatics';
-        
-        
-        PD = 0.5;  % parabola depth
-        PW = 0.5/9;  % parabola width
-        WK = 0.05;  % wall parabola k
-        ER = logspace(-2,2,101);  % repulsive energy multiplier
-        ZR = 3;  % repulsive energy exponent multiplier
-        
-        sweepVariable = ER;
-        colors = parula(202);
         
     case 3
         %subfolder = '20180306CD3ZetaElectrostaticsEB0Sweep';
-        subfolder = '20181126MembraneAssociationCD3EpsilonMembraneOnEB0Sweep';
+        %subfolder = '20190411MembraneAssociationCD3EpsilonMembraneOnEB0Sweep';
+        subfolder = 'CatFiles';
         savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Distributions/';
         
         filenamePrefix = 'CD3EpsilonElectrostatics';
@@ -126,10 +113,8 @@ for k = 1:length(WK)
                     switch (model)
                         case 1
                             filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
-                        case 2
-                            filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
                         case 3
-                            filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
+                            filename = strcat(filenamePrefix,'.EB0.',ER);
                         
                     end
                     
