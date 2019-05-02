@@ -42,28 +42,28 @@ end
 
 %% Initialize TCR
 
-NFil = 6;
+NFil = 6; - epsilon
 % Filament 1
 Filaments(1).N = 55;
 Filaments(1).iSites = [41]+1;
 Filaments(1).bSites = [];
-% Fil 2
+% Fil 2 - delta
 Filaments(2).N = 47;
 Filaments(2).iSites = [28]+1;
 Filaments(2).bSites = [];
-% Fil 3
+% Fil 3 - zeta
 Filaments(3).N = 113;
 Filaments(3).iSites = [26,65,96]+1;
 Filaments(3).bSites = [];
-% Fil 4
+% Fil 4 - zeta
 Filaments(4).N = 113;
 Filaments(4).iSites = [26,65,96]+1;
 Filaments(4).bSites = [];
-% Filament 5
+% Filament 5 - gamma
 Filaments(5).N = 45;
 Filaments(5).iSites = [28]+1;
 Filaments(5).bSites = [];
-% Filament 6
+% Filament 6 - epsilon
 Filaments(6).N = 55;
 Filaments(6).iSites = [41]+1;
 Filaments(6).bSites = [];

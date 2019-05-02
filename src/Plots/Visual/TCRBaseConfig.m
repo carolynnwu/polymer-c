@@ -5,11 +5,11 @@ saveTF = 1;
 
 baseSepDistance = [5,17]; % Kuhn lengths
 NFIL = 6; % number of filaments in TCR
-ms = 10; % marker size
+ms = 15; % marker size
 xm=6; % x limit in nm
 ym=6; % y limit in nm
 colors_fil = [0.7 0 0; 0 0.5 0.8; 0 0.5 0; 0 0.8 0; 0.7 0 0.7; 1 0 0]
-lw = 3; % line width
+lw = 4; % line width
 fs = 18; % font size
 savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/3.SimultaneousBinding/TCR/MembraneOn';
 
@@ -31,9 +31,9 @@ for nf=1:1:NFIL
 end
 xlim([-xm,xm]);
 ylim([-ym,ym]);
-set(gca,'XTickLabel',[]);
-set(gca,'YTickLabel',[]);
-set(gca,'units','inches','position',[[0.5,0.5],2.5,2.5]);
+set(gca,'xtick',[-6 -3 0 3 6],'XTickLabel',[]);
+set(gca,'ytick',[-6 -3 0 3 6],'YTickLabel',[]);
+set(gca,'units','inches','position',[[0.5,0.5],2,2]);
 
 if(saveTF)
     figure(1);
@@ -71,9 +71,9 @@ for nf=1:1:NFIL
 end
 xlim([-xm,xm]);
 ylim([-ym,ym]);
-set(gca,'XTickLabel',[]);
-set(gca,'YTickLabel',[]);
-set(gca,'units','inches','position',[[0.5,0.5],2.5,2.5]);
+set(gca,'xtick',[-6 -3 0 3 6],'XTickLabel',[]);
+set(gca,'ytick',[-6 -3 0 3 6],'YTickLabel',[]);
+set(gca,'units','inches','position',[[0.5,0.5],2,2]);
 
 if(saveTF)
     figure(2);
