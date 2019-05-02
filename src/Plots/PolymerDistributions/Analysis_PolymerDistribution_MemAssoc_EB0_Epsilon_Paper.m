@@ -11,7 +11,7 @@ NTCHECK = 200000;
 NBINS = 3000; % how many bins are there currently
 KBT = 4.14;
 bSiteTotal = 0; % how many bound ligands are there - for reading files properly
-saveTF = 0; % save figures
+saveTF = 1; % save figures
 rebin = 1; % rebin distributions to smooth
 
 server = 0;
@@ -68,7 +68,7 @@ switch (model)
         subfolder = 'CatFiles';
         savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Distributions/';
         
-        filenamePrefix = 'CD3EpsilonElectrostatics';
+        filenamePrefix = 'CD3EpsilonMembraneAssociation';
         
         PD = logspace(-6,2,201);  % parabola depth
         PW = 1;  % parabola width
@@ -88,8 +88,8 @@ switch (model)
         iSiteTotal = 2;
         BinSize = 2*N/NBINS; % what is the current binsize
         
-        controlSubfolder = '20181126MembraneAssociationCD3EpsilonMembraneOnEB0Zero';
-        controlFilename = 'CD3EpsilonElectrostaticsDistributionControl';
+        %controlSubfolder = '20181126MembraneAssociationCD3EpsilonMembraneOnEB0Zero';
+        %controlFilename = 'CD3EpsilonElectrostaticsDistributionControl';
         plotiSite = 1;
 end
 
@@ -114,7 +114,7 @@ for k = 1:length(WK)
                         case 1
                             filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
                         case 3
-                            filename = strcat(filenamePrefix,'.EB0.',ER);
+                            filename = strcat(filenamePrefix,'.EB0.',num2str(d));
                         
                     end
                     
@@ -173,8 +173,8 @@ end
 distributionDataControl = zeros(iSiteTotal+1,NBINS);
 
 %% Open file and retrieve distribution data for control
-
-M = dlmread(fullfile(controlFolder,controlSubfolder,controlFilename));
+filename = strcat(filenamePrefix,'.EB0.',num2str(0));
+M = dlmread(fullfile(folder,subfolder,filename));
 
 ntTotal = M(1,1);
 ree2Control = M(1,12+2*(iSiteTotal+1));
@@ -556,7 +556,7 @@ if(rebin)
         lg = plot(xaxisRebinnedNM,distributionDataControlRebinnedNM(i,:),'--b','LineWidth',lw+1);
         ylim([0 2]);
         yticks([0 0.25 0.5 0.75 1 1.25 1.5 1.75 2]);
-        colormap bone;
+        colormap gray;
         colortickind = [2*dColorInd(end) 2*dColorInd(1)];
         clims = [colors_fig(colortickind(1)) colors_fig(colortickind(2))];
         cbar = colorbar('Ticks',[colors_fig(colortickind(1)) colors_fig(colortickind(2))],'TickLabels',{'10^{2}','10^{-2}'},'ylim',clims);
