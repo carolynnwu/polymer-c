@@ -250,10 +250,12 @@ switch (model)
         filetitle = strcat('IrreversibleGillespie',iSiteSpacing,'Membrane',membraneState,phosDirection);
         
         sweepParameter = 'ibRadius';
-        legendlabelsAbbrev = 1:14;
+        %legendlabelsAbbrev = 1:14; % 14 finished total
+        legendlabelsAbbrev = 1:13; % only plot 13 to match SepDist17
         
         locationTotal = 10;
-        sweep = 1:1:14;
+        %sweep = 1:1:14; % 14 finished total
+        sweep = 1:1:13; % only plot 13 to match SepDist17
         
         xlabelModel = 'Radius of Ligand';
         units = '(Kuhn lengths)';
@@ -261,8 +263,8 @@ switch (model)
         % create location to save figures
         savefilesubfolder = ['3.SimultaneousBinding/','TCR','/Membrane',membraneState,'/SepDist5/Plots/',phosDirection,'/Sequence'];
         
-        colors = flipud(cool(14));
-        lw = 2;
+        colors = flipud(cool(length(sweep)));
+        lw = 1.5;
         ms = 10;
         
         modificationLabel = '(Phosphorylated)';
