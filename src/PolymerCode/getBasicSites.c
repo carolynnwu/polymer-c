@@ -54,6 +54,7 @@ void getBasicSites()
         
     }
     
+    // debugging, user check - check number of filaments (from filaments file) against number of lines in basic sites file
     if(nf!=NFil)
     {
         printf("Error! Number of filaments mismatch between filaments and  basicSites!\n");
@@ -103,7 +104,7 @@ void getBasicSites()
         }
     }
     
-    //for debugging - prints a list of the iSites
+    //for debugging - prints a list of the basic sites
     
     if (TALKATIVE)
     {

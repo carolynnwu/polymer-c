@@ -256,6 +256,7 @@ void getSites()
                     
                 }
                 
+                // Debugging, user error exit - check number of filaments against total lines in bSites file
                 if(nf!=NFil)
                 {
                     printf("Error! Number of filaments mismatch between filaments and bSites!\n");

@@ -54,7 +54,6 @@ void metropolisJoint()
         e2Base[nf][2]=0;
     }
 	
-    //THINK ABOUT THIS PART HERE!!!!!!!!!!!!!
 	// initial configuration
     for(nf=0;nf<NFil;nf++)
     {
@@ -223,7 +222,8 @@ void metropolisJoint()
 
         //If using STIFFEN
             //test if joint is stiff
-                // (e.g., if joint i is 'stiff', then the angle between points i-2, i-1, i will remain fixed)
+                // (e.g., if joint i is 'stiff', then the angle between points i-1, i, i+1 will remain fixed (by design in initializeStiffSites) )
+        
             //replace proposed joint until one is found that is not stiff
         if (STIFFEN)
         {
@@ -240,7 +240,7 @@ void metropolisJoint()
 
         }
         
-        //THINK ABOUT THIS PART HERE!!!!!!!!!!!!!
+        //
 		if(iPropose==0)
 		{
 			dChiHere = dChi[0];
@@ -284,13 +284,10 @@ void metropolisJoint()
             // -- translate to proposal configuration --
             // rotate base
             
-            //THINK ABOUT THIS PART HERE!!!!!!!!!!!!!
             // rotate only the proposed filament
             // do I need to 'set/rotate' proposed base for other filaments??
             rotate(&tBase[nfPropose][0], &e1Base[nfPropose][0], &e2Base[nfPropose][0], &tPropose[nfPropose][0][0], &e1Propose[nfPropose][0][0], &e2Propose[nfPropose][0][0], phiPropose[nfPropose][0], thetaPropose[nfPropose][0], psiPropose[nfPropose][0]);
             
-            
-            //THINK ABOUT THIS PART HERE!!!!!!!!!!!!!
             for(ix=0;ix<3;ix++)
                 rPropose[nfPropose][0][ix] = rBase[nfPropose][ix] + tPropose[nfPropose][0][ix];
             
