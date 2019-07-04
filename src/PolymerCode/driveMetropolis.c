@@ -183,28 +183,21 @@ int main( int argc, char *argv[] )
     if(argv[4])
     {
         if(atoi(argv[4])!=-1)
-            NFil = atoi(argv[4]);
-        if (TALKATIVE) printf("This is the number of filaments: %ld\n", NFil);
+            baseSepDistance = atof(argv[4]);
+        if (TALKATIVE) printf("This is the base separation distance: %lf\n", baseSepDistance);
     }
 
     if(argv[5])
     {
         if(atoi(argv[5])!=-1)
-            baseSepDistance = atof(argv[5]);
-        if (TALKATIVE) printf("This is the base separation distance: %lf\n", baseSepDistance);
-    }
-
-    if(argv[6])
-    {
-        if(atoi(argv[6])!=-1)
-            Force = atof(argv[6]);
+            Force = atof(argv[5]);
         if (TALKATIVE) printf("This is the force: %lf\n", Force);
     }
     
-    if(argv[7])
+    if(argv[6])
     {
-        if(atoi(argv[7])!=-1)
-            kdimer = atof(argv[7]);
+        if(atoi(argv[6])!=-1)
+            kdimer = atof(argv[6]);
         if (TALKATIVE) printf("This is the dimerization force: %lf\n", kdimer);
     }
     

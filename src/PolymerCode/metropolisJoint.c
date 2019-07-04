@@ -38,6 +38,7 @@ void metropolisJoint()
     // Randomly spaced? Fixed separation distance from origin?
     // Could set it like set iSites etc
     //initalize base
+    // tBase,e1Base,e2Base form coordinate system reference - these are never updated
     for(nf=0;nf<NFil;nf++)
     {
         tBase[nf][0]=0;
@@ -253,7 +254,6 @@ void metropolisJoint()
 		}
 		
         constraintProposalsTotal = 0;
-        long rounds = 0;
 		constraintSatisfiedTF = 0;
 
 		while(!constraintSatisfiedTF && constraintProposalsTotal < CPMAX) // keep generating proposal configurations until we get one that satisfies the constraint

@@ -9,6 +9,8 @@ void dataRecording();
 /*******************************************************************************/
 
 double reeBar_sum[NFILMAX], ree2Bar_sum[NFILMAX], rMBar_sum[NFILMAX], rM2Bar_sum[NFILMAX], rMiSiteBar_sum[NFILMAX][NMAX], rM2iSiteBar_sum[NFILMAX][NMAX];
+double reeiSiteBar_sum[NFILMAX][NMAX], ree2iSiteBar_sum[NFILMAX][NMAX];
+double reeiSiteBar[NFILMAX][NMAX], ree2iSiteBar[NFILMAX][NMAX];
 
 double reeFilBar_sum[NFILMAX][NFILMAX],ree2FilBar_sum[NFILMAX][NFILMAX];
 double reeFilBar[NFILMAX][NFILMAX], ree2FilBar[NFILMAX][NFILMAX];
@@ -18,7 +20,7 @@ long POcclude_sum[NFILMAX][NMAX], Prvec0_sum[NFILMAX][NMAX], POccludeBase_sum[NF
 double reeBar[NFILMAX], ree2Bar[NFILMAX];
 double POcclude[NFILMAX][NMAX], POccludeBase[NFILMAX];
 double PDeliver[NFILMAX][NMAX], Prvec0[NFILMAX][NMAX],PMembraneOcclude[NFILMAX][NMAX],PMembraneSegmentOcclude[NFILMAX][NMAX];
-double reeiSite[NFILMAX][NMAX], rMBar[NFILMAX], rM2Bar[NFILMAX], rMiSiteBar[NFILMAX][NMAX], rM2iSiteBar[NFILMAX][NMAX];
+double reeiSite[NFILMAX][NMAX], ree2iSite[NFILMAX][NMAX], rMBar[NFILMAX], rM2Bar[NFILMAX], rMiSiteBar[NFILMAX][NMAX], rM2iSiteBar[NFILMAX][NMAX];
 
 double distiSiteToLigand[NFILMAX][NMAX][NMAX], selfBind[NFILMAX][NMAX][NMAX], selfBindFraction[NFILMAX][NMAX][NMAX], localConcentration[NFILMAX][NMAX][NMAX];
 
@@ -63,6 +65,9 @@ void initializeSummary()
         //distance of iSites to membrane
         for (iy=0;iy<iSiteTotal[nf];iy++)
         {
+            reeiSiteBar_sum[nf][iy] = 0;
+            ree2iSiteBar_sum[nf][iy] = 0;
+            
             rMiSiteBar_sum[nf][iy] = 0;
             rM2iSiteBar_sum[nf][iy] = 0;
         }
@@ -142,8 +147,12 @@ void finalizeSummary()
         //average distance of iSites to membrane
         for (iy=0;iy<iSiteTotal[nf];iy++)
         {
+            reeiSiteBar[nf][iy] = reeiSiteBar_sum[nf][iy]/(double)(nt-NTCHECK);
+            ree2iSiteBar[nf][iy] = ree2iSiteBar_sum[nf][iy]/(double)(nt-NTCHECK);
+            
             rMiSiteBar[nf][iy] = rMiSiteBar_sum[nf][iy]/(double)(nt-NTCHECK);
             rM2iSiteBar[nf][iy] = rM2iSiteBar_sum[nf][iy]/(double)(nt-NTCHECK);
+            
         }
     }
     
@@ -202,40 +211,47 @@ void finalizeSummary()
         {
             
             fprintf(fList, " %ld %f %f %f %f %f",
-                    N[nf],              // 9 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    ksStatistic[nf],    // 10 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    reeBar[nf],         // 11 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    ree2Bar[nf],        // 12 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rMBar[nf],          // 13 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rM2Bar[nf]);        // 14 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    N[nf],              // 9 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    ksStatistic[nf],    // 10 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    reeBar[nf],         // 11 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    ree2Bar[nf],        // 12 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    rMBar[nf],          // 13 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    rM2Bar[nf]);        // 14 + 2*(NumberiSites+1) + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
             
             for (iy=0;iy<iSiteTotal[nf];iy++)
             {
                 fprintf(fList, " %ld %e %e %e %e %f %f",
-                    iSite[nf][iy],              // 15 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    POcclude[nf][iy],           // 16 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    1-POcclude[nf][iy],         // 17 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    PMembraneOcclude[nf][iy],   // 18 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    Prvec0[nf][iy],             // 19 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rMiSiteBar[nf][iy],         // 20 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
-                    rM2iSiteBar[nf][iy]);       // 21 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    iSite[nf][iy],              // 15 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    POcclude[nf][iy],           // 16 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    1-POcclude[nf][iy],         // 17 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    PMembraneOcclude[nf][iy],   // 18 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    Prvec0[nf][iy],             // 19 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    rMiSiteBar[nf][iy],         // 20 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                    rM2iSiteBar[nf][iy]);       // 21 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
             }
 
             
             fprintf(fList, " %e %e",
-                    POccludeBase[nf],           // 22 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
-                    1-POccludeBase[nf]);        // 23 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2)*nf
+                    POccludeBase[nf],           // 22 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2 + iSiteTotal)*nf
+                    1-POccludeBase[nf]);        // 23 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (6 + 7*iSiteTotal + 2 + iSiteTotal)*nf
             
             for(nf2=0;nf2<NFil;nf2++)
             {
                 fprintf(fList, " %f",
-                    reeFilBar[nf][nf2]);        // 24 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                    reeFilBar[nf][nf2]);        // 24 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
             }
             
             for(nf2=0;nf2<NFil;nf2++)
             {
                 fprintf(fList, " %f",
-                        ree2FilBar[nf][nf2]);   // 25 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (NFil-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil)*nf
+                        ree2FilBar[nf][nf2]);   // 25 + 2*(NumberiSites+1) + 7*(iSiteTotal-1) + (NFil-1) + nf2 + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+            }
+            
+            for (iy=0;iy<iSiteTotal[nf];iy++)
+            {
+                fprintf(fList, " %f %f",
+                        reeiSiteBar[nf][iy],         // 26 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
+                        ree2iSiteBar[nf][iy]);       // 27 + 2*(NumberiSites+1) + 7*iBind + (6 + 7*iSiteTotal + 2 + NFil + NFil + iSiteTotal)*nf
             }
             
 //            for (ib=0;ib<bSiteTotal[nf];ib++)
@@ -393,6 +409,10 @@ void dataRecording()
             reeiSite[nf][iy] = sqrt((r[nf][iSiteCurrent][0]-rBase[nf][0])*(r[nf][iSiteCurrent][0]-rBase[nf][0]) +
                                     (r[nf][iSiteCurrent][1]-rBase[nf][1])*(r[nf][iSiteCurrent][1]-rBase[nf][1]) +
                                     (r[nf][iSiteCurrent][2]-rBase[nf][2])*(r[nf][iSiteCurrent][2]-rBase[nf][2]));
+            
+            ree2iSite[nf][iy] = (r[nf][iSiteCurrent][0]-rBase[nf][0])*(r[nf][iSiteCurrent][0]-rBase[nf][0]) +
+                                    (r[nf][iSiteCurrent][1]-rBase[nf][1])*(r[nf][iSiteCurrent][1]-rBase[nf][1]) +
+                                    (r[nf][iSiteCurrent][2]-rBase[nf][2])*(r[nf][iSiteCurrent][2]-rBase[nf][2]);
         }
     }
 
@@ -596,6 +616,10 @@ void dataRecording()
         {
             for (iy=0;iy<iSiteTotal[nf];iy++)
             {
+                
+                reeiSiteBar_sum[nf][iy]   += reeiSite[nf][iy];
+                ree2iSiteBar_sum[nf][iy]  += ree2iSite[nf][iy];
+                
                 rMiSiteBar_sum[nf][iy]    += rMiSite[nf][iy];
                 rM2iSiteBar_sum[nf][iy]   += rM2iSite[nf][iy];
             }

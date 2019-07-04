@@ -4,8 +4,6 @@
 # Set variables for each run
 VERBOSE=0                   # Only print summary file for batch runs. If printing verbose, comment out concatenation step.
 
-NFIL=1                      # Number of filaments simulated
-
 BASESEPDISTANCE=0           # Separation distance of filament bases
 
 FORCE=0                     # Force on ends of filaments in z-direction
@@ -17,7 +15,7 @@ for FORCE in $(seq 0 0.04 1)
 do
 
     # Run executable
-    ./metropolis.out parameters.txt SinglePolymerWithForce.$FORCE.txt $VERBOSE $NFIL $BASESEPDISTANCE $FORCE $DIMERFORCE &
+    ./metropolis.out parameters.txt SinglePolymerWithForce.$FORCE.txt $VERBOSE $BASESEPDISTANCE $FORCE $DIMERFORCE &
 
 done
 
