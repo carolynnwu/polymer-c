@@ -42,7 +42,15 @@ void getSites()
             }
             break;
             
-        case 1: //do nothing, use command line input
+        case 1: // set identical filament single iSite - use command line input
+            
+            // assign iSiteTemp to each filament
+            for(nf=0;nf<NFil;nf++)
+            {
+                iSiteTotal[nf]=1;
+                iSite[nf][0]=iSiteTemp;
+                if (TALKATIVE) printf("This is location of the iSite in filament %ld: %ld\n",nf, iSite[nf][0]);
+            }
             
             break;
             

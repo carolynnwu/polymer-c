@@ -16,7 +16,7 @@ void getFilaments()
     switch (filamentInputMethod)
     {
             
-        case 0:  // use identical filaments, number and length set from parameters.txt file
+        case 0:  // use identical filaments, number and length set from parameters.txt file or command line argument
 
             for(nf=0;nf<NFil;nf++)
             {
@@ -43,6 +43,10 @@ void getFilaments()
             // count number of filaments
             NFil=nf;
 
+            break;
+            
+        case 2: // do nothing, use command line input, set filaments in driveMet
+            
             break;
 
     }

@@ -7,7 +7,7 @@ void getParameters();
 //  GLOBAL VARIABLES for output control
 /*******************************************************************************/
 char tmpString[100];
-long Ntemp;
+
 
 /********************************************************************************************************/
 void getParameters()
@@ -106,6 +106,9 @@ void getParameters()
     
     fscanf(paramsFile,"%s %lf", tmpString, &localConcCutoff);
     if (TALKATIVE) printf("This is localConcCutoff: %lf\n", localConcCutoff);
+    
+    fscanf(paramsFile,"%s %ld", tmpString, &iSiteTemp);
+    if (TALKATIVE) printf("This is iSiteTemp: %ld\n", iSiteTemp);
     
     fclose(paramsFile);
     
