@@ -3,11 +3,9 @@ clear all; close all;
 
 saveTF = 1;
 
-
-constant = 0;
+constant = 1;
 membrane = 1;
-spacing = 2;
-
+spacing = 0;
 
 switch (spacing)
     case 0
@@ -33,31 +31,32 @@ end
 switch(spacing)
     case 2
         filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
-        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/TwoSites/3.Gillespie/Reversible/',typeReversible,'/CatFiles'];
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/TwoSites/3.Gillespie/Reversible/CatFiles/',typeReversible];
     otherwise
         filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
-        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Reversible/',typeReversible,'/CatFiles'];
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Reversible/CatFiles/',typeReversible];
 end
 
 
 
-savefolder    = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/';
-savesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/Hill/',typeReversible];
+savefolder    = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/2.MembraneAssociation/';
+savesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/Plots/Hill/',typeReversible];
 
-colors = parula(11);
+
 lw = 2;
 ms_hill = 2;
 ms_coeff = 7;
 ms_lw = 1.5;
 paramset = 0:2:20;
 EP0 = 0.5*(paramset);
+colors = parula(length(paramset));
 
 hillcoeffEst = zeros(length(paramset),1);
 hillcoeffEstPhos = zeros(length(paramset),1);
 
 for s = 1:length(paramset)
 
-    filename = ['GillespieReversibleMembraneAssociation',iSiteSpacing,'Membrane',num2str(membrane),typeReversible,'.',num2str(paramset(s)),'.cat.txt'];
+    filename = ['ReversibleGillespie',iSiteSpacing,'Membrane',membraneState,typeReversible,'EP0.',num2str(paramset(s)),'.cat'];
 
 
     %% Import data, parse into variables
@@ -282,7 +281,7 @@ end
 
 %% Plot Hill numbers vs sweep parameter
 gray = [0.7 0.7 0.7];
-figure(34); hold on; box on;
+figure(34); clf; hold on; box on;
 plot(EP0,HillCoeffMaxSlope,'-k','LineWidth',lw);
 for s=1:length(paramset)
     plot(EP0(s),HillCoeffMaxSlope(s),'o','LineWidth',ms_lw,'Color',colors(s,:),'MarkerSize',ms_coeff,'MarkerFaceColor',colors(s,:),'MarkerEdgeColor','k');
@@ -304,7 +303,7 @@ if(saveTF)
 end
 
 
-figure(340); hold on; box on;
+figure(340); clf; hold on; box on;
 plot(EP0,HillCoeffMaxSlope,'-k','LineWidth',lw);
 for s=1:length(paramset)
     plot(EP0(s),HillCoeffMaxSlope(s),'o','LineWidth',ms_lw,'Color',colors(s,:),'MarkerSize',ms_coeff,'MarkerFaceColor',colors(s,:),'MarkerEdgeColor','k');
