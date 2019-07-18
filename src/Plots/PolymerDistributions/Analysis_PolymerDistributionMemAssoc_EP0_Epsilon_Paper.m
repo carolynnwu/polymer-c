@@ -5,7 +5,7 @@ close all;
 
 %% Initialize parameters
 
-model = 3;
+model = 1;
 
 NTCHECK = 200000;
 NBINS = 3000; % how many bins are there currently
@@ -22,22 +22,22 @@ if(server)
 else
     switch(model)
         case 1
-        case 3
+            folder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/CD3Zeta/MembraneOn/0.Distributions/';
+            controlFolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/CD3Zeta/MembraneOn/0.Distributions/';
+        case 7
             folder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/CD3Epsilon/MembraneOn/TwoSites/0.Distributions/';
             controlFolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/CD3Epsilon/MembraneOn/TwoSites/0.Distributions/';
-        case {4,5}
-            folder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/CD3Epsilon/MembraneOn/0.Distributions/';
-            controlFolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/CD3Epsilon/MembraneOn/0.Distributions/';
     end
 end
 
 switch(model)
-        case 1 % CD3 Zeta
-            filenamePrefix = 'CD3ZetaElectrostatics';
-            subfolder = '20181106MembraneAssociationCD3ZetaMembraneOnEP0Sweep';
-            savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Zeta/MembraneOn/Distributions/';
-
-            filenamePrefix = 'CD3ZetaElectrostatics';
+               
+       case 1 % WT Zeta
+            %filenamePrefix = 'CD3EpsilonMembraneAssociation';
+            subfolder = 'CatFiles/EP0';
+            savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/2.MembraneAssociation/CD3Zeta/MembraneOn/Plots/Distributions/';
+            
+            filenamePrefix = 'CD3ZetaMembraneAssociation';
             
             PD = 0.5;  % parabola depth
             PW = 0.5/9;  % parabola width
@@ -45,10 +45,13 @@ switch(model)
             ER = logspace(-2,2,101);  % repulsive energy multiplier
             ZR = 3;  % repulsive energy exponent multiplier
             ER2ind = find(ER>2,1,'first');
+            ERind = find(ER>3.5,1,'first');
             
+%             colors = parula(404);
+%             colors_gray = flipud(gray(404));
             sweepVariable = ER;
-            colors = parula(404);
-            colors_gray = flipud(gray(404));
+            colors = parula(202);
+            colors_gray = flipud(gray(202));
 
             iSiteLocations = [20, 31, 59, 71, 90, 101]+1;
             combinations=64;
@@ -57,19 +60,19 @@ switch(model)
             iSiteTotal = 6;
             BinSize = 2*N/NBINS; % what is the current binsize
 
-            controlSubfolder = '20181105MembraneAssociationCD3ZetaMembraneOnEB0Zero';
-            controlFilename = 'CD3ZetaElectrostaticsDistributionControl';
-            plotiSite = 1;
+            controlSubfolder = 'CatFiles/EB0';
+            controlFilename = strcat(filenamePrefix,'.EB0.',num2str(0));
+            plotiSite = 3;
             
             lw = 2;
             ms = 10;
-    
-        case 3 % CD3 Epsilon
-            filenamePrefix = 'CD3EpsilonElectrostatics';
-            subfolder = '20181126MembraneAssociationCD3EpsilonMembraneOnEP0Sweep';
-            savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Distributions/';
-
-            filenamePrefix = 'CD3EpsilonElectrostatics';
+            
+       case 7 % WT Epsilon
+            %filenamePrefix = 'CD3EpsilonMembraneAssociation';
+            subfolder = 'CatFiles/EP0';
+            savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Plots/Distributions/';
+            
+            filenamePrefix = 'CD3EpsilonMembraneAssociation';
             
             PD = 0.5;  % parabola depth
             PW = 0.5/9;  % parabola width
@@ -90,74 +93,8 @@ switch(model)
             iSiteTotal = 2;
             BinSize = 2*N/NBINS; % what is the current binsize
 
-            controlSubfolder = '20181126MembraneAssociationCD3EpsilonMembraneOnEB0Zero';
-            controlFilename = 'CD3EpsilonElectrostaticsDistributionControl';
-            plotiSite = 1;
-            
-            lw = 2;
-            ms = 10;
-            
-       case 4 % CD3 Epsilon with extra 'tyrosines' before ITAM
-            filenamePrefix = 'CD3EpsilonElectrostatics';
-            subfolder = '20181106MembraneAssociationCD3EpsilonMembraneOnEP0SweepTest';
-            savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Distributions/';
-
-            filenamePrefix = 'CD3EpsilonElectrostatics';
-            
-            PD = 0.5;  % parabola depth
-            PW = 0.5/9;  % parabola width
-            WK = 0.05;  % wall parabola k
-            ER = logspace(-2,2,101);  % repulsive energy multiplier
-            ZR = 3;  % repulsive energy exponent multiplier
-            ER2ind = find(ER>2,1,'first');
-            ERind = find(ER>3.5,1,'first');
-            
-            sweepVariable = ER;
-            colors = parula(202);
-            colors_gray = flipud(gray(202));
-
-            iSiteLocations = [10,21,25,30,35,46]+1;
-            combinations=4;
-            NFil = 1;
-            N = 55;
-            iSiteTotal = 6;
-            BinSize = 2*N/NBINS; % what is the current binsize
-
-            controlSubfolder = '20181105MembraneAssociationCD3EpsilonMembraneOnEB0ZeroTest';
-            controlFilename = 'CD3EpsilonElectrostaticsDistributionControl';
-            plotiSite = 1;
-            
-            lw = 2;
-            ms = 10;
-            
-       case 5 % Evenly spaced phosphorylated tyrosines on CD3 Epsilon
-            filenamePrefix = 'CD3EpsilonElectrostatics';
-            subfolder = '20181106MembraneAssociationCD3EpsilonMembraneOnEP0SweepEvenSpaceTest';
-            savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Distributions/';
-
-            filenamePrefix = 'CD3EpsilonElectrostatics';
-            
-            PD = 0.5;  % parabola depth
-            PW = 0.5/9;  % parabola width
-            WK = 0.05;  % wall parabola k
-            ER = logspace(-2,2,101);  % repulsive energy multiplier
-            ZR = 3;  % repulsive energy exponent multiplier
-            ER2ind = find(ER>2,1,'first');
-            ERind = find(ER>3.5,1,'first');
-            
-            sweepVariable = ER;
-            colors = parula(202);
-            colors_gray = flipud(gray(202));
-
-            iSiteLocations = [3,9,18,27,36,45]+1;
-            combinations=4;
-            NFil = 1;
-            N = 55;
-            iSiteTotal = 6;
-            BinSize = 2*N/NBINS; % what is the current binsize
-
-            controlSubfolder = '20181105MembraneAssociationCD3EpsilonMembraneOnEB0ZeroEvenSpaceTest';
-            controlFilename = 'CD3EpsilonElectrostaticsDistributionControl';
+            controlSubfolder = 'CatFiles/EB0';
+            controlFilename = strcat(filenamePrefix,'.EB0.',num2str(0));
             plotiSite = 1;
             
             lw = 2;
@@ -176,7 +113,8 @@ for k = 1:length(WK)
                 for z = 1:length(ZR)
                     
                     %% Open file and retrieve distribution data
-                    filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
+                    %filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
+                    filename = strcat(filenamePrefix,'.EP0.',num2str(e));
 
                     if(exist(fullfile(folder,subfolder,filename))~=0)
                         
@@ -211,10 +149,10 @@ distributionDataControl = zeros(iSiteTotal+1,NBINS);
 
 %% Open file and retrieve distribution data
 
-M = dlmread(fullfile(controlFolder,controlSubfolder,controlFilename));
+M = dlmread(fullfile(folder,controlSubfolder,controlFilename));
 
 ntTotal = M(1,1);
-ree2Control = M(1,12);
+ree2Control = M(1,12+2*(iSiteTotal+1));
 
 for i=1:1:iSiteTotal+1
     
@@ -224,6 +162,34 @@ for i=1:1:iSiteTotal+1
     distributionDataControl(i,:) = frequencyDataControl(i,:)./(sum(frequencyDataControl(i,:).*BinSize));
     distributionDataControlNM(i,:) = frequencyDataControl(i,:)./(sum(frequencyDataControl(i,:).*BinSize*0.3));
 end
+
+%% Find EP0 with peak closest to peak of EB0 = 0 
+
+for i=1:1:iSiteTotal+1
+   peakIndControl(i) = find(distributionDataControlNM(i,:) == max(distributionDataControlNM(i,:))); 
+   for e = 1:length(ER)
+      peakInd(i,e) = find(distributionDataNM(1,1,1,e,1,i,:) == max(distributionDataNM(1,1,1,e,1,i,:)));
+   end
+   
+   absDiffPeakInd(i,:) = abs(peakInd(i,:)-peakIndControl(i));
+   
+   % find minimum index that is closest to control peak
+   EP0StarPeak(i) = min(find(absDiffPeakInd(i,:) == min(absDiffPeakInd(i,:))));
+   
+
+   
+   disp(i);
+   disp(EP0StarPeak(i));
+   
+end
+
+if(EP0StarPeak(plotiSite)==ER2ind)
+   disp('Indices match.');
+else
+   disp('Peak does not occur at 2kBT');
+   ER2ind = EP0StarPeak(plotiSite);
+end
+
 
 %% Plot histograms
 lw = 2;
@@ -284,7 +250,7 @@ for i=1:iSiteTotal+1
     xtext = -1;
     ytext = get(gca,'YLim');
     text(xtext,0.75*ytext(2),'membrane','FontSize',14,'Rotation',90);
-    legend([lg1,lg2],'E_{B0} = 0','E_{P0} = 2');
+    legend([lg1,lg2],'E_{B0} = 0',['E_{P0} = ',num2str(sweepVariable(ER2ind))]);
 end
 set(gcf,'units','centimeters','position',[1,4,76,33]);
 
@@ -343,7 +309,7 @@ for i=1:iSiteTotal+1
     xtext = -0.3;
     ytext = get(gca,'YLim');
     text(xtext,0.75*ytext(2),'membrane','FontSize',14,'Rotation',90);
-    legend([lg1,lg2],'E_{B0} = 0','E_{P0} = 2');
+    legend([lg1,lg2],'E_{B0} = 0',['E_{P0} = ',num2str(sweepVariable(ER2ind))]);
 end
 set(gcf,'units','centimeters','position',[1,4,76,33]);
 
@@ -432,7 +398,7 @@ if(rebin)
         xtext = -1;
         ytext = get(gca,'YLim');
         text(xtext,0.75*ytext(2),'membrane','FontSize',14,'Rotation',90);
-        legend([lg1,lg2],'E_{B0} = 0','E_{P0} = 2');
+        legend([lg1,lg2],'E_{B0} = 0',['E_{P0} = ',num2str(sweepVariable(ER2ind))]);
     end
     set(gcf,'units','centimeters','position',[1,4,76,33]);
     
@@ -492,7 +458,7 @@ if(rebin)
         xtext = -0.3;
         ytext = get(gca,'YLim');
         text(xtext,0.75*ytext(2),'membrane','FontSize',14,'Rotation',90);
-        legend([lg1,lg2,lg3],'E_{B0} = 0','E_{P0} = 3.5','E_{P0} = 2');
+        legend([lg1,lg2,lg3],'E_{B0} = 0','E_{P0} = 3.5',['E_{P0} = ',num2str(sweepVariable(ER2ind))]);
     end
     set(gcf,'units','centimeters','position',[1,4,76,33]);
     
@@ -606,7 +572,7 @@ if(rebin)
         xtext = -0.3;
         ytext = get(gca,'YLim');
         text(xtext,0.75*ytext(2),'membrane','FontSize',14,'Rotation',90);
-        legend([lg1,lg2],'E_{B0} = 0','E_{P0} = 2');
+        legend([lg1,lg2],'E_{B0} = 0',['E_{P0} = ',num2str(sweepVariable(ER2ind))]);
     end
     set(gcf,'units','centimeters','position',[1,4,46,33]);
     
