@@ -5,13 +5,13 @@ close all;
 
 %% Initialize parameters
 
-model = 3; % 1 - EB0 sweep, 2 - EP0 Sweep, 3 - CD3E EB0 Sweep
+model = 1; % 1 - EB0 sweep, 2 - EP0 Sweep, 3 - CD3E EB0 Sweep
 
 NTCHECK = 200000;
 NBINS = 3000; % how many bins are there currently
 KBT = 4.14;
 bSiteTotal = 0; % how many bound ligands are there - for reading files properly
-saveTF = 1; % save figures
+saveTF = 0; % save figures
 rebin = 1; % rebin distributions to smooth
 
 server = 0;
@@ -34,10 +34,10 @@ switch (model)
     
     case 1
         %subfolder = '20180306CD3ZetaElectrostaticsEB0Sweep';
-        subfolder = '20180409MembraneAssociationCD3ZetaMembraneOnEB0Sweep';
-        savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Zeta/MembraneOn/Distributions/';
+        subfolder = 'CatFiles/EB0';
+        savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/2.MembraneAssociation/CD3Zeta/MembraneOn/Plots/Distributions/';
         
-        filenamePrefix = 'CD3ZetaElectrostatics';
+        filenamePrefix = 'CD3ZetaMembraneAssociation';
         
         PD = logspace(-6,2,201);  % parabola depth
         PW = 1;  % parabola width
@@ -58,15 +58,17 @@ switch (model)
         iSiteTotal = 6;
         BinSize = 2*N/NBINS; % what is the current binsize
         
-        controlSubfolder = '20180409MembraneAssociationCD3ZetaMembraneOnEB0Zero';
-        controlFilename = 'CD3ZetaElectrostaticsDistributionControl';
+%         controlSubfolder = '20180409MembraneAssociationCD3ZetaMembraneOnEB0Zero';
+%         controlFilename = 'CD3ZetaElectrostaticsDistributionControl';
+
+        plotiSite = 3;
         
         
     case 3
         %subfolder = '20180306CD3ZetaElectrostaticsEB0Sweep';
         %subfolder = '20190411MembraneAssociationCD3EpsilonMembraneOnEB0Sweep';
-        subfolder = 'CatFiles';
-        savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Distributions/';
+        subfolder = 'CatFiles/EB0';
+        savefolder = '/Volumes/GoogleDrive/My Drive/Papers/MultisiteDisorder/Data_Figures/2.MembraneAssociation/CD3Epsilon/MembraneOn/Plots/Distributions/';
         
         filenamePrefix = 'CD3EpsilonMembraneAssociation';
         
@@ -110,14 +112,10 @@ for k = 1:length(WK)
                 for z = 1:length(ZR)
                     
                     %% Open file and retrieve distribution data
-                    switch (model)
-                        case 1
-                            filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
-                        case 3
-                            filename = strcat(filenamePrefix,'.EB0.',num2str(d));
-                        
-                    end
-                    
+
+                    %filename = strcat(filenamePrefix,'.','PD','.',num2str(d),'PW','.',num2str(w),'WK','.',num2str(k),'ER','.',num2str(e),'ZR','.',num2str(z));
+                    filename = strcat(filenamePrefix,'.EB0.',num2str(d));
+
                     if(exist(fullfile(folder,subfolder,filename))~=0)
                         
                         M = dlmread(fullfile(folder,subfolder,filename));
@@ -794,9 +792,9 @@ if(saveTF)
     print('-painters',fullfile(savefolder,savefilename),'-depsc');
 end
 
-%% Calculate EB0 when Normalized <rM^2>-<rM>^2 is below 1/e (0.37) of range
+%% Calculate EB0 when (not normalized) <rM^2>-<rM>^2 is below 1/e (0.37) of range
 
-EB0starindTyr3 = find(rMVarTyr3 < (exp(-1).*(1-rMVarTyr3(end))+rMVarTyr3(end)),1,'first');
+EB0starindTyr3 = find(rMVarTyr3 < (exp(-1).*(rMVarTyr3(1)-rMVarTyr3(end))+rMVarTyr3(end)),1,'first');
 EB0starTyr3 = PD(EB0starindTyr3);
 disp(EB0starTyr3);
 
