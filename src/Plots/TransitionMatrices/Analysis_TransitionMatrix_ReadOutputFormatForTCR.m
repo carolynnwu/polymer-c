@@ -7,9 +7,9 @@ close all;
 %% Initialize model
 
 % Pick model
-spacing = 2; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR
+spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = TCR, 3 = CD3Epsilon
 membrane = 1; % 0 for membrane off, 1 for membrane on
-model = 33; % 1x = LocalStructuring, 3x = Simultaneous Binding
+model = 21; % 1x = LocalStructuring, 2x = Membrane Association, 3x = Simultaneous Binding
 
 % 10 = Local Structuring
 
@@ -35,6 +35,8 @@ switch (spacing)
         iSiteSpacing = 'EvenSites';
     case 2
         iSiteSpacing = 'TCR';
+    case 3
+        iSiteSpacing = 'CD3Epsilon';
 end
 
 if (membrane)
@@ -114,6 +116,70 @@ switch (model)
         ms = 10;
         lw = 2;
         modificationLabel = '(Phosphorylated)';
+        
+    case 20
+        % model name
+        modelName = 'MembraneAssociation';
+        
+        filefolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
+        filesubfolder = 'CD3Epsilon/MembraneOn/TwoSites/1.OcclusionProbabilities/CatFiles';
+        filetitle     = strcat(iSiteSpacing,'Membrane',num2str(membrane));
+
+        % save figures location
+        savesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/Plots'];
+        
+        locationTotal = 2;
+        NFil = 1;
+        iSiteTotal(1:NFil) = [2];
+
+
+        %phosSites = 2;
+        transitionMatrixfolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
+        transitionMatrixsubfolder = 'CD3Epsilon/MembraneOn/TwoSites/2.TransitionMatrices/';
+
+        sweep = 0:1:40;
+        sweepParameter = 'EP0';
+
+        
+        % figure parameters
+        legendlabels = {'EP0 = 0','EP0 = 1','EP0 = 2','EP0 = 3','EP0 = 4','EP0 = 5','EP0 = 6'};        
+        colorIndices = 1:1:length(sweep);
+        colors = parula(length(sweep));
+        ms = 10;
+        lw = 2;
+        modificationLabel = '(Phosphorylated)';
+        
+    case 21
+        % model name
+        modelName = 'MembraneAssociation';
+        
+        filefolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
+        filesubfolder = 'CD3Zeta/MembraneOn/1.OcclusionProbabilities/CatFiles';
+        filetitle     = strcat(iSiteSpacing,'Membrane',num2str(membrane));
+        
+        % save figures location
+        savesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/Plots'];
+        
+        
+        locationTotal = 6;
+        NFil = 1;
+        iSiteTotal(1:NFil) = [6];
+
+
+        transitionMatrixfolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
+        transitionMatrixsubfolder = 'CD3Zeta/MembraneOn/2.TransitionMatrices/';
+
+        sweep = 0:1:40;
+        sweepParameter = 'EP0';
+        
+        % figure parameters
+        legendlabels = {'EP0 = 0','EP0 = 1','EP0 = 2','EP0 = 3','EP0 = 4','EP0 = 5','EP0 = 6'};
+        colorIndices = 1:1:length(sweep);
+        colors = parula(length(sweep));
+        ms = 10;
+        lw = 2;
+        modificationLabel = '(Phosphorylated)';
+
         
     case 30
         % model name
