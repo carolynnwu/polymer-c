@@ -62,7 +62,7 @@ switch (model)
         transitionMatrixfolder = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
         transitionMatrixsubfolder = 'CD3Epsilon/MembraneOn/TwoSites/2.TransitionMatrices/';
         transitionMatFilename = 'CD3Epsilon_MembraneAssociation_EP0Sweep';
-        sweep = 0:1:39;
+        sweep = 0:1:40;
 
         
         % figure parameters
