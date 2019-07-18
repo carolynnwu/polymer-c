@@ -11,7 +11,7 @@ close all;
 % spacing = 0; % 0 = CD3Zeta, 1 = EvenSites, 2 = CD3Epsilon, 3 = TCR
 % membrane = 1; % 0 for membrane off, 1 for membrane on
 % phos = 0; % 1 = phosphorylation, 0 = dephosphorylation
-for spacing = 3
+for spacing = 0
     for membrane = 1
         for phos = 1
             sf = 1
@@ -44,7 +44,7 @@ for spacing = 3
 
             
 % initialization switch for which model we're inspecting
-model = 32; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
+model = 20; % 1x = stiffening, 2x = electrostatics, 3x = multiple binding - ibEqual
 
 saveRatesPlot = 1;
 saveSeqPlot = 0;
@@ -135,8 +135,8 @@ switch (model)
       
         % find files
         filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
-        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Irreversible/',phosDirection,'/CatFiles'];
-        filetitle = strcat('Gillespie',iSiteSpacing,'MembraneAssociation');
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Irreversible/CatFiles/',phosDirection];
+        filetitle = strcat('IrreversibleGillespie',iSiteSpacing,'Membrane',membraneState,phosDirection);
         
         %
         locationTotal = 6;
@@ -144,7 +144,7 @@ switch (model)
         sweepParameter = 'EP0';
         
         % create location to save figures
-        savefilesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/',phosDirection,'/Sequence'];
+        savefilesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/Plots/',phosDirection,'/Sequence'];
         
         % figure parameters
         lw = 2;
@@ -157,13 +157,16 @@ switch (model)
         units = 'kBT'; 
         
         modificationLabel = '(Phosphorylated)';
+        colormapName = 'parula';
+        
+        GillespieRuns = 200000000;
         
      case 21 % Membrane Association - Epsilon
       
         % find files
         filefolder    = '~/Documents/Papers/MultisiteDisorder/Data/2.MembraneAssociation/';
-        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/TwoSites/3.Gillespie/Irreversible/',phosDirection,'/CatFiles'];
-        filetitle = strcat('Gillespie',iSiteSpacing,'MembraneAssociation');
+        filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/TwoSites/3.Gillespie/Irreversible/CatFiles/',phosDirection];
+        filetitle = strcat('IrreversibleGillespie',iSiteSpacing,'Membrane',membraneState,phosDirection);
         
         %
         locationTotal = 2;
@@ -171,7 +174,7 @@ switch (model)
         sweepParameter = 'EP0';
         
         % create location to save figures
-        savefilesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/',phosDirection,'/Sequence'];
+        savefilesubfolder = ['2.MembraneAssociation/',iSiteSpacing,'/Membrane',membraneState,'/Plots/',phosDirection,'/Sequence'];
         
         % figure parameters
         lw = 2;
@@ -179,10 +182,13 @@ switch (model)
         colors = parula(11);
         legendlabelsAbbrev = {'0','1','2','3','4','5','6','7','8','9','10'};
         legendlabels = {['EP0', num2str(sweep)]};
+        colormapName = 'parula';
         
         xlabelModel = 'EP0';
         units = 'kBT'; 
         modificationLabel = '(Phosphorylated)';
+        
+        GillespieRuns = 200000000;
         
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -340,7 +346,7 @@ switch model
         secondToLastEventProbability = zeros(locationTotal,length(sweep));
 
         % find second to last event
-        eventIndex = 5; % options: 1 to locationTotal
+        eventIndex = locationTotal-1; % options: 1 to locationTotal
         eventModifier = locationTotal-eventIndex;
 
         % find index of paths where designated event is x
@@ -365,7 +371,8 @@ for s=1:length(sweep)
     
     % read in file
     M = dlmread(fullfile(filefolder,filesubfolder,filename));
-    
+    disp(s);
+    disp(size(M));
     % read in average times and rates
     transitionTime_Avg(s,1:locationTotal) = M(end-(locationTotal-1):end,2);
     transitionRate_Avg(s,1:locationTotal) = M(end-(locationTotal-1):end,3);
@@ -373,7 +380,10 @@ for s=1:length(sweep)
     
     % check size of M for possible error
     if (size(M,1) < (1+factorial(locationTotal)+locationTotal))
+        disp('File:');
+        disp(s);
         disp('Warning! File might not contain all paths!');
+        disp(size(M));
     end
     
     % find probability and avgTime from matrix
@@ -468,9 +478,13 @@ switch model
                 end
             end   
         end
-
+    case 20
+        if(phos)
+            ylim([0.004 0.012]);
+        else
+        end
                 
-    case {20,30}
+    case {30}
         ylim([0 1]);
     case { 32,33,34}
         set(gca,'YScale','log');
@@ -551,7 +565,13 @@ switch model
             end   
         end
         
-    case {20,30}
+    case 20
+        if(phos)
+            ylim([0.004 0.012]);
+        else
+        end
+        
+    case {30}
         ylim([0 1]);
     case {32,33}
         xlim([0 locationTotal-1])
@@ -559,7 +579,7 @@ switch model
         ylim([10^(-10) 10^(0)]);
 end
 %set(gcf,'Colormap',colormapName);
-colormap cool;
+colormap parula;
 h = colorbar;
 h = colorbar('Ticks',[0 1],'TickLabels',{'',''},'YDir','reverse');
 set(h,'ylim',[0 1]);
