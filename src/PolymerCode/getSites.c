@@ -118,6 +118,29 @@ void getSites()
             }
         
             break;
+            
+        case 4: // use every site as iSite
+            
+            // initialize iSiteTotal, iSites
+            for(nf=0;nf<NFil;nf++)
+            {
+                iSiteTotal[nf] = N[nf];
+                for(iy=0;iy<iSiteTotal[nf];iy++)
+                {
+                    iSite[nf][iy]=0;
+                }
+            }
+            
+            // set iSites to all segments
+            for(nf=0;nf<NFil;nf++)
+            {
+                for(iy=0;iy<iSiteTotal[nf];iy++)
+                {
+                    iSite[nf][iy]=iy;
+                }
+            }
+            
+            break;
 
     }
     
