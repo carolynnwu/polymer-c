@@ -7,7 +7,7 @@ saveTF = 1; % save figures
 
 spacing = 0; % 0 = CD3Zeta spacing, 1 = evenly spaced tyrosines
 membrane = 1; % 0 = no membrane, 1 = membrane
-constant = 2; % 0 = steric-influenced dephosphorylation, 1 = steric-influenced dephosphorylation, 2 = constant phosphorylation
+constant = 0; % 0 = steric-influenced dephosphorylation, 1 = steric-influenced dephosphorylation, 2 = constant phosphorylation
 
 % parameters to file label conversion
 if (spacing)
@@ -33,7 +33,7 @@ end
 
 % data location
 filefolder = '~/Documents/Papers/MultisiteDisorder/Data/1.LocalStructuring/';
-filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Reversible/',typeReversible,'/CatFiles'];
+filesubfolder = [iSiteSpacing,'/Membrane',membraneState,'/3.Gillespie/Reversible/CatFiles/',typeReversible];
 
 % save location for figures
 %savefolder = '~/Documents/Papers/MultisiteDisorder/Figures/1.LocalStructuring/';
@@ -55,7 +55,7 @@ hillcoeffEstPhos = zeros(length(sweep),1);
 
 for s = 1:length(sweep)
 
-    filename = ['GillespieReversibleLocalStructuring',iSiteSpacing,'Membrane',num2str(membrane),typeReversible,'.',num2str(sweep(s)),'.cat.txt'];
+    filename = ['ReversibleGillespie',iSiteSpacing,'Membrane',membraneState,typeReversible,'StiffenRange.',num2str(sweep(s)),'.cat'];
 
 
     %% Import data, parse into variables
