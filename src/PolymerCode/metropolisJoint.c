@@ -8,15 +8,6 @@ void rotate(double *tIn, double *e1In, double *e2In, double *tOut, double *e1Out
 void metropolisJoint()
 {
 
-    /********* INITIALIZE FILAMENTS, ISITES, BSITES, AND BASIC SITES *******************/
-    getFilaments();
-    getSites();
-    
-    if(ELECTRO)
-    {
-        getBasicSites();
-    }
-
     /************* STIFFEN SEGMENTS *******************/
 
     if (STIFFEN) //stiffen only if STIFFEN is 1 in driveM

@@ -12,7 +12,7 @@
 #define PI              3.14159265359
 #define INF             1e14
 #define DCHIINIT        0.1
-#define KSCRITICAL      0.01
+#define KSCRITICAL      0.005
 #define MEMBRANE        0
 #define MULTIPLE        0
 #define STIFFEN         0
@@ -46,6 +46,7 @@ char paramsFilename[100], filamentFilename[100], iSiteFilename[100], bSiteFilena
 FILE *paramsFile, *filList, *iSiteList, *bSiteList, *basicSiteList;
 
 long NFil,N[NFILMAX];
+long Ntemp,iSiteTemp;
 long iSite[NFILMAX][NMAX], iSiteTotal[NFILMAX], iSiteCurrent, iy,ty, stericOcclusion[NFILMAX][NMAX];
 long NumberiSites;
 long Ncurrent;
@@ -176,42 +177,70 @@ int main( int argc, char *argv[] )
     if(argv[3])
     {
         if(atoi(argv[3])!=-1)
-            verboseTF = atoi(argv[3]);
+            verboseTF = atof(argv[3]);
         if (TALKATIVE) printf("This will print verbose: %d\n", verboseTF);
     }
 
     if(argv[4])
     {
         if(atoi(argv[4])!=-1)
-            baseSepDistance = atof(argv[4]);
-        if (TALKATIVE) printf("This is the base separation distance: %lf\n", baseSepDistance);
+            NFil = atof(argv[4]);
+        if (TALKATIVE) printf("This is the number of filaments: %ld\n", NFil);
     }
-
+    
     if(argv[5])
     {
         if(atoi(argv[5])!=-1)
-            Force = atof(argv[5]);
-        if (TALKATIVE) printf("This is the force: %lf\n", Force);
+            Ntemp = atof(argv[5]);
+        if (TALKATIVE) printf("This is the filament length: %ld\n", Ntemp);
     }
     
     if(argv[6])
     {
         if(atoi(argv[6])!=-1)
-            kdimer = atof(argv[6]);
+            iSiteTemp = atof(argv[6]);
+        if (TALKATIVE) printf("This is the location of the iSite: %ld\n", iSiteTemp);
+    }
+    
+    if(argv[7])
+    {
+        if(atoi(argv[7])!=-1)
+            baseSepDistance = atof(argv[7]);
+        if (TALKATIVE) printf("This is the base separation distance: %lf\n", baseSepDistance);
+    }
+
+    if(argv[8])
+    {
+        if(atoi(argv[8])!=-1)
+            Force = atof(argv[8]);
+        if (TALKATIVE) printf("This is the force: %lf\n", Force);
+    }
+    
+    if(argv[9])
+    {
+        if(atoi(argv[9])!=-1)
+            kdimer = atof(argv[9]);
         if (TALKATIVE) printf("This is the dimerization force: %lf\n", kdimer);
     }
     
     
+    /***********************************************************************************/
+    /********* INITIALIZE FILAMENTS, ISITES, BSITES, AND BASIC SITES *******************/
+    /***********************************************************************************/
     
+    // filaments
+    getFilaments();
+    // iSites, bSites
+    getSites();
     
-    /* Finish setting up initial variables */
-    
-    // assign Ntemp to each filament
-    for(nf=0;nf<NFil;nf++)
+    if(ELECTRO)
     {
-        N[nf]=Ntemp;
-        if (TALKATIVE) printf("This is number of rods in filament %ld: %ld\n",nf, N[nf]);
+        // basic sites
+        getBasicSites();
     }
+
+    /***********************************************************************************/
+    /******************************* FINISH INITIALIZING *******************************/
     
     // parse OccupiedSites
     for (i=0; i<NumberiSites; i++)
@@ -229,10 +258,11 @@ int main( int argc, char *argv[] )
         i++;
     }
     
-    
+    /***********************************************************************************/
     // initialize random seed
 	iseed = RanInitReturnIseed(0);
 	
+    /***********************************************************************************/
     // run metropolis algorithm
 	metropolisJoint();
 
