@@ -5,13 +5,13 @@
 # Summer 2019
 # team real formins: Joanna, Poorvi, Katie, Allard
 # Set variables for each run
-SWEEPNAME=single_10_12
+SWEEPNAME=dimer_10_12
 
 # Loop through single variable
 for N in $(seq 1 25 301)
 do
     # Run executable
-    ./metropolis.out parameters.txt $SWEEPNAME.txt 0 1 $N -1 baseSepDist Force dimerForce
+    ./metropolis.out parameters.txt $SWEEPNAME.txt 0 2 $N -1 16.66667 Force 10
     date
 done
 
